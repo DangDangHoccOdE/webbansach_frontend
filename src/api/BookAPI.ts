@@ -46,3 +46,17 @@ export async function getThreeBooksLatest():Promise<ResultInterface> {
 
     return getBook(url);
 }
+
+export async function findBook(bookName:string,categoryId : number) {
+    let url:string=`http://localhost:8080/books?sort=bookId,desc&size=8&page=0`;
+
+    if(bookName!=='' && categoryId===0){
+        url = `http://localhost:8080/books/search/findByBookNameContaining?sort=bookId,desc&size=8&page=0&bookName=${bookName}`
+    }else if(bookName==='' && categoryId>0){
+        url = `http://localhost:8080/books/search/findByCategoryList_categoryId?sort=bookId,desc&size=8&page=0&categoryId=${categoryId}`
+    }else if(bookName!=='' && categoryId>0){
+        url = `http://localhost:8080/books/search/findByBookNameContainingAndCategoryList_categoryId?sort=bookId,desc&size=8&page=0&bookName=${bookName}&categoryId=${categoryId}`
+    }
+
+    return getBook(url);
+}

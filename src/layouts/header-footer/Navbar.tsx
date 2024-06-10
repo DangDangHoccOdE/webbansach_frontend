@@ -1,6 +1,51 @@
-import React from "react";
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { ChangeEvent, useState ,KeyboardEvent, useEffect} from "react";
+import { Link } from "react-router-dom";
+import Category from "../../models/CategoryModel";
+import { getAllCategory } from "../../api/CategoryAPI";
 
-function Navbar(){
+interface NavbarProps{
+    setBookNameFind: (keyword:string)=> void
+  }
+
+function Navbar({setBookNameFind} : NavbarProps){
+
+  const [temporaryKeyWord,setTemporaryKeyWord] = useState('');
+  const [categoryList,setCategoryList] = useState<Category[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(()=>{
+    getAllCategory().then(
+          result => {
+            setCategoryList(result);
+          })
+          .catch(
+            error => {setError(error.message)
+              }
+          )
+  },[])
+
+  if(error!==null){
+    return(
+      <div>
+        <h1>{error}</h1>
+      </div>
+    )
+  }
+  const onSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTemporaryKeyWord(e.target.value);
+  }
+
+  const handleSearch=()=>{
+    setBookNameFind(temporaryKeyWord);
+  }
+
+  const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  }
+
     return(
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
@@ -19,9 +64,9 @@ function Navbar(){
                   Thể loại sách
                 </a>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown1">
-                  <li><a className="dropdown-item" href="#">Thể loại 1</a></li>
-                  <li><a className="dropdown-item" href="#">Thể loại 2</a></li>
-                  <li><a className="dropdown-item" href="#">Thể loại 3</a></li>
+                    {categoryList.map(item=> 
+                        <li key={item.categoryId}><Link className="dropdown-item" to={`/${item.categoryId}`}>{item.categoryName}</Link></li>
+                    )}
                 </ul>
               </li>
               <li className="nav-item dropdown">
@@ -41,10 +86,10 @@ function Navbar(){
           </div>
   
           {/* Tìm kiếm */}
-          <form className="d-flex">
-            <input className="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search" />
-            <button className="btn btn-outline-success" type="submit">Search</button>
-          </form>
+          <div className="d-flex">
+            <input className="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search" onChange={onSearchInputChange} value={temporaryKeyWord} onKeyPress={handleEnter}/>
+            <button className="btn btn-outline-success" type="submit" onClick={handleSearch}>Search</button>
+          </div>
   
           {/* Biểu tượng giỏ hàng */}
           <ul className="navbar-nav me-1">
