@@ -47,9 +47,6 @@ const CarouselItem:React.FC<BookProps>=(props)=>{
             </div>
             <div className="col-7">
               <h5>{props.book.bookName}</h5>
-              <p>
-               {props.book.description}
-              </p>
             </div>
           </div>
     )

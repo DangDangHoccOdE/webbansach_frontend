@@ -1,4 +1,4 @@
-class Category{
+class CategoryModel{
     categoryId: number;
     categoryName: string;
 
@@ -9,4 +9,4 @@ class Category{
         }
 }
 
-export default Category;
+export default CategoryModel;

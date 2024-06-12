@@ -1,8 +1,8 @@
-import Category from "../models/CategoryModel";
+import CategoryModel from "../models/CategoryModel";
 import { my_request } from "./Request";
 
 export async function getCategory(link :string) {
-    const result:Category[] = [];
+    const result:CategoryModel[] = [];
 
     const respones = await my_request(link);
 
@@ -17,7 +17,7 @@ export async function getCategory(link :string) {
     return result;
 }
 
-export async function getAllCategory() {
+export async function getAllCategory():Promise<CategoryModel[]> {
     const url:string = "http://localhost:8080/category?sort=categoryId,asc";
 
     return getCategory(url);

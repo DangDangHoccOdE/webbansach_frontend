@@ -1,8 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { ChangeEvent, useState ,KeyboardEvent, useEffect} from "react";
-import { Link } from "react-router-dom";
-import Category from "../../models/CategoryModel";
+import {  NavLink } from "react-router-dom";
 import { getAllCategory } from "../../api/CategoryAPI";
+import CategoryModel from "../../models/CategoryModel";
+import { Search } from "react-bootstrap-icons";
 
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
@@ -11,7 +12,7 @@ interface NavbarProps{
 function Navbar({setBookNameFind} : NavbarProps){
 
   const [temporaryKeyWord,setTemporaryKeyWord] = useState('');
-  const [categoryList,setCategoryList] = useState<Category[]>([]);
+  const [categoryList,setCategoryList] = useState<CategoryModel[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(()=>{
@@ -57,15 +58,15 @@ function Navbar({setBookNameFind} : NavbarProps){
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#">Trang chủ</a>
+                <NavLink className="nav-link active" aria-current="page" to="/">Trang chủ</NavLink>
               </li>
               <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <NavLink className="nav-link dropdown-toggle" to="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Thể loại sách
-                </a>
+                </NavLink>
                 <ul className="dropdown-menu" aria-labelledby="navbarDropdown1">
                     {categoryList.map(item=> 
-                        <li key={item.categoryId}><Link className="dropdown-item" to={`/${item.categoryId}`}>{item.categoryName}</Link></li>
+                        <li key={item.categoryId}><NavLink className="dropdown-item" to={`/${item.categoryId}`}>{item.categoryName}</NavLink></li>
                     )}
                 </ul>
               </li>
@@ -88,7 +89,9 @@ function Navbar({setBookNameFind} : NavbarProps){
           {/* Tìm kiếm */}
           <div className="d-flex">
             <input className="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search" onChange={onSearchInputChange} value={temporaryKeyWord} onKeyPress={handleEnter}/>
-            <button className="btn btn-outline-success" type="submit" onClick={handleSearch}>Search</button>
+            <button className="btn btn-outline-success" type="submit" onClick={handleSearch}>
+                    <Search/>
+            </button>
           </div>
   
           {/* Biểu tượng giỏ hàng */}

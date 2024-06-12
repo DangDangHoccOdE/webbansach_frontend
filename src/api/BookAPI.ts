@@ -47,7 +47,7 @@ export async function getThreeBooksLatest():Promise<ResultInterface> {
     return getBook(url);
 }
 
-export async function findBook(bookName:string,categoryId : number) {
+export async function findBook(bookName:string,categoryId : number):Promise<ResultInterface> {
     let url:string=`http://localhost:8080/books?sort=bookId,desc&size=8&page=0`;
 
     if(bookName!=='' && categoryId===0){
@@ -59,4 +59,40 @@ export async function findBook(bookName:string,categoryId : number) {
     }
 
     return getBook(url);
+}
+
+export async function getBookByBookId(bookId:number): Promise<BookModel | null> {
+    const link = `http://localhost:8080/books/${bookId}`;
+    
+    try{
+        const response = await fetch(link);
+
+        if(!response.ok){
+            throw new Error("Gặp lỗi trong quá trình gọi API Lấy sách!");
+        }
+
+        const bookData = await response.json();
+
+        if(bookData){
+            return{
+                bookId: bookData.bookId,
+                bookName: bookData.bookName,
+                price:bookData.price,
+                listedPrice:bookData.listedPrice,
+                description:bookData.description,
+                author:bookData.author,
+                quantity:bookData.quantity,
+                averageRate:bookData.averageRate,
+            }
+        }else{
+            throw new Error("Sách không tồn tại!")
+        }
+
+    }catch(error){
+        console.log("Error: ",error);
+        return null;
+    }
+
+
+    
 }
