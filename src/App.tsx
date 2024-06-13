@@ -5,8 +5,8 @@ import Footer from "./layouts/header-footer/Footer";
 import HomePage from "./layouts/homepage/HomePage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import About from "./layouts/about/About";
-import ProductDetail from "./layouts/product/ProductDetail";
 import RegisterUser from "./user/RegisterUser";
+import ProductDetail from "./layouts/product/ProductDetail";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');

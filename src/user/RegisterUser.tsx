@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useState } from "react";
+import {checkEmail , checkUserName } from "../api/AccountAPI";
 
 function RegisterUser(){
 
@@ -16,24 +17,31 @@ function RegisterUser(){
     const [errorDuplicatePassword, setErrorDuplicatePassword] = useState("")
     const [errorPhoneNumber, setErrorPhoneNumber] = useState("")
     const [notice,setNotice] = useState("");
+    const [hasFull, setHasFull] = useState(true);
 
     const handleSubmit = async(e:React.FormEvent) =>{
+        e.preventDefault();
+        setNotice("")
+
+        if(!email || !userName || !lastName || !firstName || !password || !duplicatePassword || !sex || !phoneNumber){
+            setNotice("Phải điền đủ thông tin");
+            setHasFull(false);
+            return;    
+        }
+
         setErrorUserName("");
         setErrorEmail("");
         setErrorPassword("");
         setErrorDuplicatePassword("");
         setErrorPhoneNumber("");
 
-        // prevent click repeat
-        e.preventDefault();
-
-        const isUserNameValid = !await checkUserName(userName);
-        const isEmailValid = !await checkUserName(email);
-        const isPasswordValid = !await checkUserName(password);
-        const isDuplicatePasswordValid = !await checkUserName(duplicatePassword);
-        const isPhoneNumberValid = !await checkUserName(phoneNumber);
-
-        if(isUserNameValid && isEmailValid && isPasswordValid && isDuplicatePasswordValid && isPhoneNumberValid){
+        const isUserNameValid = !await checkUserName(userName,{setErrorUserName});
+        const isEmailValid = !await checkEmail(email,{setErrorEmail}); 
+        const isPasswordValid = !checkPassword(password);
+        const isDuplicatePasswordValid = !checkDuplicatePassword(duplicatePassword)
+        const isPhoneNumberValid = !checkPhoneNumber(phoneNumber);
+  
+        if (isUserNameValid && isEmailValid && isPasswordValid && isDuplicatePasswordValid && isPhoneNumberValid) {
             try{
                 const url:string = "http://localhost:8080/account/register";
                 
@@ -55,45 +63,29 @@ function RegisterUser(){
 
                 if(response.ok){
                     setNotice("Đăng ký thành công, vui lòng kiểm tra email để kích hoạt!");
+                    setHasFull(true);
                 }else{
                     console.log(response.json())
                     setNotice("Đã xảy ra lỗi trong quá trình đăng ký tài khoản!")
+                    setHasFull(false);
                 }
             }catch(error){
                 setNotice("Đã xảy ra lỗi trong quá trình đăng ký tài khoản!")
                 console.log({notice})
+                setHasFull(false);
             }
         }
     }
 
-    // Check username
-    const checkUserName = async(userName:string)=>{
-        const url = `http://localhost:8080/users/search/existsByUserName?userName=${userName}`;
-
-        try{
-            const response = await fetch(url);
-
-            const data =await response.text();
-
-            if(data==="true"){
-                setErrorUserName("Tên đăng nhập đã tồn tại!");
-                return true;
-            }
-            return false;
-        }catch(error){
-            console.error("Lỗi khi kiểm tra tên đăng nhập",error);
-            return false;
-        }
-    }
-
+    // userName
     const handleUserNameChange =  (e: ChangeEvent<HTMLInputElement>)=>{
         setUserName(e.target.value);
         setErrorUserName("");
 
-       return checkUserName(e.target.value);
+        return checkUserName(e.target.value,{setErrorUserName});
     }
     
-    // Check password
+    // password
     const checkPassword =  (password:string)=>{
         const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
@@ -113,13 +105,13 @@ function RegisterUser(){
         return checkPassword(e.target.value);
     }
 
-    // Check duplicatePassword
+    // duplicate password
     const checkDuplicatePassword =  (duplicatePassword:string)=>{
         if(duplicatePassword !==(password)){
             setErrorDuplicatePassword("Mật khẩu không trùng khớp!");
             return true;
         }else{
-            setErrorPassword("");
+            setErrorDuplicatePassword("");
             return false;
         }
     }
@@ -131,39 +123,15 @@ function RegisterUser(){
         return checkDuplicatePassword(e.target.value);
     }
 
-    // Check email
-    const checkEmail = async(email:string)=>{
-        const url = `http://localhost:8080/users/search/existsByEmail?email=${email}`;
-        const regexEmail = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gim;
-        try{
-            const response = await fetch(url);
-
-            const data =await response.text();
-
-            if(data==="true"){
-                setErrorEmail("Tên email đã tồn tại!");
-                return true;
-            }
-            if(!regexEmail.test(email)){
-                setErrorEmail("Định dạng email không hợp lệ!");
-                return true;
-            }
-
-            return false;
-        }catch(error){
-            console.error("Lỗi khi kiểm tra tên email",error);
-            return false;
-        }
-    }
-
+    // email
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>)=>{
         setEmail(e.target.value);
         setErrorEmail("");
 
-       return checkEmail(e.target.value);
+        return checkEmail(e.target.value,{setErrorEmail});
     }
 
-    // Check phoneNumber
+    // phone number
     const checkPhoneNumber=(phoneNumber:string)=>{
         const phoneNumberRegex = /^0\d{9}$/;
 
@@ -183,106 +151,102 @@ function RegisterUser(){
         return checkPhoneNumber(e.target.value)
     }
 
-    // Select sex:
+    // sex
     const handleSexChange =(e: { target: { value: React.SetStateAction<string>; }; })=>{
         setSex(e.target.value);
     }
+
     return(
         <div className="container">
             <h1 className="mt-5 text-center">Đăng ký</h1>
             <div className="mb-3 col-md-6 col-12 mx-auto">
                 <form onSubmit={handleSubmit} className="form">
-                                <div className="mb-3">
-                                <label htmlFor="userName" className="form-label">Tên đăng nhập</label>
-                                <input 
-                                    type="text"
-                                    id="userName"
-                                    className="form-control"
-                                    value={userName} 
-                                    onChange={handleUserNameChange}
-                                />
-                                <div style={{color:"red"}}>{errorUserName}</div>
-                            </div> 
-                            <div className="mb-3">
-                                <label htmlFor="email" className="form-label">Email</label>
-                                <input 
-                                    type="text"
-                                    id="email"
-                                    className="form-control"
-                                    value={email} 
-                                    onBlur={handleEmailChange}
-                                    onChange={e => setEmail(e.target.value)}
-                                />
-                                <div style={{color:"red"}}>{errorEmail}</div>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="passsword" className="form-label">Mật khẩu</label>
-                                <input 
-                                    type="password"
-                                    id="password"
-                                    className="form-control"
-                                    value={password} 
-                                    onChange={e => setPassword(e.target.value)}
-                                    onBlur={handlePasswordChange}
-                                />
-                                <div style={{color:"red"}}>{errorPassword}</div>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="duplicatePassword" className="form-label">Nhập lại mật khẩu</label>
-                                <input 
-                                    type="password"
-                                    id="duplicatePassword"
-                                    className="form-control"
-                                    value={duplicatePassword} 
-                                    onChange={e => setDuplicatePassword(e.target.value)}
-                                    onBlur={handleDuplicatePasswordChange}                                />
-                                <div style={{color:"red"}}>{errorDuplicatePassword}</div>
-                            </div>   
-                            <div className="mb-3">
-                            <label htmlFor="lastName" className="form-label">Họ đệm</label>
-                            <input 
-                                type="text"
-                                id="lastName"
-                                className="form-control"
-                                value={lastName} 
-                                onChange={(e) => setLastName(e.target.value)}
-                            />
-                        </div> 
-                        <div className="mb-3">
-                            <label htmlFor="firstName" className="form-label">Tên</label>
-                            <input 
-                                type="text"
-                                id="firstName"
-                                className="form-control"
-                                value={firstName} 
-                                onChange={(e)=> setFirstName(e.target.value)}
-                            />
-                        </div>  
-                        <div className="mb-3">
-                            <label htmlFor="phoneNumber" className="form-label">Số điện thoại</label>
-                            <input 
-                                type="text"
-                                id="phoneNumber"
-                                className="form-control"
-                                value={phoneNumber} 
-                                onBlur={handleChangePhoneNumber}
-                                onChange={(e)=> setPhoneNumber(e.target.value)}
-                            />
-                            <div>
-                                <div style={{color:"red"}}>{errorPhoneNumber}</div>
-                            </div>
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="sex" className="form-label">Giới tính</label>
-                            <select className="form-control" id="sex" value={sex} onChange={handleSexChange}>
-                                <option value={"Nam"} >Nam</option>
-                                <option value={"Nữ"}>Nữ</option>
-                            </select>
-                        </div>
-                        <div className="text-center">
-                            <button type="submit" className="btn btn-primary">Đăng ký</button>
-                            <div style={{color:"green"}}>{notice}</div>
-                        </div>
+                    <div className="mb-3">
+                        <label htmlFor="userName" className="form-label">Tên đăng nhập</label>
+                        <input 
+                            type="text"
+                            id="userName"
+                            className="form-control"
+                            value={userName} 
+                            onChange={handleUserNameChange}
+                        />
+                        <div style={{color:"red"}}>{errorUserName}</div>
+                    </div>  
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">Email</label>
+                        <input 
+                            type="text"
+                            id="email"
+                            className="form-control"
+                            value={email} 
+                            onChange={handleEmailChange}
+                        />
+                        <div style={{color:"red"}}>{errorEmail}</div>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="password" className="form-label">Mật khẩu</label>
+                        <input 
+                            type="password"
+                            id="password"
+                            className="form-control"
+                            value={password} 
+                            onChange={handlePasswordChange}
+                        />
+                        <div style={{color:"red"}}>{errorPassword}</div>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="duplicatePassword" className="form-label">Nhập lại mật khẩu</label>
+                        <input 
+                            type="password"
+                            id="duplicatePassword"
+                            className="form-control"
+                            value={duplicatePassword} 
+                            onChange={handleDuplicatePasswordChange}
+                        />
+                        <div style={{color:"red"}}>{errorDuplicatePassword}</div>
+                    </div>   
+                    <div className="mb-3">
+                        <label htmlFor="lastName" className="form-label">Họ đệm</label>
+                        <input 
+                            type="text"
+                            id="lastName"
+                            className="form-control"
+                            value={lastName} 
+                            onChange={(e) => setLastName(e.target.value)}
+                        />
+                    </div> 
+                    <div className="mb-3">
+                    <label htmlFor="firstName" className="form-label">Tên</label>
+                        <input 
+                            type="text"
+                            id="firstName"
+                            className="form-control"
+                            value={firstName} 
+                            onChange={(e) => setFirstName(e.target.value)}
+                        />
+                    </div>  
+                    <div className="mb-3">
+                        <label htmlFor="phoneNumber" className="form-label">Số điện thoại</label>
+                        <input 
+                            type="text"
+                            id="phoneNumber"
+                            className="form-control"
+                            value={phoneNumber} 
+                            onChange={handleChangePhoneNumber}
+                        />
+                        <div style={{color:"red"}}>{errorPhoneNumber}</div>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="sex" className="form-label">Giới tính</label>
+                        <select className="form-control" id="sex" value={sex} onChange={handleSexChange}>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
+                    <div className="text-center">
+                        <button type="submit" className="btn btn-primary">Đăng ký</button>
+                        <div style={{color: hasFull ? "green" : "red"}}>{notice}</div> 
+                    </div>
                 </form>
             </div>
         </div>
@@ -290,3 +254,4 @@ function RegisterUser(){
 }
 
 export default RegisterUser;
+
