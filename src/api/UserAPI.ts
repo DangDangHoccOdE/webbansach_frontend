@@ -16,7 +16,7 @@ export async function getUser(link:string): Promise<UserModel|null> {
                 userId:userData.useId,
                 firstName:userData.firstName,
                 lastName:userData.lastName,
-                account:userData.account,
+                userName:userData.userName,
                 phoneNumber:userData.phoneNumber,
                 password:userData.password,
                 sex:userData.sex,

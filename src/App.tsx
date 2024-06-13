@@ -6,6 +6,7 @@ import HomePage from "./layouts/homepage/HomePage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import About from "./layouts/about/About";
 import ProductDetail from "./layouts/product/ProductDetail";
+import RegisterUser from "./user/RegisterUser";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -19,6 +20,7 @@ function App() {
               <Route path="/:categoryId" element={<HomePage  bookNameFind={bookNameFind} />} />
               <Route path="/about" element={<About />} />
               <Route path="/books/:bookId" element={<ProductDetail/>} />
+              <Route path="/register" element={<RegisterUser />} />
           </Routes>
           <Footer/>
         </BrowserRouter>

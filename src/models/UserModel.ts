@@ -2,7 +2,7 @@ class UserModel{
     userId:number;
     firstName:string;
     lastName:string;
-    account:string;
+    userName:string;
     phoneNumber:string;
     password:string;
     sex:string;
@@ -14,7 +14,7 @@ class UserModel{
         userId:number,
         firstName:string,
         lastName:string,
-        account:string,
+        userName:string,
         phoneNumber:string,
         password:string,
         sex:string,
@@ -25,7 +25,7 @@ class UserModel{
         this.userId=userId;
         this.firstName=firstName;
         this.lastName=lastName;
-        this.account=account;
+        this.userName=userName;
         this.phoneNumber=phoneNumber;
         this.password=password;
         this.sex=sex;
