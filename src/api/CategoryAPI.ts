@@ -19,6 +19,6 @@ export async function getCategory(link :string) {
 
 export async function getAllCategory():Promise<CategoryModel[]> {
     const url:string = "http://localhost:8080/category?sort=categoryId,asc";
-
+    console.log("Đã gọi ra category")
     return getCategory(url);
 }

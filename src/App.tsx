@@ -7,6 +7,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import About from "./layouts/about/About";
 import RegisterUser from "./user/RegisterUser";
 import ProductDetail from "./layouts/product/ProductDetail";
+import ResendActivationCode from "./user/ResendActivationCode";
+import ActivatedAccount from "./user/ActivatedAccount";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -21,6 +23,8 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/books/:bookId" element={<ProductDetail/>} />
               <Route path="/register" element={<RegisterUser />} />
+              <Route path="/activatedAccount/:email/:activationCode" element={<ActivatedAccount/>} />
+              <Route path="/resendActivationCode/:email" element={<ResendActivationCode/>} />
           </Routes>
           <Footer/>
         </BrowserRouter>

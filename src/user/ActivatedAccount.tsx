@@ -1,0 +1,50 @@
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import ResendActivationCode from "./ResendActivationCode";
+
+function ActivatedAccount() {
+  const { email, activationCode } = useParams();
+  const [isActivated, setIsActivated] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [isError,setIsError] = useState(true)
+
+  useEffect(() => {
+    const activatedAccount = async () => {
+      try {
+        const url = `http://localhost:8080/account/activatedAccount?email=${email}&activationCode=${activationCode}`;
+        const response = await fetch(url, { method: "GET" });
+
+        const data = await response.json();
+
+        console.log(data.content)
+        if (response.ok) {
+            setIsError(false);
+          setIsActivated(true);
+          setNotice(data.content); 
+        }else{
+            setNotice(data.content)
+        }
+
+      } catch (error) {
+        console.error("Lỗi khi kích hoạt: ", error);
+        setNotice("Đã có lỗi xảy ra khi kích hoạt tài khoản.");
+      }
+    };
+
+    if (email && activationCode) {
+      activatedAccount();
+    }
+  }, [email, activationCode]);
+
+  return (
+    <div>
+      <h1>Kích hoạt tài khoản</h1>
+        <h4 style={{color:!isError?"green":"red"}}>{notice}</h4>
+        {
+            isError && <ResendActivationCode/>
+        }
+     </div>
+  );
+}
+
+export default ActivatedAccount;
