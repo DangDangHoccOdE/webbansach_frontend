@@ -18,6 +18,7 @@ function RegisterUser(){
     const [errorPhoneNumber, setErrorPhoneNumber] = useState("")
     const [notice,setNotice] = useState("");
     const [hasFull, setHasFull] = useState(true);
+    const [hasCalled,setHasCalled] = useState(false)
 
     const handleSubmit = async(e:React.FormEvent) =>{
         e.preventDefault();
@@ -27,6 +28,12 @@ function RegisterUser(){
             setNotice("Phải điền đủ thông tin");
             setHasFull(false);
             return;    
+        }
+
+        if(hasCalled){
+            setNotice("Đang xử lý...");
+            setHasFull(false);
+            return
         }
 
         setErrorUserName("");
@@ -43,6 +50,9 @@ function RegisterUser(){
   
         if (isUserNameValid && isEmailValid && isPasswordValid && isDuplicatePasswordValid && isPhoneNumberValid) {
             try{
+                setHasCalled(true);
+                setNotice("Đang xử lý...");
+                setHasFull(false);
                 const url:string = "http://localhost:8080/account/register";
                 
                 const response = await fetch(url,{
@@ -73,6 +83,8 @@ function RegisterUser(){
                 setNotice("Đã xảy ra lỗi trong quá trình đăng ký tài khoản!")
                 console.log({notice})
                 setHasFull(false);
+            }finally{
+                setHasCalled(false)
             }
         }
     }

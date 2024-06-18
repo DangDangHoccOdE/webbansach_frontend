@@ -14,6 +14,8 @@ function ResendActivationCode(){
 
         try{
             setIsSending(true)
+            setNotice("Đang xử lý...");
+            setIsError(true);
             const url:string = `http://localhost:8080/account/resendActivationCode?email=${email}`;
             const response = await fetch(url,{
                 method:"GET",
@@ -41,7 +43,7 @@ function ResendActivationCode(){
 
     return(
         <div>
-            <p>Nếu mã hết hạn, ấn vào đây để gửi lại mã kích hoạt</p>
+            <p>Nếu mã hết hạn hoặc không chính xác, ấn vào đây để gửi lại mã kích hoạt</p>
             <button className="btn btn-primary" onClick={handleResendActivationCode}>Send</button>
             <p style={{color: !isError ?"green":"red"}}>{notice}</p>
         </div>

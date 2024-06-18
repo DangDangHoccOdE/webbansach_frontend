@@ -9,6 +9,8 @@ import RegisterUser from "./user/RegisterUser";
 import ProductDetail from "./layouts/product/ProductDetail";
 import ResendActivationCode from "./user/ResendActivationCode";
 import ActivatedAccount from "./user/ActivatedAccount";
+import Login from "./user/Login";
+import Test from "./user/Test";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -25,6 +27,8 @@ function App() {
               <Route path="/register" element={<RegisterUser />} />
               <Route path="/activatedAccount/:email/:activationCode" element={<ActivatedAccount/>} />
               <Route path="/resendActivationCode/:email" element={<ResendActivationCode/>} />
+              <Route path="/login" element={<Login/>} />
+              <Route path="/test" element={<Test/>} />
           </Routes>
           <Footer/>
         </BrowserRouter>

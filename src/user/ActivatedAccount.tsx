@@ -6,7 +6,6 @@ function ActivatedAccount() {
   const { email, activationCode } = useParams();
   const [isActivated, setIsActivated] = useState(false);
   const [notice, setNotice] = useState("");
-  const [isError,setIsError] = useState(true)
 
   useEffect(() => {
     const activatedAccount = async () => {
@@ -18,7 +17,6 @@ function ActivatedAccount() {
 
         console.log(data.content)
         if (response.ok) {
-            setIsError(false);
           setIsActivated(true);
           setNotice(data.content); 
         }else{
@@ -39,9 +37,9 @@ function ActivatedAccount() {
   return (
     <div>
       <h1>Kích hoạt tài khoản</h1>
-        <h4 style={{color:!isError?"green":"red"}}>{notice}</h4>
+        <h4 style={{color:isActivated?"green":"red"}}>{notice}</h4>
         {
-            isError && <ResendActivationCode/>
+            !isActivated && <ResendActivationCode/>
         }
      </div>
   );
