@@ -105,6 +105,7 @@ const ProductDetail: React.FC = () => {
                         <div className="col-8">
                             <h1>{book.bookName}</h1>
                             <h4>{renderRating(book.averageRate?book.averageRate:0)}</h4>
+                            <h5 className="text-end">Đã bán: {NumberFormat(book.soldQuantity)}</h5>
                             <h4>{NumberFormat(book.price)} đ</h4>
                             <hr/>
                                 <div dangerouslySetInnerHTML={{__html:book.description}}/>

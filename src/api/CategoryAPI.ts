@@ -4,9 +4,9 @@ import { my_request } from "./Request";
 export async function getCategory(link :string) {
     const result:CategoryModel[] = [];
 
-    const respones = await my_request(link);
+    const response = await my_request(link);
 
-    const responseData = respones._embedded.categories;
+    const responseData = response._embedded.categories;
     for(const key in responseData){
         result.push({
             categoryId: responseData[key].categoryId,

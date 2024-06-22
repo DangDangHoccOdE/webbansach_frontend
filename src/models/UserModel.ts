@@ -9,6 +9,7 @@ class UserModel{
     email:string;
     deliveryAddress:string;
     purchaseAddress:string;
+    avatar:string;
 
     constructor(
         userId:number,
@@ -20,7 +21,8 @@ class UserModel{
         sex:string,
         email:string,
         deliveryAddress:string,
-        purchaseAddress:string
+        purchaseAddress:string,
+        avatar:string
     ){
         this.userId=userId;
         this.firstName=firstName;
@@ -32,6 +34,7 @@ class UserModel{
         this.email=email;
         this.deliveryAddress=deliveryAddress;
         this.purchaseAddress=purchaseAddress;
+        this.avatar =avatar;
     }
 }
 

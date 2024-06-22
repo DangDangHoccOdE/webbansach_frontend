@@ -28,6 +28,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
             .catch(error=>{
                 setLoadingData(false);
                 setNoticeError(error.message)
+                console.log(error.message)
             })
     },[bookId]
     );
@@ -71,15 +72,16 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                     <div className="price row">
                         <span className="listed-price col-6 text-end">
                             <del>{NumberFormat(props.book.listedPrice)}</del>
+                            <sup>đ</sup>
                         </span>
                         <span className="discounted-price col-6 text-end">
-                            <strong>{NumberFormat(props.book.price)} đ</strong>
+                            <strong>{NumberFormat(props.book.price)} <sup>đ</sup></strong>
                         </span>
                     </div>
 
                     <div className="row mt-2" role="group">
                         <div className="rate col-6">
-                            <span>{renderRating(props.book.averageRate?props.book.averageRate:0)}</span>
+                            <span>{renderRating(props.book.averageRate?props.book.averageRate:0)} ({NumberFormat(props.book.soldQuantity)})</span>
                         </div>
                         <div className="col-6 text-end">
                             <a href="#" className="btn btn-secondary btn-block me-2">

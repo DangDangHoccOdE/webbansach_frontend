@@ -29,6 +29,8 @@ export async function getBook(link:string):Promise<ResultInterface> {
             author:responseData[key].author,
             quantity:responseData[key].quantity,
             averageRate:responseData[key].averageRate,
+            soldQuantity:responseData[key].soldQuantity,
+            discountPercent:responseData[key].discountPercent
             });
     }
 
@@ -43,7 +45,6 @@ export async function getAllBook(currentPage:number):Promise<ResultInterface> {
 
 export async function getThreeBooksLatest():Promise<ResultInterface> {
     const url:string = 'http://localhost:8080/books?sort=bookId,desc&page=0&size=3';
-
     return getBook(url);
 }
 
@@ -83,6 +84,8 @@ export async function getBookByBookId(bookId:number): Promise<BookModel | null> 
                 author:bookData.author,
                 quantity:bookData.quantity,
                 averageRate:bookData.averageRate,
+                soldQuantity:bookData.soldQuantity,
+                discountPercent:bookData.discountPercent
             }
         }else{
             throw new Error("Sách không tồn tại!")

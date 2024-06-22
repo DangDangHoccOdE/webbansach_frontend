@@ -7,6 +7,11 @@ class BookModel{
     author:string;
     quantity:number;
     averageRate?:number;
+    soldQuantity:number;
+    discountPercent:number;
+    thumbnail?:string;
+    categoryList?:string[];
+    relatedImage?:string[];
 
     constructor(bookId: number,
         bookName:string ,
@@ -15,7 +20,12 @@ class BookModel{
         description:string,
         author:string,
         quantity:number,
-        averageRate:number){
+        averageRate:number,    
+        soldQuantity:number,
+        discountPercent:number,
+        thumbnail?:string,
+        categoryList?:string[],
+        relatedImage?:string[]){
             this.bookId = bookId;
             this.bookName = bookName
             this.price = price;
@@ -24,6 +34,11 @@ class BookModel{
             this.author = author;
             this.quantity = quantity;
             this.averageRate = averageRate;
+            this.soldQuantity = soldQuantity;
+            this.discountPercent = discountPercent;
+            this.thumbnail = thumbnail;
+            this.categoryList = categoryList;
+            this.relatedImage = relatedImage;
         }
 }
 

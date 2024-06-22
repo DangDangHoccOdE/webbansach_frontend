@@ -3,7 +3,7 @@ import BookModel from "../../../models/BookModel";
 import { getThreeBooksLatest } from "../../../api/BookAPI";
 import CarouselItem from "./CarouselItem";
 
-const Carousel: React.FC=()=> {
+const Carousel=()=> {
   const [loadingData, setLoadingData] = useState(true);
   const [noticeError, setNoticeError] = useState<string | null>(null);
   const [bookList, setBookList] = useState<BookModel[]>([]);
@@ -19,8 +19,9 @@ const Carousel: React.FC=()=> {
               setNoticeError(error.message);
             }
           )
-  })
+  },[])
   
+ 
   if (loadingData) {
     return( <h1>Đang tải dữ liệu</h1>);
   }

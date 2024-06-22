@@ -13,12 +13,13 @@ const Test = () =>{
                 setUsername(userData.sub+"");
             }
         }
+        console.log(token)
     },[]);
     return (
     <div>
          {
         username && <div>Xin chào, {username}</div>
-      }  
+         }
     </div>
     
     );

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login=()=>{
     
@@ -6,39 +7,52 @@ const [username,setUsername] = useState("");
 const [password,setPassword] = useState("");
 const [notice,setNotice] = useState("");
 const [isError,setIsError] = useState(false)
+const navigate = useNavigate();
+const dataToken = localStorage.getItem('token')
 
-const handleLogin=() =>{
+useEffect(()=>{
+    if(dataToken){
+            navigate("/")
+    }
+},[dataToken,navigate])
+
+const handleLogin=async () =>{
     const loginRequest =    {
         username:username,
         password:password
     }
 
-    const url:string = "http://localhost:8080/account/login";
-    fetch(url,{
-        method:"POST",
-        headers:{
-            "content-type":"application/json"
-        },
-        body: JSON.stringify(loginRequest)
-    }).then(
-        (response => {
-            if(response.ok){
-                return response.json();
-            }else{
-                throw new Error("Đăng nhập thất bại!")
-            }
+    try{
+        const url:string = "http://localhost:8080/account/login";
+        const response = await fetch(url,{
+            method:"POST",
+            headers:{
+                "content-type":"application/json"
+            },
+            body: JSON.stringify(loginRequest)
         })
-    ).then(
-        (data=>{
+
+        const data = await response.json();
+
+        if(response.ok){
+            console.log("Đăng nhập thành công!")
+
+            setIsError(false)
             const {jwt} = data;
             localStorage.setItem("token",jwt);
-            setNotice("Đăng nhập thành công!")
-        })
-    ).catch(error=>{
-        console.log("Đăng nhập thất bại",error)
+            setNotice("Đăng nhập thành công!");
+
+            // setTimeout(()=>{
+            //     navigate("/");
+            // },5000) // 5 second
+        }else{
+            throw new Error("Đăng nhập thất bại!");
+        }
+  
+    }catch(error){
         setNotice("Đăng nhập thất bại, vui lòng kiểm tra lại tài khoản và mật khẩu!")
         setIsError(true)
-    })
+    }
 }
 
     return (

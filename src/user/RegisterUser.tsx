@@ -11,6 +11,7 @@ function RegisterUser(){
     const [password, setPassword] = useState("")
     const [duplicatePassword,setDuplicatePassword] = useState("")
     const [sex, setSex] = useState("Nam")
+    const [avatar, setAvatar] = useState<File|null>(null)
     const [errorUserName, setErrorUserName] = useState("")
     const [errorEmail, setErrorEmail] = useState("")
     const [errorPassword, setErrorPassword] = useState("")
@@ -49,6 +50,9 @@ function RegisterUser(){
         const isPhoneNumberValid = !checkPhoneNumber(phoneNumber);
   
         if (isUserNameValid && isEmailValid && isPasswordValid && isDuplicatePasswordValid && isPhoneNumberValid) {
+
+            const  base64Avatar =avatar ? await getBase64(avatar) : null
+
             try{
                 setHasCalled(true);
                 setNotice("Đang xử lý...");
@@ -68,20 +72,20 @@ function RegisterUser(){
                         lastName: lastName,
                         phoneNumber: phoneNumber,
                         sex:sex,
+                        avatar:base64Avatar
                     })
                 });
+                const data = await response.json();
 
                 if(response.ok){
-                    setNotice("Đăng ký thành công, vui lòng kiểm tra email để kích hoạt!");
                     setHasFull(true);
                 }else{
-                    console.log(response.json())
-                    setNotice("Đã xảy ra lỗi trong quá trình đăng ký tài khoản!")
                     setHasFull(false);
                 }
+                setNotice(data.content)
             }catch(error){
                 setNotice("Đã xảy ra lỗi trong quá trình đăng ký tài khoản!")
-                console.log({notice})
+                console.log({error})
                 setHasFull(false);
             }finally{
                 setHasCalled(false)
@@ -167,6 +171,24 @@ function RegisterUser(){
     const handleSexChange =(e: { target: { value: React.SetStateAction<string>; }; })=>{
         setSex(e.target.value);
     }
+
+    // avatar
+    const handleAvatarChange=(e:ChangeEvent<HTMLInputElement>)=>{
+        if(e.target.files){
+            const file = e.target.files[0];
+            setAvatar(file)
+        }
+    }
+
+    // Convert file to String
+    const getBase64 = (file: File): Promise<string | null> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result ? (reader.result as string) : null);
+            reader.onerror = (error) => reject(error)
+        });
+    };
 
     return(
         <div className="container">
@@ -254,6 +276,11 @@ function RegisterUser(){
                             <option value="Nam">Nam</option>
                             <option value="Nữ">Nữ</option>
                         </select>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="avatar" className="form-label">Avatar</label>
+                        <input type="file" id="avatar"className="form-control" accept="image/**"onChange={handleAvatarChange}></input>
+
                     </div>
                     <div className="text-center">
                         <button type="submit" className="btn btn-primary">Đăng ký</button>

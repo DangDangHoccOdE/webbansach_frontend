@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { ChangeEvent, useState ,KeyboardEvent, useEffect} from "react";
-import {  NavLink } from "react-router-dom";
+import {  Link, NavLink, useNavigate } from "react-router-dom";
 import { getAllCategory } from "../../api/CategoryAPI";
 import CategoryModel from "../../models/CategoryModel";
 import { Search } from "react-bootstrap-icons";
+import { getAvatarByToken, getFirstNameByToken } from "../utils/JwtService";
 
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
@@ -14,17 +15,23 @@ function Navbar({setBookNameFind} : NavbarProps){
   const [temporaryKeyWord,setTemporaryKeyWord] = useState('');
   const [categoryList,setCategoryList] = useState<CategoryModel[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const navigator = useNavigate();
+  const dataToken = localStorage.getItem('token');
+ 
 
-  useEffect(()=>{
-    getAllCategory().then(
-          result => {
-            setCategoryList(result);
-          })
-          .catch(
-            error => {setError(error.message)
-              }
-          )
-  },[])
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const result = await getAllCategory(); 
+        setCategoryList(result); 
+      } catch (error) {
+        setError("Lỗi khi gọi api danh sách thể loại"); 
+      }
+    };
+
+    fetchCategories(); 
+
+  },[]);
 
   if(error!==null){
     return(
@@ -45,6 +52,11 @@ function Navbar({setBookNameFind} : NavbarProps){
     if (e.key === 'Enter') {
       handleSearch();
     }
+  }
+
+  const handleLogout=() =>{
+      localStorage.removeItem('token');
+      navigator("/login")
   }
 
     return(
@@ -102,15 +114,26 @@ function Navbar({setBookNameFind} : NavbarProps){
               </a>
             </li>
           </ul>
-  
+     
           {/* Biểu tượng đăng nhập */}
-          <ul className="navbar-nav me-1">
-            <li className="nav-item">
-              <a className="nav-link" href="#">
-                <i className="fas fa-user"></i>
-              </a>
-            </li>
-          </ul>
+          {
+            dataToken ? 
+            <ul className="navbar-nav me-1">
+            <li className="nav-item dropdown">
+                 <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                 {/* <i className="fas fa-user"></i> */}
+                  <img src={getAvatarByToken()} alt={getFirstNameByToken()?.toUpperCase()} style={{width:"50px"}}></img>
+                 </a>
+                 <div className="dropdown-menu dropdown-menu-end">
+                 <p className="dropdown-item">Chào, {getFirstNameByToken()}</p>
+                 <a className="dropdown-item" href="#">Xem thông tin</a>
+                   <div className="dropdown-divider"></div>
+                   <button className="dropdown-item" onClick={handleLogout}>Đăng xuất</button>
+                 </div>
+             </li>
+         </ul> : <Link className="btn btn-warning" to={"/login"}>Đăng nhập</Link>
+          }
+         
         </div>
       </nav>
     );
