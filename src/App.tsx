@@ -4,7 +4,7 @@ import "./App.css";
 import Navbar from "./layouts/header-footer/Navbar";
 import Footer from "./layouts/header-footer/Footer";
 import HomePage from "./layouts/homepage/HomePage";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, } from "react-router-dom";
 import About from "./layouts/about/About";
 import RegisterUser from "./user/RegisterUser";
 import ProductDetail from "./layouts/product/ProductDetail";
@@ -15,12 +15,16 @@ import Test from "./user/Test";
 import BookForm_Admin from "./admin/BookForm";
 import Error_403 from "./layouts/utils/Error_403";
 import { jwtDecode } from "jwt-decode";
+import UserInformation from "./user/UserInformation";
+import { AuthProvider } from "./utils/AuthContext";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
+  const dataToken = localStorage.getItem("token")
+
   useEffect(()=>{
     const checkValidExpiration = () =>{
-        const dataToken = localStorage.getItem("token")
+
         if(dataToken){
           try{
             const decode = jwtDecode(dataToken);
@@ -34,10 +38,10 @@ function App() {
         }
     }
     checkValidExpiration();
-  },[])
+  },[dataToken])
   
   return (
-    <div className="App">
+    <AuthProvider>
       <BrowserRouter>
           <Navbar setBookNameFind={setBookNameFind}/>
           <Routes>
@@ -49,13 +53,14 @@ function App() {
               <Route path="/activatedAccount/:email/:activationCode" element={<ActivatedAccount/>} />
               <Route path="/resendActivationCode/:email" element={<ResendActivationCode/>} />
               <Route path="/login" element={ <Login/>}  />
-              <Route path="/account/test" element={<Test/>} />
+              <Route path="/user/test" element={<Test/>} />
               <Route path="/admin/addBook" element={<BookForm_Admin/>} />
               <Route path="/error-403" element={<Error_403/>} />
+              <Route path="/user/info" element={<UserInformation/>} />
           </Routes>
           <Footer/>
         </BrowserRouter>
-    </div>
+    </AuthProvider>
   );
 }
 

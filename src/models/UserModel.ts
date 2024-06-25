@@ -3,6 +3,7 @@ class UserModel{
     firstName:string;
     lastName:string;
     userName:string;
+    dateOfBirth:string;
     phoneNumber:string;
     password:string;
     sex:string;
@@ -16,6 +17,7 @@ class UserModel{
         firstName:string,
         lastName:string,
         userName:string,
+        dateOfBirth:string,
         phoneNumber:string,
         password:string,
         sex:string,
@@ -28,6 +30,7 @@ class UserModel{
         this.firstName=firstName;
         this.lastName=lastName;
         this.userName=userName;
+        this.dateOfBirth = dateOfBirth
         this.phoneNumber=phoneNumber;
         this.password=password;
         this.sex=sex;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../utils/AuthContext";
 
 const Login=()=>{
     
@@ -8,22 +9,23 @@ const [password,setPassword] = useState("");
 const [notice,setNotice] = useState("");
 const [isError,setIsError] = useState(false)
 const navigate = useNavigate();
-const dataToken = localStorage.getItem('token')
-
-useEffect(()=>{
-    if(dataToken){
-            navigate("/")
+const {isLoggedIn,setLoggedIn} = useAuth();
+useEffect(() => {
+    if(isLoggedIn){
+        navigate("/",{replace:true});
     }
-},[dataToken,navigate])
+});
 
-const handleLogin=async () =>{
+const handleLogin=async (e:React.FormEvent) =>{
+    e.preventDefault();
     const loginRequest =    {
         username:username,
         password:password
     }
+    console.log(username)
 
     try{
-        const url:string = "http://localhost:8080/account/login";
+        const url:string = "http://localhost:8080/user/login";
         const response = await fetch(url,{
             method:"POST",
             headers:{
@@ -40,19 +42,25 @@ const handleLogin=async () =>{
             setIsError(false)
             const {jwt} = data;
             localStorage.setItem("token",jwt);
+            setLoggedIn(true)
             setNotice("Đăng nhập thành công!");
 
-            // setTimeout(()=>{
-            //     navigate("/");
-            // },5000) // 5 second
+            setTimeout(() => {
+                navigate('/',{replace:true});
+              }, 2000);
         }else{
-            throw new Error("Đăng nhập thất bại!");
+            setNotice(data.content)
+            console.log(data.content)
+            setIsError(true)
         }
   
     }catch(error){
-        setNotice("Đăng nhập thất bại, vui lòng kiểm tra lại tài khoản và mật khẩu!")
+        console.log("Đăng nhập không thành công!",error)
         setIsError(true)
     }
+}
+if(isLoggedIn){
+    return null;
 }
 
     return (
@@ -108,5 +116,6 @@ const handleLogin=async () =>{
             </div>
         </div>
     );
+  
 }
 export default Login;

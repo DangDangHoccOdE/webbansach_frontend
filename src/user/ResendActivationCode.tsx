@@ -16,7 +16,7 @@ function ResendActivationCode(){
             setIsSending(true)
             setNotice("Đang xử lý...");
             setIsError(true);
-            const url:string = `http://localhost:8080/account/resendActivationCode?email=${email}`;
+            const url:string = `http://localhost:8080/user/resendActivationCode?email=${email}`;
             const response = await fetch(url,{
                 method:"GET",
                 headers:{

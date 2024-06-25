@@ -11,6 +11,7 @@ export async function getUser(link: string): Promise<UserModel | null> {
         firstName: userData.firstName,
         lastName: userData.lastName,
         userName: userData.userName,
+        dateOfBirth:userData.dateOfBirth,
         phoneNumber: userData.phoneNumber,
         password: userData.password,
         sex: userData.sex,
@@ -33,7 +34,7 @@ export async function getUserByRemark(remarkId: number): Promise<UserModel | nul
     return getUser(url);
 }
 
-// export async function getUserByUsername(username: string): Promise<UserModel | null> {
-//   const url: string = `http://localhost:8080/users/search/findByUserName?userName=${username}`;
-//     return getUser(url);
-// }
+export async function getUserByUsername(username: string): Promise<UserModel | null> {
+  const url: string = `http://localhost:8080/users/search/findByUserName?userName=${username}`;
+    return getUser(url);
+}

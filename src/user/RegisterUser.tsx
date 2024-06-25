@@ -1,10 +1,21 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import {checkEmail , checkUserName } from "../api/AccountAPI";
+import getBase64 from "../layouts/utils/getBase64";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../utils/AuthContext";
 
 function RegisterUser(){
+    const {isLoggedIn} = useAuth();
+    const navigate = useNavigate();
+    useEffect(()=>{
+        if(isLoggedIn){
+            navigate("/",{replace:true});
+        }
+    },[isLoggedIn,navigate])
 
     const [userName, setUserName] = useState("")
     const [email, setEmail] = useState("")
+    const [dateOfBirth, setDateOfBirth] = useState("")
     const [lastName, setLastName] = useState("")
     const [firstName, setFirstName] = useState("")
     const [phoneNumber, setPhoneNumber] = useState("")
@@ -17,6 +28,7 @@ function RegisterUser(){
     const [errorPassword, setErrorPassword] = useState("")
     const [errorDuplicatePassword, setErrorDuplicatePassword] = useState("")
     const [errorPhoneNumber, setErrorPhoneNumber] = useState("")
+    const [errorDateOfBirth, setErrorDateOfBirth] = useState("")
     const [notice,setNotice] = useState("");
     const [hasFull, setHasFull] = useState(true);
     const [hasCalled,setHasCalled] = useState(false)
@@ -25,7 +37,7 @@ function RegisterUser(){
         e.preventDefault();
         setNotice("")
 
-        if(!email || !userName || !lastName || !firstName || !password || !duplicatePassword || !sex || !phoneNumber){
+        if(!email || !userName || !lastName || !firstName || !password || !duplicatePassword || !sex || !phoneNumber || !dateOfBirth){
             setNotice("Phải điền đủ thông tin");
             setHasFull(false);
             return;    
@@ -42,22 +54,23 @@ function RegisterUser(){
         setErrorPassword("");
         setErrorDuplicatePassword("");
         setErrorPhoneNumber("");
+        setErrorDateOfBirth("")
 
         const isUserNameValid = !await checkUserName(userName,{setErrorUserName});
         const isEmailValid = !await checkEmail(email,{setErrorEmail}); 
         const isPasswordValid = !checkPassword(password);
         const isDuplicatePasswordValid = !checkDuplicatePassword(duplicatePassword)
         const isPhoneNumberValid = !checkPhoneNumber(phoneNumber);
+        const idDateOfBirthValid = !checkDateOfBirthRegex(dateOfBirth);
   
-        if (isUserNameValid && isEmailValid && isPasswordValid && isDuplicatePasswordValid && isPhoneNumberValid) {
+        if (isUserNameValid && isEmailValid && isPasswordValid && isDuplicatePasswordValid && isPhoneNumberValid && idDateOfBirthValid) {
 
             const  base64Avatar =avatar ? await getBase64(avatar) : null
-
             try{
                 setHasCalled(true);
                 setNotice("Đang xử lý...");
                 setHasFull(false);
-                const url:string = "http://localhost:8080/account/register";
+                const url:string = "http://localhost:8080/user/register";
                 
                 const response = await fetch(url,{
                     method: 'POST',
@@ -70,6 +83,7 @@ function RegisterUser(){
                         password:password,
                         firstName: firstName,
                         lastName: lastName,
+                        dateOfBirth:dateOfBirth,
                         phoneNumber: phoneNumber,
                         sex:sex,
                         avatar:base64Avatar
@@ -168,7 +182,7 @@ function RegisterUser(){
     }
 
     // sex
-    const handleSexChange =(e: { target: { value: React.SetStateAction<string>; }; })=>{
+    const handleSexChange =(e:ChangeEvent<HTMLSelectElement>)=>{
         setSex(e.target.value);
     }
 
@@ -180,15 +194,30 @@ function RegisterUser(){
         }
     }
 
-    // Convert file to String
-    const getBase64 = (file: File): Promise<string | null> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result ? (reader.result as string) : null);
-            reader.onerror = (error) => reject(error)
-        });
-    };
+    // dateOfBirth
+    const checkDateOfBirthRegex=(dateOfBirth:string)=>{
+        const regex =  /\d{4}-\d{2}-\d{2}/;
+        if(!regex.test(dateOfBirth)){
+            setErrorDateOfBirth("Ngày sinh không đúng định dạng !");
+            return true;
+        }
+
+        const minDate = new Date("1900-01-01");
+        const nowDate = new Date()
+        const userDate = new Date(dateOfBirth);
+        if(minDate > userDate || userDate>nowDate){
+            setErrorDateOfBirth("Ngày sinh không hợp lệ!")
+            return true;
+        }
+            setErrorDateOfBirth("");
+            return false;
+        
+    }
+    const handleDateOfBirthChange=(e:ChangeEvent<HTMLInputElement>)=>{
+        setErrorDateOfBirth("");
+        setDateOfBirth(e.target.value);
+        return checkDateOfBirthRegex(e.target.value);
+    }
 
     return(
         <div className="container">
@@ -196,7 +225,7 @@ function RegisterUser(){
             <div className="mb-3 col-md-6 col-12 mx-auto">
                 <form onSubmit={handleSubmit} className="form">
                     <div className="mb-3">
-                        <label htmlFor="userName" className="form-label">Tên đăng nhập</label>
+                        <label htmlFor="userName" className="form-label">Tên đăng nhập</label> <span style={{color:"red"}}> *</span>
                         <input 
                             type="text"
                             id="userName"
@@ -207,7 +236,7 @@ function RegisterUser(){
                         <div style={{color:"red"}}>{errorUserName}</div>
                     </div>  
                     <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email</label>
+                        <label htmlFor="email" className="form-label">Email</label> <span style={{color:"red"}}> *</span>
                         <input 
                             type="text"
                             id="email"
@@ -218,7 +247,7 @@ function RegisterUser(){
                         <div style={{color:"red"}}>{errorEmail}</div>
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="password" className="form-label">Mật khẩu</label>
+                        <label htmlFor="password" className="form-label">Mật khẩu</label> <span style={{color:"red"}}> *</span>
                         <input 
                             type="password"
                             id="password"
@@ -229,7 +258,7 @@ function RegisterUser(){
                         <div style={{color:"red"}}>{errorPassword}</div>
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="duplicatePassword" className="form-label">Nhập lại mật khẩu</label>
+                        <label htmlFor="duplicatePassword" className="form-label">Nhập lại mật khẩu</label> <span style={{color:"red"}}> *</span>
                         <input 
                             type="password"
                             id="duplicatePassword"
@@ -240,7 +269,7 @@ function RegisterUser(){
                         <div style={{color:"red"}}>{errorDuplicatePassword}</div>
                     </div>   
                     <div className="mb-3">
-                        <label htmlFor="lastName" className="form-label">Họ đệm</label>
+                        <label htmlFor="lastName" className="form-label">Họ đệm</label> <span style={{color:"red"}}> *</span>
                         <input 
                             type="text"
                             id="lastName"
@@ -250,8 +279,8 @@ function RegisterUser(){
                         />
                     </div> 
                     <div className="mb-3">
-                    <label htmlFor="firstName" className="form-label">Tên</label>
-                        <input 
+                    <label htmlFor="firstName" className="form-label">Tên</label> <span style={{color:"red"}}> *</span>
+                        <input  
                             type="text"
                             id="firstName"
                             className="form-control"
@@ -260,7 +289,19 @@ function RegisterUser(){
                         />
                     </div>  
                     <div className="mb-3">
-                        <label htmlFor="phoneNumber" className="form-label">Số điện thoại</label>
+                    <label htmlFor="dateOfBirth" className="form-label">Ngày sinh</label> <span style={{color:"red"}}> *</span>
+                        <input  
+                            type="date"
+                            id="dateOfBirth"
+                            value={dateOfBirth}
+                            className="form-control"
+                            onChange={handleDateOfBirthChange}
+                        />
+                    <div style={{color:"red"}}>{errorDateOfBirth}</div>
+
+                    </div> 
+                    <div className="mb-3">
+                        <label htmlFor="phoneNumber" className="form-label">Số điện thoại</label> <span style={{color:"red"}}> *</span>
                         <input 
                             type="text"
                             id="phoneNumber"
@@ -271,19 +312,19 @@ function RegisterUser(){
                         <div style={{color:"red"}}>{errorPhoneNumber}</div>
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="sex" className="form-label">Giới tính</label>
+                        <label htmlFor="sex" className="form-label">Giới tính</label> <span style={{color:"red"}}> *</span>
                         <select className="form-control" id="sex" value={sex} onChange={handleSexChange}>
                             <option value="Nam">Nam</option>
                             <option value="Nữ">Nữ</option>
                         </select>
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="avatar" className="form-label">Avatar</label>
+                        <label htmlFor="avatar" className="form-label">Avatar</label> <span style={{color:"red"}}> *</span>
                         <input type="file" id="avatar"className="form-control" accept="image/**"onChange={handleAvatarChange}></input>
 
                     </div>
                     <div className="text-center">
-                        <button type="submit" className="btn btn-primary">Đăng ký</button>
+                        <button type="submit" className="btn btn-primary">Đăng ký</button> 
                         <div style={{color: hasFull ? "green" : "red"}}>{notice}</div> 
                     </div>
                 </form>
@@ -291,6 +332,7 @@ function RegisterUser(){
         </div>
     )
 }
+
 
 export default RegisterUser;
 

@@ -3,6 +3,7 @@ import RequireAdmin from "./RequireAdmin";
 import { getAllCategory } from "../api/CategoryAPI";
 import CategoryModel from "../models/CategoryModel";
 import NumberFormat from "../layouts/utils/NumberFormat";
+import getBase64 from "../layouts/utils/getBase64";
 
 const BookForm: React.FC = (props) => {
     const [thumbnail,setThumbnail] = useState<string|null>(null);
@@ -32,15 +33,6 @@ const BookForm: React.FC = (props) => {
     }
 
     // convert file to string
-    const getBase64 = (file: File): Promise<string | null> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result ? (reader.result as string) : null);
-            reader.onerror = (error) => reject(error)
-        });
-    };
-
     const handleThumbnailChange=async (e:ChangeEvent<HTMLInputElement>)=>{
         if(e.target.files){
             const fileChoose = e.target.files[0];
@@ -111,12 +103,12 @@ const BookForm: React.FC = (props) => {
     })
 
         useEffect(()=>{
-            setBook(prevBook=>({...prevBook,relatedImage:relatedImage}));
-            setBook(prevBook=>({...prevBook,categoryList: categoryIsChoose}));
-            setBook(prevBook=>({...prevBook,thumbnail: thumbnail}));
+            // setBook(prevBook=>({...prevBook,relatedImage:relatedImage}));
+            // setBook(prevBook=>({...prevBook,categoryList: categoryIsChoose}));
+            // setBook(prevBook=>({...prevBook,thumbnail: thumbnail}));
 
             const priceUpdate = book.listedPrice *  (1-book.discountPercent/100);
-            setBook(prevBook=>({...prevBook,price:priceUpdate}));
+            setBook(prevBook=>({...prevBook,price:priceUpdate,relatedImage,categoryList:categoryIsChoose,thumbnail}));
         },[relatedImage,categoryIsChoose,thumbnail,book.listedPrice,book.discountPercent])
 
     const handleSubmit = async (event: FormEvent) => {

@@ -10,7 +10,7 @@ function ActivatedAccount() {
   useEffect(() => {
     const activatedAccount = async () => {
       try {
-        const url = `http://localhost:8080/account/activatedAccount?email=${email}&activationCode=${activationCode}`;
+        const url = `http://localhost:8080/user/activatedAccount?email=${email}&activationCode=${activationCode}`;
         const response = await fetch(url, { method: "GET" });
 
         const data = await response.json();

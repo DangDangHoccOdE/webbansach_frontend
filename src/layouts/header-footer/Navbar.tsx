@@ -4,8 +4,8 @@ import {  Link, NavLink, useNavigate } from "react-router-dom";
 import { getAllCategory } from "../../api/CategoryAPI";
 import CategoryModel from "../../models/CategoryModel";
 import { Search } from "react-bootstrap-icons";
-import { getAvatarByToken, getFirstNameByToken } from "../utils/JwtService";
-
+import { getAvatarByToken, getFirstNameByToken, isToken } from "../utils/JwtService";
+import { useAuth } from "../../utils/AuthContext";
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
   }
@@ -15,10 +15,10 @@ function Navbar({setBookNameFind} : NavbarProps){
   const [temporaryKeyWord,setTemporaryKeyWord] = useState('');
   const [categoryList,setCategoryList] = useState<CategoryModel[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const navigator = useNavigate();
-  const dataToken = localStorage.getItem('token');
- 
 
+  const navigator = useNavigate();
+  const {setLoggedIn} = useAuth();
+  
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -56,6 +56,7 @@ function Navbar({setBookNameFind} : NavbarProps){
 
   const handleLogout=() =>{
       localStorage.removeItem('token');
+      setLoggedIn(false);
       navigator("/login")
   }
 
@@ -114,19 +115,22 @@ function Navbar({setBookNameFind} : NavbarProps){
               </a>
             </li>
           </ul>
-     
-          {/* Biểu tượng đăng nhập */}
+
+          {/* { Biểu tượng đăng nhập */}
           {
-            dataToken ? 
+            isToken() ? 
             <ul className="navbar-nav me-1">
             <li className="nav-item dropdown">
                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                 {/* <i className="fas fa-user"></i> */}
-                  <img src={getAvatarByToken()} alt={getFirstNameByToken()?.toUpperCase()} style={{width:"50px"}}></img>
-                 </a>
+               {  
+                  getAvatarByToken()===undefined ? 
+                           <i className="fas fa-user"></i>
+                           : <img src={getAvatarByToken()} alt={getFirstNameByToken()?.toUpperCase()} style={{width:"50px"}}></img>
+                  
+              }</a>
                  <div className="dropdown-menu dropdown-menu-end">
                  <p className="dropdown-item">Chào, {getFirstNameByToken()}</p>
-                 <a className="dropdown-item" href="#">Xem thông tin</a>
+                 <Link className="dropdown-item" to="/user/info">Xem thông tin</Link>
                    <div className="dropdown-divider"></div>
                    <button className="dropdown-item" onClick={handleLogout}>Đăng xuất</button>
                  </div>
@@ -137,6 +141,6 @@ function Navbar({setBookNameFind} : NavbarProps){
         </div>
       </nav>
     );
-}
+} 
 
 export default Navbar;

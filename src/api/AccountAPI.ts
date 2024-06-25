@@ -1,3 +1,4 @@
+
 /* eslint-disable import/no-anonymous-default-export */
 interface checkEmailProps{
     setErrorEmail:(email:string)=>void
@@ -9,7 +10,9 @@ export async function checkEmail(email:string,{setErrorEmail}:checkEmailProps):P
             const response = await fetch(url);
 
             const data =await response.text();
+
             if(data==="true"){
+                console.log("Ton tai")
                 setErrorEmail("Tên email đã tồn tại!");
                 return true;
             }else if(!regexEmail.test(email)){
