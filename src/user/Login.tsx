@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const Login=()=>{
     
@@ -35,19 +36,27 @@ const handleLogin=async (e:React.FormEvent) =>{
         })
 
         const data = await response.json();
+        console.log(data)
 
         if(response.ok){
             console.log("Đăng nhập thành công!")
 
             setIsError(false)
-            const {jwt} = data;
-            localStorage.setItem("token",jwt);
-            setLoggedIn(true)
+            const {accessTokenJwt,refreshTokenJwt} = data;
+            localStorage.setItem("accessToken",accessTokenJwt);
+            localStorage.setItem("refreshToken",refreshTokenJwt);
             setNotice("Đăng nhập thành công!");
 
+            if(accessTokenJwt && refreshTokenJwt){
+                console.log(jwtDecode(accessTokenJwt));
+                console.log(jwtDecode(refreshTokenJwt));
+
+            }
             setTimeout(() => {
                 navigate('/',{replace:true});
               }, 2000);
+              setLoggedIn(true)
+
         }else{
             setNotice(data.content)
             console.log(data.content)
@@ -59,9 +68,12 @@ const handleLogin=async (e:React.FormEvent) =>{
         setIsError(true)
     }
 }
-if(isLoggedIn){
-    return null;
-}
+
+const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleLogin(e);
+    }
+  }
 
     return (
         <div className="vh-100" style={{backgroundColor:"#9A616D"}}>
@@ -77,7 +89,7 @@ if(isLoggedIn){
                         <div className="col-md-6 col-lg-7 d-flex align-items-center">
                         <div className="card-body p-4 p-lg-5 text-black">
 
-                            <form>
+                            <form className="form" onSubmit={handleLogin}>
 
                             <div className="d-flex align-items-center mb-3 pb-1">
                                 <i className="fas fa-cubes fa-2x me-3" style={{color: "#ff6219"}}></i>
@@ -87,17 +99,17 @@ if(isLoggedIn){
                             <h5 className="fw-normal mb-3 pb-3" style={{letterSpacing: "1px"}}>Sign into your account</h5>
 
                             <div data-mdb-input-init className="form-outline mb-4">
-                                <input type="email" id="form2Example17" className="form-control form-control-lg" value={username} onChange={(e) => setUsername(e.target.value)} />
+                                <input type="email" id="form2Example17" className="form-control form-control-lg" value={username} onChange={(e) => setUsername(e.target.value)} onKeyDown={handleEnter} />
                                 <label className="form-label" htmlFor="form2Example17">User name</label>
                             </div>
 
                             <div data-mdb-input-init className="form-outline mb-4">
-                                <input type="password" id="form2Example27" className="form-control form-control-lg" value={password} onChange={e=>setPassword(e.target.value)} />
+                                <input type="password" id="form2Example27" className="form-control form-control-lg" value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={handleEnter}/>
                                 <label className="form-label" htmlFor="form2Example27">Password</label>
                             </div>
 
                             <div className="pt-1 mb-4">
-                                <button data-mdb-button-init data-mdb-ripple-init className="btn btn-dark btn-lg btn-block" type="button" onClick={handleLogin}>Login</button>
+                                <button data-mdb-button-init data-mdb-ripple-init className="btn btn-dark btn-lg btn-block" type="submit" onClick={handleLogin} >Login</button>
                             </div>
                             {notice && <div style={{color:isError?"red":"green"}}>{notice}</div>}
 

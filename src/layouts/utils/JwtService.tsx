@@ -1,8 +1,6 @@
-import { jwtDecode } from 'jwt-decode'; // Sửa lại import ở đây
+import { jwtDecode } from 'jwt-decode';
 interface JwtPayload {
     userId: string;
-    avatar: string;
-    email:string;
     firstName: string;
     enable: boolean;
     isAdmin: boolean;
@@ -10,40 +8,25 @@ interface JwtPayload {
     isUser: boolean;
 }
 
-export function isTokenExpired(token:string){
+export function isTokenExpired(token: string) {
     const decode = jwtDecode(token);
-    if(!decode.exp){
+    if (!decode.exp) {
         return false;
     }
-
-    const currentTime = Date.now() / 1000 // => second
-    return currentTime < decode.exp
+    const currentTime = Date.now() / 1000; // current time in seconds
+    return currentTime > decode.exp;
 }
 
+
 export function getUsernameByToken(){
-    const dataToken = localStorage.getItem('token')
+    const dataToken = localStorage.getItem('accessToken')
     if(dataToken){
         return jwtDecode(dataToken).sub;
     }
 }
-export function getEmailByToken(){
-    const dataToken = localStorage.getItem('token')
-    if(dataToken){
-        const decode = jwtDecode(dataToken) as JwtPayload
-        return decode.email;
-    }
-}
-
-export function getAvatarByToken(){
-    const dataToken = localStorage.getItem('token')
-    if(dataToken){
-        const decode = jwtDecode(dataToken) as JwtPayload
-        return decode.avatar;
-    }
-}
 
 export function getFirstNameByToken(){
-    const dataToken = localStorage.getItem('token')
+    const dataToken = localStorage.getItem('accessToken')
     if(dataToken){
         const decode = jwtDecode(dataToken) as JwtPayload
         return decode.firstName;
@@ -51,9 +34,14 @@ export function getFirstNameByToken(){
 }
 
 export function isToken(){
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if(token){
         return true;
     }
     return false;
+}
+
+export function logout(){
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
 }

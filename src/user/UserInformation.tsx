@@ -1,34 +1,36 @@
 import { ChangeEvent, useEffect, useState } from "react"
-import { checkEmail } from "../api/AccountAPI"
 import getBase64 from "../layouts/utils/getBase64"
 import { getUserByUsername } from "../api/UserAPI"
 import {  getUsernameByToken } from "../layouts/utils/JwtService"
 import UserModel from "../models/UserModel"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../utils/AuthContext"
 
 const UserInformation:React.FC=()=>{
     const {isLoggedIn} = useAuth();
     const [userByToken,setUserByToken] = useState<UserModel|null>();
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false); // State để theo dõi trạng thái loading
+
     useEffect(()=>{
         if(!isLoggedIn){
             navigate("/login");
             return;        
         }else{
             const usernameByToken = getUsernameByToken();
-            console.log(usernameByToken)
             if(usernameByToken!==undefined){
+                setIsLoading(true);
                 getUserByUsername(usernameByToken).then(
                     user=>{
                         setUserByToken(user);
-                        console.log(user);
                     }
                 ).catch(error =>{
                     console.error("Lỗi load info user!",error);
                     setNotice("Không thể load được thông tin user!");
                     setHasFull(false);
                     alert("Lỗi load info user!");
+                }).finally(()=>{
+                    setIsLoading(false);
                 })
                 }else{
                     console.log("Không có thông tin user!")
@@ -39,19 +41,16 @@ const UserInformation:React.FC=()=>{
          
         },[isLoggedIn,navigate]
     )
-    
-    console.log(userByToken)
-
-    const [userName, setUserName] = useState(userByToken?.userName)
-    const [email, setEmail] = useState(userByToken?.email)
-    const [dateOfBirth, setDateOfBirth] = useState(userByToken?.dateOfBirth)
-    const [lastName, setLastName] = useState(userByToken?.lastName)
-    const [firstName, setFirstName] = useState(userByToken?.firstName)
-    const [phoneNumber, setPhoneNumber] = useState(userByToken?.phoneNumber)
-    const [sex, setSex] = useState(userByToken?.sex)
-    const [avatar, setAvatar] = useState<string|undefined|null>(userByToken?.avatar)
-    const [deliveryAddress, setDeliveryAddress] = useState(userByToken?.deliveryAddress)
-    const [purchaseAddress, setPurchaseAddress] = useState(userByToken?.purchaseAddress)
+    const [userName, setUserName] = useState<string | undefined>(userByToken?.userName);
+    const [email, setEmail] = useState<string | undefined>(userByToken?.email);
+    const [dateOfBirth, setDateOfBirth] = useState<string | undefined>(userByToken?.dateOfBirth);
+    const [lastName, setLastName] = useState<string | undefined>(userByToken?.lastName);
+    const [firstName, setFirstName] = useState<string | undefined>(userByToken?.firstName);
+    const [phoneNumber, setPhoneNumber] = useState<string | undefined>(userByToken?.phoneNumber);
+    const [sex, setSex] = useState<string | undefined>(userByToken?.sex);
+    const [avatar, setAvatar] = useState<string | undefined | null>(userByToken?.avatar);
+    const [deliveryAddress, setDeliveryAddress] = useState<string|undefined>("")
+    const [purchaseAddress, setPurchaseAddress] = useState<string|undefined>("")
 
     useEffect(()=>{
         setUserName(userByToken?.userName);
@@ -67,7 +66,6 @@ const UserInformation:React.FC=()=>{
     },[userByToken])
 
 
-    const [errorEmail, setErrorEmail] = useState("")
     const [errorDateOfBirth, setErrorDateOfBirth] = useState("")
     const [errorPhoneNumber, setErrorPhoneNumber] = useState("")
     const [notice,setNotice] = useState("");
@@ -90,20 +88,15 @@ const UserInformation:React.FC=()=>{
             return;
         }
 
-        setErrorEmail("");
         setErrorPhoneNumber("");
         setErrorDateOfBirth("");
 
-        let isEmailValid = false;
-        if (userByToken?.email === email) {
-            isEmailValid = true;
-        } else {
-            isEmailValid = !await checkEmail(email, { setErrorEmail });
-        }
+        
         const isPhoneNumberValid = !checkPhoneNumber(phoneNumber);
-        if (isEmailValid && isPhoneNumberValid) {
+        if (isPhoneNumberValid) {
             try {
                 setHasCalled(true);
+                setIsLoading(true);
                 setNotice("Đang xử lý...");
                 setHasFull(false);
 
@@ -131,16 +124,17 @@ const UserInformation:React.FC=()=>{
                     body: JSON.stringify(userInfo)
                 });
 
-                console.log(response);
                 const data = await response.json();
-                console.log(data);
 
                 if (response.ok) {
                     setHasFull(true);
+                    setNotice("Đã thay đổi thông tin thành công!")
+                    const {jwt} = data;
+                    localStorage.setItem('accessToken',jwt);
                 } else {
                     setHasFull(false);
+                    setNotice(data.content || 'Không có nội dung');
                 }
-                setNotice(data.content || 'Không có nội dung');
             } catch (error) {
                 setNotice("Đã xảy ra lỗi trong quá trình cập nhật thông tin!");
                 console.log({ error });
@@ -151,13 +145,6 @@ const UserInformation:React.FC=()=>{
         }
     };
 
-    // email
-    const handleEmailChange = (e: ChangeEvent<HTMLInputElement>)=>{
-        setEmail(e.target.value);
-        setErrorEmail("");
-
-        return checkEmail(e.target.value,{setErrorEmail});
-    }
 
     // phone number
     const checkPhoneNumber=(phoneNumber:string)=>{
@@ -225,17 +212,27 @@ const UserInformation:React.FC=()=>{
         <div className="container">
             <h1 className="mt-5 text-center">Chỉnh sửa thông tin</h1>
             <div className="mb-3 col-md-6 col-12 mx-auto">
+            {isLoading && <div className="text-center">Đang tải...</div>}
                 <form onSubmit={handleSubmit} className="form">
                     <div className="mb-3">
-                        <label htmlFor="email" className="form-label">Email</label> <span style={{color:"red"}}> *</span>
-                        <input 
-                            type="text"
-                            id="email"
-                            className="form-control"
-                            value={email} 
-                            onChange={handleEmailChange}
-                        />
-                        <div style={{color:"red"}}>{errorEmail}</div>
+                        <div className="row">
+                        <label htmlFor="email" className="form-label">Email<span style={{color:"red"}}> *</span> </label> 
+                            <div className="col-9">
+                                <input 
+                                    type="text"
+                                    id="email"
+                                    className="form-control"
+                                    value={email} 
+                                    readOnly
+                                />
+                            </div>
+                            <div className="col-3">
+                                <Link to={"/user/changeEmail"}>
+                                   <i className="fas fa-edit btn btn-info">Thay đổi</i>                        
+                                </Link>
+                            </div>
+                        </div>
+
                     </div>
             
                     <div className="mb-3">
@@ -307,13 +304,13 @@ const UserInformation:React.FC=()=>{
                     
                     <div className="mb-3">
                         <label htmlFor="deliveryAddress" className="form-label">Địa chỉ giao hàng</label> <span style={{color:"red"}}> *</span>
-                        <textarea id="deliveryAddress"className="form-control" value={deliveryAddress} onChange={e=>setDeliveryAddress(e.target.value)}></textarea>
+                        <input id="deliveryAddress"className="form-control" value={deliveryAddress} onChange={e=>setDeliveryAddress(e.target.value)}></input>
 
                     </div>
                     
                      <div className="mb-3">
                         <label htmlFor="purchaseAddress" className="form-label">Địa chỉ mua hàng</label> <span style={{color:"red"}}> *</span>
-                        <textarea id="purchaseAddress"className="form-control" value={purchaseAddress} onChange={e=>setPurchaseAddress(e.target.value)}></textarea>
+                        <input id="purchaseAddress"className="form-control" value={purchaseAddress} onChange={e=>setPurchaseAddress(e.target.value)}></input>
 
                     </div>
                     <div className="text-center">

@@ -103,10 +103,6 @@ const BookForm: React.FC = (props) => {
     })
 
         useEffect(()=>{
-            // setBook(prevBook=>({...prevBook,relatedImage:relatedImage}));
-            // setBook(prevBook=>({...prevBook,categoryList: categoryIsChoose}));
-            // setBook(prevBook=>({...prevBook,thumbnail: thumbnail}));
-
             const priceUpdate = book.listedPrice *  (1-book.discountPercent/100);
             setBook(prevBook=>({...prevBook,price:priceUpdate,relatedImage,categoryList:categoryIsChoose,thumbnail}));
         },[relatedImage,categoryIsChoose,thumbnail,book.listedPrice,book.discountPercent])
@@ -114,8 +110,7 @@ const BookForm: React.FC = (props) => {
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
     
-        console.log("Book: ",book)
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('accessToken')
         const response = await fetch("http://localhost:8080/admin/addBook",
             {
                 method:"POST",
@@ -318,6 +313,7 @@ const BookForm: React.FC = (props) => {
                         {relatedImage?.map((image,index)=>(
                             <img key={index} src={image} alt={`Ảnh liên quan ${index+1}`} style={{width:"100px",height:"100px"}}></img>
                         ))}
+
                     </div>
                 </div>
 

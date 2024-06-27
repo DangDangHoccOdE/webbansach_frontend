@@ -5,6 +5,7 @@ interface checkEmailProps{
 }
 export async function checkEmail(email:string,{setErrorEmail}:checkEmailProps):Promise<boolean> {
       const url = `http://localhost:8080/users/search/existsByEmail?email=${email}`;
+      console.log(email)
         const regexEmail = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gim;
         try{
             const response = await fetch(url);
@@ -14,13 +15,13 @@ export async function checkEmail(email:string,{setErrorEmail}:checkEmailProps):P
             if(data==="true"){
                 console.log("Ton tai")
                 setErrorEmail("Tên email đã tồn tại!");
-                return true;
+                return false;
             }else if(!regexEmail.test(email)){
                 setErrorEmail("Định dạng email không hợp lệ!");
-                return true;
+                return false;
             }
 
-            return false;
+            return true;
         }catch(error){
             console.error("Lỗi khi kiểm tra tên email",error);
             return false;

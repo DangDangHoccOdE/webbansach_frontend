@@ -14,7 +14,7 @@ const RequireAdmin= <P extends object>(WrappedComponent: React.ComponentType<P>)
         const navigate = useNavigate();
 
         useEffect(()=>{
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('accessToken');
              console.log(token);
             if(!token){
                 navigate("/login");

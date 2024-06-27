@@ -4,8 +4,10 @@ import {  Link, NavLink, useNavigate } from "react-router-dom";
 import { getAllCategory } from "../../api/CategoryAPI";
 import CategoryModel from "../../models/CategoryModel";
 import { Search } from "react-bootstrap-icons";
-import { getAvatarByToken, getFirstNameByToken, isToken } from "../utils/JwtService";
+import { getUsernameByToken, isToken, logout } from "../utils/JwtService";
 import { useAuth } from "../../utils/AuthContext";
+import { getUserByUsername } from "../../api/UserAPI";
+import UserModel from "../../models/UserModel";
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
   }
@@ -15,7 +17,7 @@ function Navbar({setBookNameFind} : NavbarProps){
   const [temporaryKeyWord,setTemporaryKeyWord] = useState('');
   const [categoryList,setCategoryList] = useState<CategoryModel[]>([]);
   const [error, setError] = useState<string | null>(null);
-
+  const [user,setUser] = useState<UserModel|null>(null); 
   const navigator = useNavigate();
   const {setLoggedIn} = useAuth();
   
@@ -29,9 +31,22 @@ function Navbar({setBookNameFind} : NavbarProps){
       }
     };
 
+    const getUser = async () =>{
+        const username = getUsernameByToken();
+        if(username!==undefined){
+          try{
+              const result = await getUserByUsername(username);
+              setUser(result);
+          }catch(error){
+            setError("Lỗ khi gọi api user!");
+          }
+      }
+    };
+
+    getUser();
     fetchCategories(); 
 
-  },[]);
+  },[navigator,setLoggedIn]);
 
   if(error!==null){
     return(
@@ -55,7 +70,7 @@ function Navbar({setBookNameFind} : NavbarProps){
   }
 
   const handleLogout=() =>{
-      localStorage.removeItem('token');
+      logout();
       setLoggedIn(false);
       navigator("/login")
   }
@@ -123,13 +138,13 @@ function Navbar({setBookNameFind} : NavbarProps){
             <li className="nav-item dropdown">
                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                {  
-                  getAvatarByToken()===undefined ? 
+                  user?.avatar===null?
                            <i className="fas fa-user"></i>
-                           : <img src={getAvatarByToken()} alt={getFirstNameByToken()?.toUpperCase()} style={{width:"50px"}}></img>
+                           : <img src={user?.avatar} alt={user?.firstName?.toUpperCase()} style={{width:"50px"}}></img>
                   
               }</a>
                  <div className="dropdown-menu dropdown-menu-end">
-                 <p className="dropdown-item">Chào, {getFirstNameByToken()}</p>
+                 <p className="dropdown-item">Chào, {user?.firstName}</p>
                  <Link className="dropdown-item" to="/user/info">Xem thông tin</Link>
                    <div className="dropdown-divider"></div>
                    <button className="dropdown-item" onClick={handleLogout}>Đăng xuất</button>
