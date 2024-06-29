@@ -15,30 +15,12 @@ import Test from "./user/Test";
 import BookForm_Admin from "./admin/BookForm";
 import Error_403 from "./layouts/utils/Error_403";
 import UserInformation from "./user/UserInformation";
-import { AuthProvider } from "./utils/AuthContext";
+import { AuthProvider } from "./layouts/utils/AuthContext";
 import ChangeEmail from "./user/ChangeEmail";
+import ConfirmChangeEmail from "./user/ConfirmChangeEmail";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
-  // const dataToken = localStorage.getItem("token")
-
-  // useEffect(()=>{
-  //   const checkValidExpiration = () =>{
-
-  //       if(dataToken){
-  //         try{
-  //           const decode = jwtDecode(dataToken);
-  //           if(decode.exp!==undefined && decode.exp*1000 < Date.now()){
-  //               console.log("Token is expired");
-  //               localStorage.removeItem('token')
-  //           }
-  //         }catch(error){
-  //           console.error('Failed to decode token', error);
-  //         }
-  //       }
-  //   }
-  //   checkValidExpiration();
-  // },[dataToken])
   
   return (
       <BrowserRouter>
@@ -58,6 +40,7 @@ function App() {
               <Route path="/error-403" element={<Error_403/>} />
               <Route path="/user/info" element={<UserInformation/>} />
               <Route path="/user/changeEmail" element={<ChangeEmail/>} />
+              <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail/>}/>
           </Routes>
           <Footer/>
           </AuthProvider>

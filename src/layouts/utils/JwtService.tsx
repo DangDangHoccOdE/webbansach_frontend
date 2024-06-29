@@ -1,12 +1,11 @@
 import { jwtDecode } from 'jwt-decode';
-interface JwtPayload {
-    userId: string;
-    firstName: string;
-    enable: boolean;
-    isAdmin: boolean;
-    isStaff: boolean;
-    isUser: boolean;
-}
+// interface JwtPayload {
+//     userId: string;
+//     enable: boolean;
+//     isAdmin: boolean;
+//     isStaff: boolean;
+//     isUser: boolean;
+// }
 
 export function isTokenExpired(token: string) {
     const decode = jwtDecode(token);
@@ -25,13 +24,13 @@ export function getUsernameByToken(){
     }
 }
 
-export function getFirstNameByToken(){
-    const dataToken = localStorage.getItem('accessToken')
-    if(dataToken){
-        const decode = jwtDecode(dataToken) as JwtPayload
-        return decode.firstName;
-    }
-}
+// export function getFirstNameByToken(){
+//     const dataToken = localStorage.getItem('accessToken')
+//     if(dataToken){
+//         const decode = jwtDecode(dataToken) as JwtPayload
+//         return decode.firstName;
+//     }
+// }
 
 export function isToken(){
     const token = localStorage.getItem('accessToken');

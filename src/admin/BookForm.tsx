@@ -1,9 +1,10 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react"
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react"
 import RequireAdmin from "./RequireAdmin";
 import { getAllCategory } from "../api/CategoryAPI";
 import CategoryModel from "../models/CategoryModel";
 import NumberFormat from "../layouts/utils/NumberFormat";
 import getBase64 from "../layouts/utils/getBase64";
+import CheckAndRefreshToken from "../layouts/utils/CheckTokenExpired";
 
 const BookForm: React.FC = (props) => {
     const [thumbnail,setThumbnail] = useState<string|null>(null);
@@ -85,6 +86,7 @@ const BookForm: React.FC = (props) => {
         setCategoryIsChoose(selectOption);
     }   
 
+    CheckAndRefreshToken(); // kiểm tra token hết thì lấy token mới
     const [book, setBook] = useState({
         bookId:0,
         bookName:'',
@@ -107,6 +109,17 @@ const BookForm: React.FC = (props) => {
             setBook(prevBook=>({...prevBook,price:priceUpdate,relatedImage,categoryList:categoryIsChoose,thumbnail}));
         },[relatedImage,categoryIsChoose,thumbnail,book.listedPrice,book.discountPercent])
 
+        // Reset File
+        const inputFile = useRef<any>();
+        const inputMultipleFile = useRef<any>();
+        const handleReset = () => {
+            if (inputFile.current) {
+                inputFile.current.value = "";
+            }
+            if (inputMultipleFile.current) {
+                inputMultipleFile.current.value = "";
+            }
+        };
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
     
@@ -143,6 +156,7 @@ const BookForm: React.FC = (props) => {
                         setCategoryIsChoose([]);
                         setRelatedImage([]);
                         setThumbnail('');
+                        handleReset();
                         console.log("Đã thêm sách thành công!")
                     }else{
                         alert("Gặp lỗi trong quá trình thêm sách!")
@@ -293,7 +307,7 @@ const BookForm: React.FC = (props) => {
                         className="form-control"
                         accept="image/**"
                         onChange={handleThumbnailChange}
-                        required
+                        required ref={inputFile}
                     /><br/>
                     {thumbnail && <img src={thumbnail} alt="Ảnh chính" style={{width:"100px" , height:"100px"}}></img>}
                 </div>
@@ -307,7 +321,7 @@ const BookForm: React.FC = (props) => {
                         accept="image/**"
                         onChange={handleRelatedImagesChange}
                         multiple
-                        required
+                        required ref={inputMultipleFile}
                     /><br/>
                     <div className="related-images-preview">
                         {relatedImage?.map((image,index)=>(

@@ -5,7 +5,7 @@ import { getAllCategory } from "../../api/CategoryAPI";
 import CategoryModel from "../../models/CategoryModel";
 import { Search } from "react-bootstrap-icons";
 import { getUsernameByToken, isToken, logout } from "../utils/JwtService";
-import { useAuth } from "../../utils/AuthContext";
+import { useAuth } from "../utils/AuthContext";
 import { getUserByUsername } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
 interface NavbarProps{

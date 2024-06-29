@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../utils/AuthContext";
+import { useAuth } from "../layouts/utils/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
 const Login=()=>{

@@ -1,101 +1,99 @@
-import { ChangeEvent, useEffect, useState } from "react"
-import getBase64 from "../layouts/utils/getBase64"
-import { getUserByUsername } from "../api/UserAPI"
-import {  getUsernameByToken } from "../layouts/utils/JwtService"
-import UserModel from "../models/UserModel"
-import { Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../utils/AuthContext"
+import { ChangeEvent, useEffect, useState } from "react";
+import getBase64 from "../layouts/utils/getBase64";
+import { getUserByUsername } from "../api/UserAPI";
+import { getUsernameByToken } from "../layouts/utils/JwtService";
+import UserModel from "../models/UserModel";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../layouts/utils/AuthContext";
+import CheckAndRefreshToken from "../layouts/utils/CheckTokenExpired";
 
-const UserInformation:React.FC=()=>{
-    const {isLoggedIn} = useAuth();
-    const [userByToken,setUserByToken] = useState<UserModel|null>();
+const UserInformation: React.FC = () => {
+    const { isLoggedIn } = useAuth();
+    const [userByToken, setUserByToken] = useState<UserModel | null>(null);
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false); // State để theo dõi trạng thái loading
+    const [isLoading, setIsLoading] = useState(false);
+    const [noAvatar, setNoAvatar] = useState(false);
+    const [userName, setUserName] = useState<string | undefined>();
+    const [email, setEmail] = useState<string | undefined>();
+    const [dateOfBirth, setDateOfBirth] = useState<string | undefined>();
+    const [lastName, setLastName] = useState<string | undefined>();
+    const [firstName, setFirstName] = useState<string | undefined>();
+    const [phoneNumber, setPhoneNumber] = useState<string | undefined>();
+    const [sex, setSex] = useState<string | undefined>();
+    const [avatar, setAvatar] = useState<string | undefined | null>();
+    const [deliveryAddress, setDeliveryAddress] = useState<string | undefined>("");
+    const [purchaseAddress, setPurchaseAddress] = useState<string | undefined>("");
+    const [errorDateOfBirth, setErrorDateOfBirth] = useState("");
+    const [errorPhoneNumber, setErrorPhoneNumber] = useState("");
+    const [notice, setNotice] = useState("");
+    const [hasFull, setHasFull] = useState(true);
 
-    useEffect(()=>{
-        if(!isLoggedIn){
+    CheckAndRefreshToken(); // kiểm tra token hết nếu hết thì lấy access token mới
+    useEffect(() => {
+        if (!isLoggedIn) {
             navigate("/login");
-            return;        
-        }else{
-            const usernameByToken = getUsernameByToken();
-            if(usernameByToken!==undefined){
-                setIsLoading(true);
-                getUserByUsername(usernameByToken).then(
-                    user=>{
-                        setUserByToken(user);
-                    }
-                ).catch(error =>{
-                    console.error("Lỗi load info user!",error);
+            return;
+        }
+
+        const usernameByToken = getUsernameByToken();
+        if (usernameByToken !== undefined) {
+            setIsLoading(true);
+            getUserByUsername(usernameByToken)
+                .then(user => {
+                    setUserByToken(user);
+                })
+                .catch(error => {
+                    console.error("Lỗi load info user!", error);
                     setNotice("Không thể load được thông tin user!");
                     setHasFull(false);
                     alert("Lỗi load info user!");
-                }).finally(()=>{
-                    setIsLoading(false);
                 })
-                }else{
-                    console.log("Không có thông tin user!")
-                    alert("Không có thông tin user!")
-                    navigate("/");
-                }
-            }
-         
-        },[isLoggedIn,navigate]
-    )
-    const [userName, setUserName] = useState<string | undefined>(userByToken?.userName);
-    const [email, setEmail] = useState<string | undefined>(userByToken?.email);
-    const [dateOfBirth, setDateOfBirth] = useState<string | undefined>(userByToken?.dateOfBirth);
-    const [lastName, setLastName] = useState<string | undefined>(userByToken?.lastName);
-    const [firstName, setFirstName] = useState<string | undefined>(userByToken?.firstName);
-    const [phoneNumber, setPhoneNumber] = useState<string | undefined>(userByToken?.phoneNumber);
-    const [sex, setSex] = useState<string | undefined>(userByToken?.sex);
-    const [avatar, setAvatar] = useState<string | undefined | null>(userByToken?.avatar);
-    const [deliveryAddress, setDeliveryAddress] = useState<string|undefined>("")
-    const [purchaseAddress, setPurchaseAddress] = useState<string|undefined>("")
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        } else {
+            console.log("Không có thông tin user!");
+            alert("Không có thông tin user!");
+            navigate("/");
+        }
+    }, [isLoggedIn, navigate]);
 
-    useEffect(()=>{
-        setUserName(userByToken?.userName);
-        setEmail(userByToken?.email);
-        setDateOfBirth(userByToken?.dateOfBirth)
-        setLastName(userByToken?.lastName);
-        setFirstName(userByToken?.firstName);
-        setPhoneNumber(userByToken?.phoneNumber);
-        setSex(userByToken?.sex);
-        setAvatar(userByToken?.avatar);
-        setDeliveryAddress(userByToken?.deliveryAddress);
-        setPurchaseAddress(userByToken?.purchaseAddress);
-    },[userByToken])
+    useEffect(() => {
+        if (userByToken) {
+            setUserName(userByToken.userName);
+            setEmail(userByToken.email);
+            setDateOfBirth(userByToken.dateOfBirth);
+            setLastName(userByToken.lastName);
+            setFirstName(userByToken.firstName);
+            setPhoneNumber(userByToken.phoneNumber);
+            setSex(userByToken.sex);
+            setAvatar(userByToken.avatar);
+            setDeliveryAddress(userByToken.deliveryAddress);
+            setPurchaseAddress(userByToken.purchaseAddress);
+        }
+    }, [userByToken]);
 
-
-    const [errorDateOfBirth, setErrorDateOfBirth] = useState("")
-    const [errorPhoneNumber, setErrorPhoneNumber] = useState("")
-    const [notice,setNotice] = useState("");
-    const [hasFull, setHasFull] = useState(true);
-    const [hasCalled,setHasCalled] = useState(false)
-
+  
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setNotice("");
+
+        if (noAvatar) {
+            setAvatar(null);
+        }
 
         if (!email || !lastName || !firstName || !sex || !phoneNumber) {
             setNotice("Phải điền đủ thông tin");
             setHasFull(false);
             return;
         }
-
-        if (hasCalled) {
-            setNotice("Đang xử lý...");
-            setHasFull(false);
-            return;
-        }
-
+        
+        setNotice("");
         setErrorPhoneNumber("");
         setErrorDateOfBirth("");
-
-        
         const isPhoneNumberValid = !checkPhoneNumber(phoneNumber);
         if (isPhoneNumberValid) {
             try {
-                setHasCalled(true);
                 setIsLoading(true);
                 setNotice("Đang xử lý...");
                 setHasFull(false);
@@ -108,18 +106,17 @@ const UserInformation:React.FC=()=>{
                     dateOfBirth,
                     phoneNumber,
                     sex,
-                    avatar,
+                    avatar: noAvatar ? null : avatar,
                     deliveryAddress,
                     purchaseAddress
                 };
 
-                console.log("Request body: ", JSON.stringify(userInfo, null, 2));
-
-                const url: string = "http://localhost:8080/user/changeInfo";
+                const url = "http://localhost:8080/user/changeInfo";
                 const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
                         'Content-type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
                     },
                     body: JSON.stringify(userInfo)
                 });
@@ -128,63 +125,71 @@ const UserInformation:React.FC=()=>{
 
                 if (response.ok) {
                     setHasFull(true);
-                    setNotice("Đã thay đổi thông tin thành công!")
-                    const {jwt} = data;
-                    localStorage.setItem('accessToken',jwt);
                 } else {
                     setHasFull(false);
-                    setNotice(data.content || 'Không có nội dung');
                 }
+                setNotice(data.content);
             } catch (error) {
                 setNotice("Đã xảy ra lỗi trong quá trình cập nhật thông tin!");
                 console.log({ error });
                 setHasFull(false);
             } finally {
-                setHasCalled(false);
+                setIsLoading(false);
             }
         }
     };
 
-
-    // phone number
-    const checkPhoneNumber=(phoneNumber:string)=>{
+    const checkPhoneNumber = (phoneNumber: string) => {
         const phoneNumberRegex = /^0\d{9}$/;
 
-        if(!phoneNumberRegex.test(phoneNumber)){
-            setErrorPhoneNumber("Số điện thoại không đúng định dạng, phải có 10 chữ số và bắt đầu là 0")
-            return true
-        }else{
+        if (!phoneNumberRegex.test(phoneNumber)) {
+            setErrorPhoneNumber("Số điện thoại không đúng định dạng, phải có 10 chữ số và bắt đầu là 0");
+            return true;
+        } else {
             setErrorPhoneNumber("");
             return false;
         }
-    }
+    };
 
-    const handleChangePhoneNumber = (e:ChangeEvent<HTMLInputElement>)=>{
+    const handleChangePhoneNumber = (e: ChangeEvent<HTMLInputElement>) => {
         setErrorPhoneNumber("");
         setPhoneNumber(e.target.value);
 
-        return checkPhoneNumber(e.target.value)
-    }
+        return checkPhoneNumber(e.target.value);
+    };
 
-    // sex
-    const handleSexChange =(e:ChangeEvent<HTMLSelectElement>)=>{
+    const handleSexChange = (e: ChangeEvent<HTMLSelectElement>) => {
         setSex(e.target.value);
-    }
+    };
 
-    // avatar
-    const handleAvatarChange= async (e:ChangeEvent<HTMLInputElement>)=>{
-        if(e.target.files){
+    const handleAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
-            const base64File = await getBase64(file) ;
-            setAvatar(base64File);
-        }
-    } 
-    
+            const fileSizeInBytes = file.size;
+            const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
 
-    // date Of Birth
-    const checkDateOfBirthRegex=(dateOfBirth:string)=>{
-        const regex =  /\d{4}-\d{2}-\d{2}/;
-        if(!regex.test(dateOfBirth)){
+            if (fileSizeInBytes > maxSizeInBytes) {
+                alert("Dung lượng file ảnh không được vượt quá 1 MB");
+                return;
+            }
+
+            const base64 = await getBase64(file);
+            setAvatar(base64 as string);
+        }
+    };
+
+    const handleNoAvatar = () => {
+        setNoAvatar(!noAvatar);
+        if (!noAvatar) {
+            setAvatar(null);
+        } else {
+            setAvatar(userByToken?.avatar);
+        }
+    };
+
+    const checkDateOfBirthRegex = (dateOfBirth: string) => {
+        const regex = /\d{4}-\d{2}-\d{2}/;
+        if (!regex.test(dateOfBirth)) {
             setErrorDateOfBirth("Ngày sinh không đúng định dạng!");
             return true;
         }
@@ -193,134 +198,139 @@ const UserInformation:React.FC=()=>{
         const nowDate = new Date(dateOfBirth);
         const maxDate = new Date();
 
-        if(maxDate < nowDate || nowDate < minDate){
+        if (maxDate < nowDate || nowDate < minDate) {
             setErrorDateOfBirth("Ngày sinh không hợp lệ!");
             return true;
         }
 
-        setErrorDateOfBirth("")
+        setErrorDateOfBirth("");
         return false;
-    }
+    };
 
-    const handleDateOfBirthChange= async (e:ChangeEvent<HTMLInputElement>)=>{
+    const handleDateOfBirthChange = (e: ChangeEvent<HTMLInputElement>) => {
         setErrorDateOfBirth("");
         setDateOfBirth(e.target.value);
         return checkDateOfBirthRegex(e.target.value);
-    }
+    };
 
-    return(
+    return (
         <div className="container">
             <h1 className="mt-5 text-center">Chỉnh sửa thông tin</h1>
             <div className="mb-3 col-md-6 col-12 mx-auto">
-            {isLoading && <div className="text-center">Đang tải...</div>}
+                {isLoading && <div className="text-center">Đang tải...</div>}
                 <form onSubmit={handleSubmit} className="form">
                     <div className="mb-3">
                         <div className="row">
-                        <label htmlFor="email" className="form-label">Email<span style={{color:"red"}}> *</span> </label> 
+                            <label htmlFor="email" className="form-label">Email<span style={{ color: "red" }}> *</span> </label>
                             <div className="col-9">
-                                <input 
+                                <input
                                     type="text"
                                     id="email"
                                     className="form-control"
-                                    value={email} 
+                                    value={email}
                                     readOnly
                                 />
                             </div>
                             <div className="col-3">
                                 <Link to={"/user/changeEmail"}>
-                                   <i className="fas fa-edit btn btn-info">Thay đổi</i>                        
+                                    <i className="fas fa-edit btn btn-info">Thay đổi</i>
                                 </Link>
                             </div>
                         </div>
-
                     </div>
-            
+
                     <div className="mb-3">
-                        <label htmlFor="lastName" className="form-label">Họ đệm</label> <span style={{color:"red"}}> *</span>
-                        <input 
+                        <label htmlFor="lastName" className="form-label">Họ đệm</label> <span style={{ color: "red" }}> *</span>
+                        <input
                             type="text"
                             id="lastName"
                             className="form-control"
-                            value={lastName} 
+                            value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                         />
-                    </div> 
+                    </div>
                     <div className="mb-3">
-                    <label htmlFor="firstName" className="form-label">Tên</label> <span style={{color:"red"}}> *</span>
-                        <input  
+                        <label htmlFor="firstName" className="form-label">Tên</label> <span style={{ color: "red" }}> *</span>
+                        <input
                             type="text"
                             id="firstName"
                             className="form-control"
-                            value={firstName} 
+                            value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                         />
-                    </div> 
-                    
+                    </div>
+
                     <div className="mb-3">
-                      <label htmlFor="dateOfBirth" className="form-label">Ngày sinh</label> <span style={{color:"red"}}> *</span>
-                        <input  
+                        <label htmlFor="dateOfBirth" className="form-label">Ngày sinh</label> <span style={{ color: "red" }}> *</span>
+                        <input
                             type="date"
                             id="dateOfBirth"
                             className="form-control"
-                            value={dateOfBirth} 
+                            value={dateOfBirth}
                             onChange={handleDateOfBirthChange}
                         />
-                     <div style={{color:"red"}}>{errorDateOfBirth}</div>
-
-                    </div>  
+                        <div style={{ color: "red" }}>{errorDateOfBirth}</div>
+                    </div>
                     <div className="mb-3">
-                        <label htmlFor="phoneNumber" className="form-label">Số điện thoại</label> <span style={{color:"red"}}> *</span>
-                        <input 
+                        <label htmlFor="phoneNumber" className="form-label">Số điện thoại</label> <span style={{ color: "red" }}> *</span>
+                        <input
                             type="text"
                             id="phoneNumber"
                             className="form-control"
-                            value={phoneNumber} 
+                            value={phoneNumber}
                             onChange={handleChangePhoneNumber}
                         />
-                        <div style={{color:"red"}}>{errorPhoneNumber}</div>
+                        <div style={{ color: "red" }}>{errorPhoneNumber}</div>
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="sex" className="form-label">Giới tính</label> <span style={{color:"red"}}> *</span>
+                        <label htmlFor="sex" className="form-label">Giới tính</label> <span style={{ color: "red" }}> *</span>
                         <select className="form-control" id="sex" value={sex} onChange={handleSexChange}>
                             <option value="Nam">Nam</option>
                             <option value="Nữ">Nữ</option>
                         </select>
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="avatar" className="form-label">Avatar</label> <span style={{color:"red"}}> *</span>
-                        <input type="file" id="avatar"className="form-control" accept="image/**" onChange={handleAvatarChange}></input>
-                        <br/>
-                          {
-                            avatar ? (
-                                <img src={avatar} alt="Avatar" style={{width:"100px"}}/>
-                            ): userByToken && userByToken.avatar ? (
-                                <img src={userByToken.avatar} alt="Avatar" style={{width:"100px"}}/>
-                            ):(
-                                <div>Chưa có ảnh đại diện được chọn!</div>
-                            )
-                          }
-
-                    </div> 
-                    
-                    <div className="mb-3">
-                        <label htmlFor="deliveryAddress" className="form-label">Địa chỉ giao hàng</label> <span style={{color:"red"}}> *</span>
-                        <input id="deliveryAddress"className="form-control" value={deliveryAddress} onChange={e=>setDeliveryAddress(e.target.value)}></input>
-
+                        <label htmlFor="avatar" className="form-label">Avatar</label> <span style={{ color: "red" }}> *</span>
+                        <input type="file" id="avatar" className="form-control" accept="image/**" onChange={handleAvatarChange} ></input>
+                        <br />
+                        <div className="row">
+                            <div className="col-6">
+                                {
+                                    avatar ? (
+                                        <img src={avatar} alt="Avatar" style={{ width: "100px" }} />
+                                    ) : userByToken && userByToken.avatar ? (
+                                        <img src={userByToken.avatar} alt="Avatar" style={{ width: "100px" }} />
+                                    ) : (
+                                        <div>Chưa có ảnh đại diện được chọn!</div>
+                                    )
+                                }
+                            </div>
+                            <div className="col-6">
+                                <input type="checkbox" id="noAvatar" value="Không dùng avatar" onClick={handleNoAvatar}></input>
+                                <label htmlFor="noAvatar"> Không dùng avatar</label>
+                            </div>
+                        </div>
                     </div>
-                    
-                     <div className="mb-3">
-                        <label htmlFor="purchaseAddress" className="form-label">Địa chỉ mua hàng</label> <span style={{color:"red"}}> *</span>
-                        <input id="purchaseAddress"className="form-control" value={purchaseAddress} onChange={e=>setPurchaseAddress(e.target.value)}></input>
 
+                    <div className="mb-3">
+                        <label htmlFor="deliveryAddress" className="form-label">Địa chỉ giao hàng</label> <span style={{ color: "red" }}> *</span>
+                        <input id="deliveryAddress" className="form-control" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}></input>
+                    </div>
+
+                    <div className="mb-3">
+                        <label htmlFor="purchaseAddress" className="form-label">Địa chỉ mua hàng</label> <span style={{ color: "red" }}> *</span>
+                        <input id="purchaseAddress" className="form-control" value={purchaseAddress} onChange={e => setPurchaseAddress(e.target.value)}></input>
                     </div>
                     <div className="text-center">
-                        <button type="submit" className="btn btn-primary">Lưu</button> 
-                        <div style={{color: hasFull ? "green" : "red"}}>{notice}</div> 
+                        <button type="submit" className="btn btn-primary">
+                            Lưu
+                        </button>
+                        <div style={{ color: hasFull ? "green" : "red" }}>{notice}</div>
                     </div>
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default UserInformation;

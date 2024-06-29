@@ -1,10 +1,11 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useAuth } from "../utils/AuthContext";
+import { useAuth } from "../layouts/utils/AuthContext";
 import { getUsernameByToken } from "../layouts/utils/JwtService";
 import { useNavigate } from "react-router-dom";
 import { checkEmail } from "../api/AccountAPI";
 import UserModel from "../models/UserModel";
 import { getUserByUsername } from "../api/UserAPI";
+import CheckAndRefreshToken from "../layouts/utils/CheckTokenExpired";
 
 const ChangeEmail: React.FC = () => {
     const { isLoggedIn } = useAuth();
@@ -16,6 +17,8 @@ const ChangeEmail: React.FC = () => {
     const [emailValue, setEmailValue] = useState(""); // State để điều khiển giá trị email
     const [isLoading, setIsLoading] = useState(false); // State để theo dõi trạng thái loading
     const navigate = useNavigate();
+
+    CheckAndRefreshToken(); // kiểm tra token hết hạn 
 
     useEffect(() => {
         if (!isLoggedIn) {
@@ -77,11 +80,13 @@ const ChangeEmail: React.FC = () => {
                     newEmail,
                 };
 
+                console.log("USer: ",emailInfo)
                 const url: string = "http://localhost:8080/user/changeEmail";
                 const response = await fetch(url, {
                     method: "PUT",
                     headers: {
                         "Content-type": "application/json",
+                        'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
                     },
                     body: JSON.stringify(emailInfo),
                 });
@@ -89,11 +94,10 @@ const ChangeEmail: React.FC = () => {
                 console.log(response);
                 if (response.ok) {
                     setHasError(false);
-                    setNotice("Thay đổi email thành công!");
                 } else {
                     setHasError(true);
-                    setNotice(data.content || "Có lỗi xảy ra!");
                 }
+                setNotice(data.content)
             } catch (error) {
                 setNotice("Đã xảy ra lỗi trong quá trình cập nhật thông tin!");
                 console.log({ error });
