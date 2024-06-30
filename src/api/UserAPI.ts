@@ -5,23 +5,28 @@ export async function getUser(link: string): Promise<UserModel | null> {
     const response = await fetch(link);
 
     const userData = await response.json();
-    if (userData) {
-      return {
-        userId: userData.userId,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        userName: userData.userName,
-        dateOfBirth:userData.dateOfBirth,
-        phoneNumber: userData.phoneNumber,
-        password: userData.password,
-        sex: userData.sex,
-        email: userData.email,
-        deliveryAddress: userData.deliveryAddress,
-        purchaseAddress: userData.purchaseAddress,
-        avatar: userData.avatar
-      };
+
+    if (response.ok) {
+      if (userData) {
+        return {
+          userId: userData.userId,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          userName: userData.userName,
+          dateOfBirth: userData.dateOfBirth,
+          phoneNumber: userData.phoneNumber,
+          password: userData.password,
+          sex: userData.sex,
+          email: userData.email,
+          deliveryAddress: userData.deliveryAddress,
+          purchaseAddress: userData.purchaseAddress,
+          avatar: userData.avatar
+        };
+      } else {
+        throw new Error("Người dùng không tồn tại!");
+      }
     } else {
-      throw new Error("Người dùng không tồn tại!");
+      throw new Error(`Lỗi HTTP: ${response.status}`);
     }
   } catch (error) {
     console.error("Lỗi khi lấy thông tin người dùng:", error);

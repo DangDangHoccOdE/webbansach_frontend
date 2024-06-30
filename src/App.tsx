@@ -18,6 +18,8 @@ import UserInformation from "./user/UserInformation";
 import { AuthProvider } from "./layouts/utils/AuthContext";
 import ChangeEmail from "./user/ChangeEmail";
 import ConfirmChangeEmail from "./user/ConfirmChangeEmail";
+import ForgotPassword from "./user/ForgotPassword";
+import ConfirmForgotPassword from "./user/ConfirmForgotPassword";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -41,6 +43,8 @@ function App() {
               <Route path="/user/info" element={<UserInformation/>} />
               <Route path="/user/changeEmail" element={<ChangeEmail/>} />
               <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail/>}/>
+              <Route path="/user/forgotPassword" element={<ForgotPassword/>}/>
+              <Route path="/user/confirmForgotPassword/:username/:forgotPasswordCode" element={<ConfirmForgotPassword/>}/>
           </Routes>
           <Footer/>
           </AuthProvider>

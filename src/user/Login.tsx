@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../layouts/utils/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
@@ -113,9 +113,9 @@ const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
                             </div>
                             {notice && <div style={{color:isError?"red":"green"}}>{notice}</div>}
 
-                            <a className="small text-muted" href="#!">Forgot password?</a>
-                            <p className="mb-5 pb-lg-2" style={{color: "#393f81"}}>Don't have an account? <a href="#!"
-                                style={{color: "#393f81"}}>Register here</a></p>
+                            <Link className="small text-muted" to="/user/forgotPassword">Forgot password?</Link>
+                            <p className="mb-5 pb-lg-2" style={{color: "#393f81"}}>Don't have an account? <Link to="/register"
+                                style={{color: "#393f81"}}>Register here</Link></p>
                             <a href="#!" className="small text-muted">Terms of use.</a>
                             <a href="#!" className="small text-muted">Privacy policy</a>
                             </form>
