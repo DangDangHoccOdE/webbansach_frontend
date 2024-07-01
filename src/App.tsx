@@ -20,6 +20,7 @@ import ChangeEmail from "./user/ChangeEmail";
 import ConfirmChangeEmail from "./user/ConfirmChangeEmail";
 import ForgotPassword from "./user/ForgotPassword";
 import ConfirmForgotPassword from "./user/ConfirmForgotPassword";
+import EditBook_Admin from "./admin/EditBook";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -45,6 +46,7 @@ function App() {
               <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail/>}/>
               <Route path="/user/forgotPassword" element={<ForgotPassword/>}/>
               <Route path="/user/confirmForgotPassword/:username/:forgotPasswordCode" element={<ConfirmForgotPassword/>}/>
+              <Route path="/admin/editBook/:bookId" element={<EditBook_Admin/>}/>
           </Routes>
           <Footer/>
           </AuthProvider>

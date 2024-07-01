@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import BookModel from "../../../models/BookModel";
 import ImageModel from "../../../models/ImageModel";
-import { getOneImageByBook } from "../../../api/ImageAPI";
+import { getIconImageByBook } from "../../../api/ImageAPI";
 
 interface BookProps{
     book:BookModel;
@@ -15,7 +15,7 @@ const CarouselItem:React.FC<BookProps>=(props)=>{
     const [imageList,setImageList] = useState<ImageModel[]>([]);
 
     useEffect(()=>{
-        getOneImageByBook(bookId)
+      getIconImageByBook(bookId)
             .then(imageData => {
                     setImageList(imageData);
                     setLoadingData(false)}

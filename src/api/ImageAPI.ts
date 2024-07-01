@@ -21,13 +21,13 @@ export async function getImage(link:string) {
 }
 
 export async function getAllImagesByBook(bookId:number): Promise<ImageModel[]> {
-    const url:string = `http://localhost:8080/books/${bookId}/imageList`;
+    const url:string = `http://localhost:8080/images/search/findByBook_BookId?bookId=${bookId}&sort=imageId,desc`;
 
     return getImage(url);
 }
 
-export async function getOneImageByBook(bookId:number):Promise<ImageModel[]> {
-    const url:string= `http://localhost:8080/books/${bookId}/imageList?sort=imageId,,asc&pazge=0&size=1`   ;
+export async function getIconImageByBook(bookId:number):Promise<ImageModel[]> {
+    const url:string= `http://localhost:8080/books/${bookId}/imageList?sort=imageId,desc&page=0&size=1`   ;
     
     return getImage(url);
 }

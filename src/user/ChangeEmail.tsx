@@ -80,7 +80,6 @@ const ChangeEmail: React.FC = () => {
                     newEmail,
                 };
 
-                console.log("USer: ",emailInfo)
                 const url: string = "http://localhost:8080/user/changeEmail";
                 const response = await fetch(url, {
                     method: "PUT",

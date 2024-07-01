@@ -21,3 +21,8 @@ export async function getAllCategory():Promise<CategoryModel[]> {
     const url:string = "http://localhost:8080/category?sort=categoryId,asc";
     return getCategory(url);
 }
+
+export async function getCategoryByBook(bookId:number):Promise<CategoryModel[]> {
+    const url:string = `http://localhost:8080/books/${bookId}/categoryList?sort=categoryId,asc`;
+    return getCategory(url);
+}

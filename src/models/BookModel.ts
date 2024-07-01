@@ -2,11 +2,12 @@ class BookModel{
     bookId: number;
     bookName?:string ; // can be null
     price:number;
+    isbn:string;
     listedPrice:number;
     description:string;
     author:string;
     quantity:number;
-    averageRate?:number;
+    averageRate:number;
     soldQuantity:number;
     discountPercent:number;
     thumbnail?:string;
@@ -16,6 +17,7 @@ class BookModel{
     constructor(bookId: number,
         bookName:string ,
         price:number,
+        isbn:string,
         listedPrice:number,
         description:string,
         author:string,
@@ -29,6 +31,7 @@ class BookModel{
             this.bookId = bookId;
             this.bookName = bookName
             this.price = price;
+            this.isbn = isbn;
             this.listedPrice = listedPrice;
             this.description = description;
             this.author = author;
