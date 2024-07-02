@@ -1,12 +1,15 @@
 import CategoryModel from "../models/CategoryModel";
-import { my_request } from "./Request";
 
 export async function getCategory(link :string) {
     const result:CategoryModel[] = [];
 
-    const response = await my_request(link);
+    const response = await fetch(link);
+    if(!response.ok){
+        throw new Error(`Không thể truy cập ${link}!`);
+    }
 
-    const responseData = response._embedded.categories;
+    const data =await response.json();
+    const responseData = data._embedded.categories;
     for(const key in responseData){
         result.push({
             categoryId: responseData[key].categoryId,

@@ -1,13 +1,18 @@
 import RemarkModel from "../models/RemarkModel";
-import { my_request } from "./Request";
 
 export async function getRemarkByBook(link:string): Promise<RemarkModel[]> {
     const result:RemarkModel[] = [];
 
-    const response = await my_request(link);
+    const response = await fetch(link);
 
+    if(!response.ok){
+        throw new Error(`Không thể truy cập ${link}!`);
+    }
+
+    const data =await response.json();
     // get json book
-    const responseData = response._embedded.remarks;
+    const responseData = data._embedded.remarks;
+
 
     for(const key in responseData){
             result.push({

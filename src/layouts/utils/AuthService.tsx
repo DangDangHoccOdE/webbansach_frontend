@@ -1,0 +1,61 @@
+interface RequestInitWithRetry extends RequestInit{
+    _retry?:boolean;
+}
+let refreshTokenPromise:Promise<null|any>|null = null;
+
+const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise<Response>=>{
+    const accessToken = localStorage.getItem("accessToken");
+    const headers = {
+        ...options.headers,
+        Authorization: `Bearer ${accessToken}`,
+    };
+
+    const response = await fetch(url,{...options,headers});
+
+    if(response.status===401 && !options._retry){
+        if(!refreshTokenPromise){
+            refreshTokenPromise = refreshToken();
+        }
+        const data = await refreshTokenPromise;
+        const {accessTokenJwt,refreshTokenJwt} = data;
+        console.log(accessTokenJwt)
+        refreshTokenPromise = null;
+
+        if(data){
+            localStorage.setItem("accessToken",accessTokenJwt);
+            localStorage.setItem("refreshToken",refreshTokenJwt);
+            return fetchWithAuth(url, {...options,_retry:true});
+        }
+    }
+    return response;
+}
+
+ const refreshToken = async ():Promise<string|null> => {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    try {
+        const url = "http://localhost:8080/user/refreshToken";
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Refresh-Token":`Refresh-Token ${refreshToken}`,
+            },
+        });
+        console.log("Authorization",`Bearer ${refreshToken}`)
+        console.log("hello cu Dang!")
+        const text = await response.text();
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = JSON.parse(text);
+        return data;
+    } catch (error) {
+        console.log("Lỗi refreshToken:", error);
+        throw error;
+    }
+};
+
+export default fetchWithAuth;

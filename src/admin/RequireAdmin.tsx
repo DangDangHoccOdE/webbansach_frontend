@@ -15,13 +15,11 @@ const RequireAdmin= <P extends object>(WrappedComponent: React.ComponentType<P>)
 
         useEffect(()=>{
             const token = localStorage.getItem('accessToken');
-             console.log(token);
             if(!token){
                 navigate("/login");
                 return;
             }else{
                 const decodeToken = jwtDecode(token) as JwtPayload;
-                console.log("DecodeToken: ",decodeToken)
                 // get info
                 const isAdmin = decodeToken.isAdmin;
     

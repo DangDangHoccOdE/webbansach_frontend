@@ -4,7 +4,7 @@ import { getAllCategory } from "../api/CategoryAPI";
 import CategoryModel from "../models/CategoryModel";
 import NumberFormat from "../layouts/utils/NumberFormat";
 import getBase64 from "../layouts/utils/getBase64";
-import CheckAndRefreshToken from "../layouts/utils/CheckTokenExpired";
+import fetchWithAuth from "../layouts/utils/AuthService";
 
 const BookForm: React.FC = (props) => {
     const [thumbnail,setThumbnail] = useState<string|null>(null);
@@ -86,7 +86,6 @@ const BookForm: React.FC = (props) => {
         setCategoryIsChoose(selectOption);
     }   
 
-    CheckAndRefreshToken(); // kiểm tra token hết thì lấy token mới
     const [book, setBook] = useState({
         bookId:0,
         bookName:'',
@@ -124,7 +123,7 @@ const BookForm: React.FC = (props) => {
         event.preventDefault();
     
         const token = localStorage.getItem('accessToken')
-        const response = await fetch("http://localhost:8080/admin/addBook",
+        const response = await fetchWithAuth("http://localhost:8080/admin/addBook",
             {
                 method:"POST",
                 headers:{

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { checkEmail } from "../api/AccountAPI";
 import UserModel from "../models/UserModel";
 import { getUserByUsername } from "../api/UserAPI";
-import CheckAndRefreshToken from "../layouts/utils/CheckTokenExpired";
+import fetchWithAuth from "../layouts/utils/AuthService";
 
 const ChangeEmail: React.FC = () => {
     const { isLoggedIn } = useAuth();
@@ -17,8 +17,6 @@ const ChangeEmail: React.FC = () => {
     const [emailValue, setEmailValue] = useState(""); // State để điều khiển giá trị email
     const [isLoading, setIsLoading] = useState(false); // State để theo dõi trạng thái loading
     const navigate = useNavigate();
-
-    CheckAndRefreshToken(); // kiểm tra token hết hạn 
 
     useEffect(() => {
         if (!isLoggedIn) {
@@ -81,7 +79,7 @@ const ChangeEmail: React.FC = () => {
                 };
 
                 const url: string = "http://localhost:8080/user/changeEmail";
-                const response = await fetch(url, {
+                const response = await fetchWithAuth(url, {
                     method: "PUT",
                     headers: {
                         "Content-type": "application/json",

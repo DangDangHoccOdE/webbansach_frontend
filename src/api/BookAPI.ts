@@ -1,5 +1,4 @@
 import BookModel from "../models/BookModel";
-import { my_request } from "./Request";
 
 interface ResultInterface{
     resultBooks:BookModel[];
@@ -10,31 +9,36 @@ interface ResultInterface{
 export async function getBook(link:string):Promise<ResultInterface> {
     const result:BookModel[] = [];
 
-    const response = await my_request(link);
+    const response = await fetch(link);
 
-    // get json book
-    const responseData = response._embedded.books;
-
-    // total pages
-    const totalPages:number = response.page.totalPages;
-    const totalBooks:number = response.page.totalElements;
-
-    for(const key in responseData){
-            result.push({
-            bookId: responseData[key].bookId,
-            bookName: responseData[key].bookName,
-            price:responseData[key].price,
-            isbn:responseData[key].isbn,
-            listedPrice:responseData[key].listedPrice,
-            description:responseData[key].description,
-            author:responseData[key].author,
-            quantity:responseData[key].quantity,
-            averageRate:responseData[key].averageRate,
-            soldQuantity:responseData[key].soldQuantity,
-            discountPercent:responseData[key].discountPercent
-            });
+    if(!response.ok){
+        throw new Error(`Không thể truy cập ${link}!`);
     }
 
+         const data =await response.json();
+
+        // get json book
+        const responseData = data._embedded.books;
+
+        // total pages
+        const totalPages:number = data.page.totalPages;
+        const totalBooks:number = data.page.totalElements;
+
+        for(const key in responseData){
+                result.push({
+                bookId: responseData[key].bookId,
+                bookName: responseData[key].bookName,
+                price:responseData[key].price,
+                isbn:responseData[key].isbn,
+                listedPrice:responseData[key].listedPrice,
+                description:responseData[key].description,
+                author:responseData[key].author,
+                quantity:responseData[key].quantity,
+                averageRate:responseData[key].averageRate,
+                soldQuantity:responseData[key].soldQuantity,
+                discountPercent:responseData[key].discountPercent
+                });
+    }
     return {resultBooks:result, totalPages: totalPages , totalBooks: totalBooks};
 }
 

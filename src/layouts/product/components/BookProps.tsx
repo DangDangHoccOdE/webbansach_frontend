@@ -6,6 +6,7 @@ import { getAllImagesByBook } from "../../../api/ImageAPI";
 import { Link } from "react-router-dom";
 import renderRating from "../../utils/StarRate";
 import NumberFormat from "../../utils/NumberFormat";
+import isAdmin from "../../utils/CheckCurrentRole";
 
 interface BookPropsInterface{
     book: BookModel;
@@ -54,6 +55,9 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
         imageData = imageList[0].imageData;
     }
 
+    const handleDelete=()=>{
+        return alert("Bạn có chắc chắn muốn xóa!");
+    }
     return (
         <div className="col-md-3 mt-2">
             <div className="card">  
@@ -92,6 +96,15 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                             </button>
                         </div>
                     </div>
+                    {isAdmin() &&  
+                            (<div className="admin-button mt-2 text-end">
+                            <Link to={`/admin/editBook/${bookId}`} className="btn btn-primary me-2">
+                            <i className="fa fa-edit"></i></Link>
+                                 
+                            <Link to={`/admin/deleteBook/${bookId}`} className="btn btn-danger"  onClick={handleDelete}>
+                            <i className="fas fa-trash"></i></Link>
+                            </div>
+                            )}
                 </div>
             </div>
         </div>

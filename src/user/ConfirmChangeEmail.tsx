@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import fetchWithAuth from "../layouts/utils/AuthService";
 
 function ConfirmChangeEmail(){
     const {email,emailCode,newEmail} = useParams();
@@ -9,8 +10,13 @@ function ConfirmChangeEmail(){
         const confirm = async()=>{
             try{
                 const url = `http://localhost:8080/user/confirmChangeEmail?email=${email}&emailCode=${emailCode}&newEmail=${newEmail}`;
-                const response  = await fetch(url,
-                    {method:"GET"}
+                const response  = await fetchWithAuth(url,
+                    {method:"GET",
+                        headers: {
+                            "Content-type": "application/json",
+                            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+                        },
+                    }
                 );
 
                 const data = await response.json();

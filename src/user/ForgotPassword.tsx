@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { getUserByUsername } from "../api/UserAPI";
 import UserModel from "../models/UserModel";
-import CheckAndRefreshToken from "../layouts/utils/CheckTokenExpired";
 import MaskEmail from "../layouts/utils/MaskEmail";
 
 const ForgotPassword:React.FC=()=>{
@@ -9,8 +8,6 @@ const ForgotPassword:React.FC=()=>{
     const [notice,setNotice] = useState("")
     const [user,setUser] = useState<UserModel|null>(null)
     const [isError,setIsError]= useState(false)
-
-    CheckAndRefreshToken();
 
         useEffect(()=>{
             console.log(username)

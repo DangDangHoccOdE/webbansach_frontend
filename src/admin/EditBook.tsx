@@ -2,7 +2,6 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import RequireAdmin from "./RequireAdmin";
 import NumberFormat from "../layouts/utils/NumberFormat";
 import getBase64 from "../layouts/utils/getBase64";
-import CheckAndRefreshToken from "../layouts/utils/CheckTokenExpired";
 import BookModel from "../models/BookModel";
 import { getBookByBookId } from "../api/BookAPI";
 import { useNavigate, useParams } from "react-router-dom";
@@ -11,8 +10,9 @@ import { getAllCategory, getCategoryByBook } from "../api/CategoryAPI";
 import CategoryModel from "../models/CategoryModel";
 import ImageModel from "../models/ImageModel";
 import { getAllImagesByBook, getIconImageByBook } from "../api/ImageAPI";
+import fetchWithAuth from "../layouts/utils/AuthService";
 
-const EditBook: React.FC = (props) => {
+const EditBook: React.FC = () => {
     const isLoggedIn = useAuth();
     const navigate = useNavigate();
     const bookIdString = useParams();
@@ -21,11 +21,8 @@ const EditBook: React.FC = (props) => {
     const [iconImage,setIconImage] = useState<ImageModel[]>([])
     const [imageList,setImageList] = useState<ImageModel[]>([])
     const [categoryOfBook,setCategoryOfBook] = useState<CategoryModel[]>([])
+    const [isLoading,setIsLoading] = useState(true);
     let bookNumber = parseInt(bookIdString.bookId+'');
-
-    // useEffect(() => {
-    //     CheckAndRefreshToken();
-    // }, []); // kiểm tra token hết thì lấy token mới
 
     // gọi api lấy thông tin sách
     useEffect(()=>{
@@ -33,6 +30,7 @@ const EditBook: React.FC = (props) => {
             navigate("/login");
             return;
         }
+        setIsLoading(true);
         // gọi api lấy thông tin sách
           getBookByBookId((bookNumber))
             .then(
@@ -69,6 +67,7 @@ const EditBook: React.FC = (props) => {
                         alert("Lỗi không thể tải ảnh của sách!")
                         console.error({error});
         })
+        setIsLoading(false);
     },[bookNumber, isLoggedIn, navigate])
 
 
@@ -188,13 +187,17 @@ const EditBook: React.FC = (props) => {
         setCategoryList(selectOption);
     }   
 
+    // update price
+    useEffect(()=>{
+        const updatePrice = listedPrice*(1-discountPercent/100);
+        setPrice(updatePrice);
+    },[listedPrice,discountPercent])
+
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
-
-        CheckAndRefreshToken();
         const token = localStorage.getItem('accessToken')
         try{
-            const response = await fetch("http://localhost:8080/admin/editBook",
+            const response = await fetchWithAuth("http://localhost:8080/admin/editBook",
                 {
                     method:"PUT",
                     headers:{
@@ -219,24 +222,28 @@ const EditBook: React.FC = (props) => {
                 }
             )})
 
-                console.log(response)
                 if(response.ok){
                         alert("Đã sửa sách thành công!")
                             console.log("Đã sửa sách thành công!")
                         }else{
                             alert("Gặp lỗi trong quá trình sửa sách!")
                             console.log("Sách chưa được sửa!")
+                            setIsLoading(false);
                 }
              }
         catch(error){
             console.log("Lỗi sửa sách, ",error);
-        }   
+            setIsLoading(false);
+        }finally{
+            setIsLoading(false);
+        }
     }
     return( 
 <div className="container">
     <div className="row justify-content-center">
         <div className="col-md-8">
             <h1 className="text-center mb-4">Chỉnh sửa sách</h1>
+            {isLoading && <div className="text-center">Đang tải...</div>}
             <form onSubmit={handleSubmit} className="form">
                 <input type="number" id="bookId" value={bookId} hidden readOnly />
 

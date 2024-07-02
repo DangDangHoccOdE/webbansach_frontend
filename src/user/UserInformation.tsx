@@ -5,7 +5,7 @@ import { getUsernameByToken } from "../layouts/utils/JwtService";
 import UserModel from "../models/UserModel";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../layouts/utils/AuthContext";
-import CheckAndRefreshToken from "../layouts/utils/CheckTokenExpired";
+import fetchWithAuth from "../layouts/utils/AuthService";
 
 const UserInformation: React.FC = () => {
     const { isLoggedIn } = useAuth();
@@ -28,7 +28,6 @@ const UserInformation: React.FC = () => {
     const [notice, setNotice] = useState("");
     const [hasFull, setHasFull] = useState(true);
 
-    CheckAndRefreshToken(); // kiểm tra token hết nếu hết thì lấy access token mới
     useEffect(() => {
         if (!isLoggedIn) {
             navigate("/login");
@@ -59,6 +58,7 @@ const UserInformation: React.FC = () => {
     }, [isLoggedIn, navigate]);
 
     useEffect(() => {
+        setIsLoading(true);
         if (userByToken) {
             setUserName(userByToken.userName);
             setEmail(userByToken.email);
@@ -71,6 +71,7 @@ const UserInformation: React.FC = () => {
             setDeliveryAddress(userByToken.deliveryAddress);
             setPurchaseAddress(userByToken.purchaseAddress);
         }
+        setIsLoading(false);
     }, [userByToken]);
 
   
@@ -94,7 +95,6 @@ const UserInformation: React.FC = () => {
         const isPhoneNumberValid = !checkPhoneNumber(phoneNumber);
         if (isPhoneNumberValid) {
             try {
-                setIsLoading(true);
                 setNotice("Đang xử lý...");
                 setHasFull(false);
 
@@ -112,7 +112,7 @@ const UserInformation: React.FC = () => {
                 };
 
                 const url = "http://localhost:8080/user/changeInfo";
-                const response = await fetch(url, {
+                const response = await fetchWithAuth(url, {
                     method: 'PUT',
                     headers: {
                         'Content-type': 'application/json',
@@ -133,8 +133,6 @@ const UserInformation: React.FC = () => {
                 setNotice("Đã xảy ra lỗi trong quá trình cập nhật thông tin!");
                 console.log({ error });
                 setHasFull(false);
-            } finally {
-                setIsLoading(false);
             }
         }
     };
