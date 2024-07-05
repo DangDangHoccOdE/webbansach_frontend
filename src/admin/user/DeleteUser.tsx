@@ -9,7 +9,7 @@ const DeleteUser:React.FC=()=>{
     const navigate = useNavigate();
 
     const handleDelete= async()=>{
-        const url:string = `http://localhost:8080/user/deleteUser?username=${username}`;
+        const url:string = `http://localhost:8080/user/deleteUser/${username}`;
     try{
         const response = await fetchWithAuth(url,{
             method:"DELETE",
@@ -20,7 +20,6 @@ const DeleteUser:React.FC=()=>{
         })
 
         const data =await response.json();
-        console.log(data.content)
         if(response.ok){
             alert(data.content);
         }else{

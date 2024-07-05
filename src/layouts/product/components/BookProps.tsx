@@ -94,9 +94,9 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                             <span>{renderRating(props.book.averageRate?props.book.averageRate:0)} ({NumberFormat(props.book.soldQuantity)})</span>
                         </div>
                         <div className="col-6 text-end">
-                            <a href="#" className="btn btn-secondary btn-block me-2">
+                            <Link to={`/user/addWishList/${props.book.bookId}`} className="btn btn-secondary btn-block me-2">
                                 <i className="fas fa-heart"></i>
-                            </a>
+                            </Link>
                             <button className="btn btn-danger btn-block">
                                 <i className="fas fa-shopping-cart"></i>
                             </button>

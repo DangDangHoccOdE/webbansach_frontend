@@ -5,7 +5,6 @@ interface checkEmailProps{
 }
 export async function checkEmail(email:string,{setErrorEmail}:checkEmailProps):Promise<boolean> {
       const url = `http://localhost:8080/users/search/existsByEmail?email=${email}`;
-      console.log(email)
         const regexEmail = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gim;
         try{
             const response = await fetch(url);

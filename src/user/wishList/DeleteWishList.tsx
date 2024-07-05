@@ -1,25 +1,24 @@
 import { useNavigate, useParams } from "react-router-dom";
-import RequireAdmin from "../RequireAdmin"
+import ShowWishListByUser from "./ShowWishListByUser";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { useEffect } from "react";
-import HomePage from "../../layouts/homepage/HomePage";
 
-const DeleteBook:React.FC=()=>{
-    const {bookId} = useParams();
+const DeleteWishList=()=>{
+    const {wishListId} = useParams();
+    const {userId} = useParams();
     const navigate = useNavigate();
 
-    const handleDelete=async()=>{
+    const handleDelete= async()=>{
+        const url:string =`http://localhost:8080/wishList/deleteWishList/${wishListId}`;
         try{
-            const url:string=`http://localhost:8080/admin/deleteBook/${bookId}`;
             const response = await fetchWithAuth(url,{
                 method:"DELETE",
                 headers:{
                     "Content-type":"application/json",
-                    "Authorization":`Bearer ${localStorage.getItem("accessToken")}`
+                    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
                 }
-            }
-            )
-
+            });
+             
             const data =await response.json();
             console.log(data.content)
             if(response.ok){
@@ -30,7 +29,7 @@ const DeleteBook:React.FC=()=>{
         }catch(error){
             console.error({error});
         }finally{
-            navigate("/");
+            navigate(`/user/showWishList/${userId}`);
         }
     }
     useEffect(()=>{
@@ -38,10 +37,10 @@ const DeleteBook:React.FC=()=>{
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
+  
     return(
-        <HomePage bookNameFind=""/>
-    );
-    
+        <ShowWishListByUser/>
+    )
 }
- const DeleteBook_Admin = RequireAdmin(DeleteBook);
- export default DeleteBook_Admin;
+
+export default DeleteWishList;

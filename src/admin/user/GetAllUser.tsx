@@ -17,9 +17,10 @@ const GetAllUser:React.FC=()=>{
             try{
                 const result = await getAllUserByAdmin();
                 setAllUser(result);
-                if(result == null){
+                if(result!==null){
+                    if(result.length===0){
                     setNotice("Danh sách user trống!");
-                }else{
+                      }else{
                     const rolesMap:{[key:number]:string[]}={};
                     for(const user of result){
                         const userRoles = await getRoleByUser(user.userId);
@@ -28,6 +29,7 @@ const GetAllUser:React.FC=()=>{
                     setRoles(rolesMap)
                     console.log("Lấy thông tin user thành công!");
                 }
+            }
             }catch(error){
                 console.log("Lỗi lấy thông tin user! ",error);
                 setNotice("Lỗi khi lấy thông tin user !");
@@ -49,7 +51,7 @@ const GetAllUser:React.FC=()=>{
 
     return(
         <div className="container">
-            <h1 className="mt-5 text-center">Chỉnh sửa thông tin</h1>
+            <h1 className="mt-5 text-center">Thông tin người dùng</h1>
                  {isLoading ?( <div style={{ textAlign: "center" }}>Đang tải...</div>
             
         ):( <>
