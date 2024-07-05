@@ -1,15 +1,14 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import getBase64 from "../layouts/utils/getBase64";
 import { getUserByUsername } from "../api/UserAPI";
-import { getUsernameByToken } from "../layouts/utils/JwtService";
 import UserModel from "../models/UserModel";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../layouts/utils/AuthContext";
 import fetchWithAuth from "../layouts/utils/AuthService";
 
 const UserInformation: React.FC = () => {
     const { isLoggedIn } = useAuth();
-    const [userByToken, setUserByToken] = useState<UserModel | null>(null);
+    const [user, setUser] = useState<UserModel | null>(null);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [noAvatar, setNoAvatar] = useState(false);
@@ -27,6 +26,7 @@ const UserInformation: React.FC = () => {
     const [errorPhoneNumber, setErrorPhoneNumber] = useState("");
     const [notice, setNotice] = useState("");
     const [hasFull, setHasFull] = useState(true);
+    const {username} = useParams();
 
     useEffect(() => {
         if (!isLoggedIn) {
@@ -34,12 +34,11 @@ const UserInformation: React.FC = () => {
             return;
         }
 
-        const usernameByToken = getUsernameByToken();
-        if (usernameByToken !== undefined) {
+        if (username !== undefined) {
             setIsLoading(true);
-            getUserByUsername(usernameByToken)
+            getUserByUsername(username)
                 .then(user => {
-                    setUserByToken(user);
+                    setUser(user);
                 })
                 .catch(error => {
                     console.error("Lỗi load info user!", error);
@@ -55,24 +54,24 @@ const UserInformation: React.FC = () => {
             alert("Không có thông tin user!");
             navigate("/");
         }
-    }, [isLoggedIn, navigate]);
+    }, [isLoggedIn, navigate,username]);
 
     useEffect(() => {
         setIsLoading(true);
-        if (userByToken) {
-            setUserName(userByToken.userName);
-            setEmail(userByToken.email);
-            setDateOfBirth(userByToken.dateOfBirth);
-            setLastName(userByToken.lastName);
-            setFirstName(userByToken.firstName);
-            setPhoneNumber(userByToken.phoneNumber);
-            setSex(userByToken.sex);
-            setAvatar(userByToken.avatar);
-            setDeliveryAddress(userByToken.deliveryAddress);
-            setPurchaseAddress(userByToken.purchaseAddress);
+        if (user) {
+            setUserName(user.userName);
+            setEmail(user.email);
+            setDateOfBirth(user.dateOfBirth);
+            setLastName(user.lastName);
+            setFirstName(user.firstName);
+            setPhoneNumber(user.phoneNumber);
+            setSex(user.sex);
+            setAvatar(user.avatar);
+            setDeliveryAddress(user.deliveryAddress);
+            setPurchaseAddress(user.purchaseAddress);
         }
         setIsLoading(false);
-    }, [userByToken]);
+    }, [user]);
 
   
     const handleSubmit = async (e: React.FormEvent) => {
@@ -181,7 +180,7 @@ const UserInformation: React.FC = () => {
         if (!noAvatar) {
             setAvatar(null);
         } else {
-            setAvatar(userByToken?.avatar);
+            setAvatar(user?.avatar);
         }
     };
 
@@ -296,8 +295,8 @@ const UserInformation: React.FC = () => {
                                 {
                                     avatar ? (
                                         <img src={avatar} alt="Avatar" style={{ width: "100px" }} />
-                                    ) : userByToken && userByToken.avatar ? (
-                                        <img src={userByToken.avatar} alt="Avatar" style={{ width: "100px" }} />
+                                    ) : user && user.avatar ? (
+                                        <img src={user.avatar} alt="Avatar" style={{ width: "100px" }} />
                                     ) : (
                                         <div>Chưa có ảnh đại diện được chọn!</div>
                                     )

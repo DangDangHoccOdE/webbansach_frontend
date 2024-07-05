@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from "react-router-dom";
-import RequireAdmin from "./RequireAdmin"
-import fetchWithAuth from "../layouts/utils/AuthService";
+import RequireAdmin from "../RequireAdmin"
+import fetchWithAuth from "../../layouts/utils/AuthService";
 import { useEffect } from "react";
-import HomePage from "../layouts/homepage/HomePage";
+import HomePage from "../../layouts/homepage/HomePage";
 
 const DeleteBook:React.FC=()=>{
     const {bookId} = useParams();
@@ -21,7 +21,6 @@ const DeleteBook:React.FC=()=>{
             )
 
             const data =await response.json();
-            console.log(response)
             console.log(data.content)
             if(response.ok){
                 alert(data.content);

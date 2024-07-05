@@ -13,7 +13,6 @@ export async function checkEmail(email:string,{setErrorEmail}:checkEmailProps):P
             const data =await response.text();
 
             if(data==="true"){
-                console.log("Ton tai")
                 setErrorEmail("Tên email đã tồn tại!");
                 return false;
             }else if(!regexEmail.test(email)){

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import fetchWithAuth from "../layouts/utils/AuthService";
+import fetchWithAuth from "../../layouts/utils/AuthService";
 
 function ConfirmChangeEmail(){
     const {email,emailCode,newEmail} = useParams();

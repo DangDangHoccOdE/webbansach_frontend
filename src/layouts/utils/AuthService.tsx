@@ -18,7 +18,6 @@ const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise
         }
         const data = await refreshTokenPromise;
         const {accessTokenJwt,refreshTokenJwt} = data;
-        console.log(accessTokenJwt)
         refreshTokenPromise = null;
 
         if(data){

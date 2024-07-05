@@ -6,22 +6,24 @@ import Footer from "./layouts/header-footer/Footer";
 import HomePage from "./layouts/homepage/HomePage";
 import { BrowserRouter, Route, Routes, } from "react-router-dom";
 import About from "./layouts/about/About";
-import RegisterUser from "./user/RegisterUser";
 import ProductDetail from "./layouts/product/ProductDetail";
-import ResendActivationCode from "./user/ResendActivationCode";
-import ActivatedAccount from "./user/ActivatedAccount";
+import ResendActivationCode from "./user/account/ResendActivationCode";
 import Login from "./user/Login";
 import Test from "./user/Test";
-import BookForm_Admin from "./admin/BookForm";
 import Error_403 from "./layouts/utils/Error_403";
 import UserInformation from "./user/UserInformation";
 import { AuthProvider } from "./layouts/utils/AuthContext";
-import ChangeEmail from "./user/ChangeEmail";
-import ConfirmChangeEmail from "./user/ConfirmChangeEmail";
-import ForgotPassword from "./user/ForgotPassword";
-import ConfirmForgotPassword from "./user/ConfirmForgotPassword";
-import EditBook_Admin from "./admin/EditBook";
-import DeleteBook_Admin from "./admin/DeleteBook";
+import DeleteBook_Admin from "./admin/book/DeleteBook";
+import RegisterUser from "./user/account/RegisterUser";
+import ActivatedAccount from "./user/account/ActivatedAccount";
+import ChangeEmail from "./user/email/ChangeEmail";
+import ConfirmChangeEmail from "./user/email/ConfirmChangeEmail";
+import ForgotPassword from "./user/password/ForgotPassword";
+import ConfirmForgotPassword from "./user/password/ConfirmForgotPassword";
+import GetAllUser_Admin from "./admin/user/GetAllUser";
+import BookForm_Admin from "./admin/book/BookForm";
+import EditBook_Admin from "./admin/book/EditBook";
+import DeleteUser_Admin from "./admin/user/DeleteUser";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -42,13 +44,15 @@ function App() {
               <Route path="/user/test" element={<Test/>} />
               <Route path="/admin/addBook" element={<BookForm_Admin/>} />
               <Route path="/error-403" element={<Error_403/>} />
-              <Route path="/user/info" element={<UserInformation/>} />
+              <Route path="/user/info/:username" element={<UserInformation/>} />
               <Route path="/user/changeEmail" element={<ChangeEmail/>} />
               <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail/>}/>
               <Route path="/user/forgotPassword" element={<ForgotPassword/>}/>
               <Route path="/user/confirmForgotPassword/:username/:forgotPasswordCode" element={<ConfirmForgotPassword/>}/>
               <Route path="/admin/editBook/:bookId" element={<EditBook_Admin/>}/>
               <Route path="/admin/deleteBook/:bookId" element={<DeleteBook_Admin/>}/>
+              <Route path="/admin/getAllUsers/" element={<GetAllUser_Admin/>}/>
+              <Route path="/user/deleteUser/:username" element={<DeleteUser_Admin/>}/>
           </Routes>
           <Footer/>
           </AuthProvider>

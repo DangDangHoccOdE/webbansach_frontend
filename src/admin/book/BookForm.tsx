@@ -1,122 +1,21 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react"
-import RequireAdmin from "./RequireAdmin";
-import NumberFormat from "../layouts/utils/NumberFormat";
-import getBase64 from "../layouts/utils/getBase64";
-import BookModel from "../models/BookModel";
-import { getBookByBookId } from "../api/BookAPI";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../layouts/utils/AuthContext";
-import { getAllCategory, getCategoryByBook } from "../api/CategoryAPI";
-import CategoryModel from "../models/CategoryModel";
-import ImageModel from "../models/ImageModel";
-import { getAllImagesByBook, getIconImageByBook } from "../api/ImageAPI";
-import fetchWithAuth from "../layouts/utils/AuthService";
-
-const EditBook: React.FC = () => {
-    const isLoggedIn = useAuth();
-    const navigate = useNavigate();
-    const bookIdString = useParams();
-    const [editBook,setEditBook] = useState<BookModel|null>(null)
-    const [notice,setNotice] = useState("");
-    const [iconImage,setIconImage] = useState<ImageModel[]>([])
-    const [imageList,setImageList] = useState<ImageModel[]>([])
-    const [categoryOfBook,setCategoryOfBook] = useState<CategoryModel[]>([])
-    const [isLoading,setIsLoading] = useState(true);
-    let bookNumber = parseInt(bookIdString.bookId+'');
-
-    // gọi api lấy thông tin sách
-    useEffect(()=>{
-        if (!isLoggedIn) {
-            navigate("/login");
-            return;
-        }
-        setIsLoading(true);
-        // gọi api lấy thông tin sách
-          getBookByBookId((bookNumber))
-            .then(
-                 book=>setEditBook(book)
-            ).catch(
-                 error=>{
-                    alert("Lỗi không thể tìm thấy sách!");
-                    console.error({error});
-                 })
-
-        // gọi api lấy ảnh của sách
-        getAllImagesByBook(bookNumber)
-            .then(images=>setImageList(images)
-            ).catch(
-                error=>{
-                    alert("Lỗi không thể tải ảnh của sách!")
-                    console.error({error});
-                })
-
-        // Lấy ảnh chính của sách
-        getIconImageByBook(bookNumber)
-                .then(icon=>setIconImage(icon)
-                ).catch(
-                    error=>{
-                        alert("Lỗi không thể tải ảnh của sách!")
-                        console.error({error});
-        })
-
-        // lấy danh sách thể loại của 1 cuốn sách
-        getCategoryByBook(bookNumber)
-                .then(category=>setCategoryOfBook(category)
-                 ).catch(
-                    error=>{
-                        alert("Lỗi không thể tải ảnh của sách!")
-                        console.error({error});
-        })
-        setIsLoading(false);
-    },[bookNumber, isLoggedIn, navigate])
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react"
+import getBase64 from "../../layouts/utils/getBase64";
+import CategoryModel from "../../models/CategoryModel";
+import { getAllCategory } from "../../api/CategoryAPI";
+import fetchWithAuth from "../../layouts/utils/AuthService";
+import NumberFormat from "../../layouts/utils/NumberFormat";
+import RequireAdmin from "../RequireAdmin";
 
 
-    const [bookId,setBookId] = useState(0)
-    const [bookName,setBookName] = useState<string|undefined>("")
-    const [isbn,setIsbn] = useState("")
-    const [price,setPrice] = useState(0)
-    const [listedPrice,setListedPrice] = useState(0)
-    const [description,setDescription] = useState("")
-    const [discountPercent,setDiscountPercent] = useState(0)
-    const [quantity,setQuantity] = useState(0)
-    const [author,setAuthor] = useState("")
-    const [averageRate,setAverageRate] = useState<number>(0)
-    const [soldQuantity,setSoldQuantity] = useState(0)
-    const [thumbnail,setThumbnail] = useState<string|null|undefined>("");
-    const [relatedImage,setRelatedImage] = useState<string[]|null|undefined>(null)
-    const [categoryList,setCategoryList] = useState<string[]|undefined>([])
-
-    useEffect(()=>{
-        if(editBook){
-            setBookId(editBook.bookId);
-            setBookName(editBook.bookName);
-            setIsbn(editBook.isbn);
-            setPrice(editBook.price);
-            setListedPrice(editBook.listedPrice);
-            setDescription(editBook.description);
-            setDiscountPercent(editBook.discountPercent);
-            setQuantity(editBook.quantity);
-            setAuthor(editBook.author);
-            setAverageRate(editBook.averageRate);
-            setSoldQuantity(editBook.soldQuantity);
-
-            // handle Icon -> ''
-            iconImage.map(icon=>setThumbnail(icon.imageData))
-
-            // handle RelatedImage
-            const handleRelatedImage = imageList.map(images=>images.imageData).filter((image):image is string => image!==undefined).slice(1);
-            setRelatedImage(handleRelatedImage);
-
-            // handle CategoryList
-            const handleCategoryList = categoryOfBook.map(category=>category.categoryId.toString()).filter((category):category is string=>category!==undefined);
-            setCategoryList(handleCategoryList)
-        }
-    },[categoryOfBook, editBook, iconImage, imageList])
+const BookForm: React.FC = (props) => {
+    const [thumbnail,setThumbnail] = useState<string|null>(null);
+    const [relatedImage,setRelatedImage] = useState<string[]|null>([])
+    const [categoryIsChoose,setCategoryIsChoose] = useState<string[]>([])
 
     // averageRate
     const [noticeAverageRate,setNoticeAverageRate] = useState("");
     const handleAverageRate = ()=>{
-        if(averageRate < 0 || averageRate>5){
+        if(book.averageRate < 0 || book.averageRate>5){
             setNoticeAverageRate("Chỉ được đánh giá từ 1 đến 5 sao!")
             return;
         }else{
@@ -127,7 +26,7 @@ const EditBook: React.FC = () => {
     // discount percent
     const [noticeDiscountPercent,setNoticeDiscountPercent] = useState("");
     const handleDiscountPercent = () =>{
-        if(discountPercent<0 || discountPercent>100){
+        if(book.discountPercent<0 || book.discountPercent>100){
             setNoticeDiscountPercent("Chỉ được giảm giá từ 0 đến 100 phần trăm!")
             return;
         }else{
@@ -171,11 +70,12 @@ const EditBook: React.FC = () => {
     }
 
     // get list Category
-    const [categoryListAPI,setCategoryListAPI] = useState<CategoryModel[]>([])
+    const [categoryList,setCategoryList] = useState<CategoryModel[]>([])
+    const [notice,setNotice] = useState("")
     useEffect(()=>{
         getAllCategory()
             .then(
-                result=> setCategoryListAPI(result)
+                result=> setCategoryList(result)
             ).catch(
                 error=> {setNotice("Không thể lấy được danh sách thể loại!")
                         console.log("Không thể lấy được danh sách thể loại! ",error)
@@ -184,76 +84,101 @@ const EditBook: React.FC = () => {
 
     const handleCategoryChange=(e:ChangeEvent<HTMLSelectElement>)=>{
         const selectOption = Array.from(e.target.selectedOptions).map(otp=>otp.value)
-        setCategoryList(selectOption);
+        setCategoryIsChoose(selectOption);
     }   
 
-    // update price
-    useEffect(()=>{
-        const updatePrice = listedPrice*(1-discountPercent/100);
-        setPrice(updatePrice);
-    },[listedPrice,discountPercent])
+    const [book, setBook] = useState({
+        bookId:0,
+        bookName:'',
+        isbn:'',
+        price:0,
+        listedPrice:0,
+        description:'',
+        quantity:0,
+        author:'',
+        averageRate:0,
+        soldQuantity:0,
+        discountPercent:0,
+        thumbnail:thumbnail,
+        relatedImage:relatedImage,
+        categoryList:categoryIsChoose
+    })
 
+        useEffect(()=>{
+            const priceUpdate = book.listedPrice *  (1-book.discountPercent/100);
+            setBook(prevBook=>({...prevBook,price:priceUpdate,relatedImage,categoryList:categoryIsChoose,thumbnail}));
+        },[relatedImage,categoryIsChoose,thumbnail,book.listedPrice,book.discountPercent])
+
+        // Reset File
+        const inputFile = useRef<any>();
+        const inputMultipleFile = useRef<any>();
+        const handleReset = () => {
+            if (inputFile.current) {
+                inputFile.current.value = "";
+            }
+            if (inputMultipleFile.current) {
+                inputMultipleFile.current.value = "";
+            }
+        };
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
+    
         const token = localStorage.getItem('accessToken')
-        try{
-            const response = await fetchWithAuth("http://localhost:8080/admin/editBook",
-                {
-                    method:"PUT",
-                    headers:{
-                        "Content-type":"application/json",
-                        "Authorization":`Bearer ${token}`
-                    },
-                    body:JSON.stringify({
-                        bookId,
-                        bookName,
-                        isbn,
-                        price,
-                        listedPrice,
-                        description,
-                        quantity,
-                        author,
-                        averageRate,
-                        thumbnail,
-                        categoryList,
-                        discountPercent,
-                        relatedImage,
-                        soldQuantity
-                }
-            )})
-
-                if(response.ok){
-                        alert("Đã sửa sách thành công!")
-                            console.log("Đã sửa sách thành công!")
-                        }else{
-                            alert("Gặp lỗi trong quá trình sửa sách!")
-                            console.log("Sách chưa được sửa!")
-                            setIsLoading(false);
-                }
-             }
-        catch(error){
-            console.log("Lỗi sửa sách, ",error);
-            setIsLoading(false);
-        }finally{
-            setIsLoading(false);
-        }
+        const response = await fetchWithAuth("http://localhost:8080/admin/addBook",
+            {
+                method:"POST",
+                headers:{
+                    "Content-type":"application/json",
+                    "Authorization":`Bearer ${token}`
+                },
+                body:JSON.stringify(book)
+            }
+        )
+            console.log(response)
+            if(response.ok){
+                     alert("Đã thêm sách thành công!")
+                        setBook({
+                            bookId:0,
+                            bookName:'',
+                            isbn:'',
+                            price:0,
+                            listedPrice:0,
+                            description:'',
+                            quantity:0,
+                            author:'',
+                            averageRate:0,
+                            thumbnail:"",
+                            categoryList:[],
+                            discountPercent:0,
+                            relatedImage:[],
+                            soldQuantity:0,
+                        })
+                        setCategoryIsChoose([]);
+                        setRelatedImage([]);
+                        setThumbnail('');
+                        handleReset();
+                        console.log("Đã thêm sách thành công!")
+                    }else{
+                        alert("Gặp lỗi trong quá trình thêm sách!")
+                        console.log("Sách chưa được thêm!")
+            }
+        
     }
     return( 
 <div className="container">
     <div className="row justify-content-center">
         <div className="col-md-8">
-            <h1 className="text-center mb-4">Chỉnh sửa sách</h1>
-            {isLoading && <div className="text-center">Đang tải...</div>}
+            <h1 className="text-center mb-4">Thêm sách</h1>
             <form onSubmit={handleSubmit} className="form">
-                <input type="number" id="bookId" value={bookId} hidden readOnly />
+                <input type="number" id="bookId" value={book.bookId} hidden readOnly />
 
                 <div className="form-group">
                     <label htmlFor="bookName">Tên sách<span style={{color:"red"}}> *</span></label>
                     <input 
                         className="form-control"
                         type="text"
-                        value={bookName}
-                        onChange={e=>setBookName((e.target.value))}
+                        value={book.bookName}
+                        onChange={e => setBook({ ...book, bookName: e.target.value })}
                         required
                     />
                 </div>
@@ -263,8 +188,8 @@ const EditBook: React.FC = () => {
                     <input 
                         className="form-control"
                         type="text"
-                        value={isbn}
-                        onChange={e => setIsbn(e.target.value)}
+                        value={book.isbn}
+                        onChange={e => setBook({ ...book, isbn: e.target.value })}
                         required
                     />
                 </div>
@@ -274,8 +199,8 @@ const EditBook: React.FC = () => {
                     <div className="input-group">
                         <input 
                             className="form-control"
-                            type="number" value={listedPrice}
-                            onChange={e => setListedPrice(parseFloat(e.target.value))}
+                            type="number" value={book.listedPrice}
+                            onChange={e => setBook({ ...book, listedPrice: parseFloat(e.target.value) })}
                             min={0}
                             required
                         />
@@ -293,8 +218,8 @@ const EditBook: React.FC = () => {
                             min={0}
                             max={100}
                             type="number"
-                            value={discountPercent}
-                            onChange={e => setDiscountPercent(parseFloat(e.target.value))}
+                            value={book.discountPercent}
+                            onChange={e => setBook({ ...book, discountPercent: parseFloat(e.target.value) })}
                             onBlur={handleDiscountPercent}
                             required
                         />
@@ -308,7 +233,7 @@ const EditBook: React.FC = () => {
                 <div className="form-group">
                     <label htmlFor="price">Giá bán (Giá niêm yết * Phần trăm giảm giá)<span style={{color:"red"}}> *</span></label>
                     <div className="input-group">
-                         <span className="form-control">{NumberFormat(listedPrice*(1-discountPercent/100))}</span>
+                         <span className="form-control">{NumberFormat(book.listedPrice*(1-book.discountPercent/100))}</span>
                         <div className="input-group-append">
                             <span className="input-group-text">VND</span>
                         </div>
@@ -320,8 +245,8 @@ const EditBook: React.FC = () => {
                     <input 
                         className="form-control"
                         type="number"
-                        value={quantity}
-                        onChange={e => setQuantity(parseInt(e.target.value))}
+                        value={book.quantity}
+                        onChange={e => setBook({ ...book, quantity: parseInt(e.target.value) })}
                         required
                     />
                 </div>
@@ -331,8 +256,8 @@ const EditBook: React.FC = () => {
                     <input 
                         className="form-control"
                         type="number"
-                        value={soldQuantity}
-                        onChange={e => setSoldQuantity(parseInt(e.target.value))}
+                        value={book.soldQuantity}
+                        onChange={e => setBook({ ...book, soldQuantity: parseInt(e.target.value) })}
                         required
                     />
                 </div>
@@ -341,8 +266,8 @@ const EditBook: React.FC = () => {
                     <label htmlFor="description">Mô tả<span style={{color:"red"}}> *</span></label>
                     <textarea 
                         className="form-control"
-                        value={description}
-                        onChange={e => setDescription(e.target.value)}
+                        value={book.description}
+                        onChange={e => setBook({ ...book, description: e.target.value })}
                         required
                     />
                 </div>
@@ -352,8 +277,8 @@ const EditBook: React.FC = () => {
                     <input 
                         className="form-control"
                         type="text"
-                        value={author}
-                        onChange={e => setAuthor(e.target.value)}
+                        value={book.author}
+                        onChange={e => setBook({ ...book, author: e.target.value })}
                         required
                     />
                 </div>
@@ -365,8 +290,8 @@ const EditBook: React.FC = () => {
                         min={0}
                         max={5}
                         type="number"
-                        value={averageRate}
-                        onChange={e => setAverageRate(parseFloat(e.target.value))}
+                        value={book.averageRate}
+                        onChange={e => setBook({...book,averageRate:parseFloat(e.target.value)})}
                         onBlur={handleAverageRate}
                         step={0.1}
                         required
@@ -382,6 +307,7 @@ const EditBook: React.FC = () => {
                         className="form-control"
                         accept="image/**"
                         onChange={handleThumbnailChange}
+                        required ref={inputFile}
                     /><br/>
                     {thumbnail && <img src={thumbnail} alt="Ảnh chính" style={{width:"100px" , height:"100px"}}></img>}
                 </div>
@@ -395,6 +321,7 @@ const EditBook: React.FC = () => {
                         accept="image/**"
                         onChange={handleRelatedImagesChange}
                         multiple
+                        required ref={inputMultipleFile}
                     /><br/>
                     <div className="related-images-preview">
                         {relatedImage?.map((image,index)=>(
@@ -410,13 +337,13 @@ const EditBook: React.FC = () => {
                         id="categoryList"
                         multiple
                         className="form-control"
-                        value={categoryList}
+                        value={categoryIsChoose}
                         onChange={handleCategoryChange}
                         required
                     >
-                        {categoryListAPI.map(temp => 
-                            <option key={temp.categoryId} value={temp.categoryId} selected={categoryList?.includes(temp.categoryId.toString())}>
-                                {temp.categoryName} 
+                        {categoryList.map(temp => 
+                            <option key={temp.categoryId} value={temp.categoryId}>
+                                {temp.categoryName}
                             </option>
                         )}
                     </select>
@@ -433,5 +360,5 @@ const EditBook: React.FC = () => {
     )
 }
 
-const EditBook_Admin=RequireAdmin(EditBook)
-export default EditBook_Admin
+const BookForm_Admin=RequireAdmin(BookForm)
+export default BookForm_Admin

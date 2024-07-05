@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { getUserByUsername } from "../api/UserAPI";
-import UserModel from "../models/UserModel";
-import MaskEmail from "../layouts/utils/MaskEmail";
+import { getUserByUsername } from "../../api/UserAPI";
+import UserModel from "../../models/UserModel";
+import MaskEmail from "../../layouts/utils/MaskEmail";
+
 
 const ForgotPassword:React.FC=()=>{
     const [username,setUsername] = useState("");

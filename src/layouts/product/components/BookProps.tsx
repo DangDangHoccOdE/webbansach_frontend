@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import BookModel from "../../../models/BookModel";
 import ImageModel from "../../../models/ImageModel";
 import { getAllImagesByBook } from "../../../api/ImageAPI";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import renderRating from "../../utils/StarRate";
 import NumberFormat from "../../utils/NumberFormat";
 import isAdmin from "../../utils/CheckCurrentRole";
@@ -19,6 +19,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
     const [imageList,setImageList] = useState<ImageModel[]>([]);
     const [loadingData,setLoadingData] = useState(true);
     const [noticeError,setNoticeError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(()=>{
         getAllImagesByBook(bookId)
@@ -55,8 +56,13 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
         imageData = imageList[0].imageData;
     }
 
-    const handleDelete=()=>{
-        return alert("Bạn có chắc chắn muốn xóa!");
+     const handleDelete=()=>{
+            const userConfirmed = window.confirm("Bạn có chắc chắn muốn xóa!");
+            if(!userConfirmed){
+                return;
+            }else{
+                navigate(`/admin/deleteBook/${bookId}`);
+            }
     }
     return (
         <div className="col-md-3 mt-2">
@@ -101,8 +107,8 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                             <Link to={`/admin/editBook/${bookId}`} className="btn btn-primary me-2">
                             <i className="fa fa-edit"></i></Link>
                                  
-                            <Link to={`/admin/deleteBook/${bookId}`} className="btn btn-danger"  onClick={handleDelete}>
-                            <i className="fas fa-trash"></i></Link>
+                            <button className="btn btn-danger"  onClick={handleDelete}>
+                            <i className="fas fa-trash"></i></button>
                             </div>
                             )}
                 </div>

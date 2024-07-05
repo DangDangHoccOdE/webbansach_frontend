@@ -1,8 +1,8 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import {checkEmail , checkUserName } from "../api/AccountAPI";
-import getBase64 from "../layouts/utils/getBase64";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../layouts/utils/AuthContext";
+import { useAuth } from "../../layouts/utils/AuthContext";
+import { checkEmail, checkUserName } from "../../api/AccountAPI";
+import getBase64 from "../../layouts/utils/getBase64";
 
 function RegisterUser(){
     const {isLoggedIn} = useAuth();

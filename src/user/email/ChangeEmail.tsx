@@ -1,11 +1,11 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useAuth } from "../layouts/utils/AuthContext";
-import { getUsernameByToken } from "../layouts/utils/JwtService";
+import { useAuth } from "../../layouts/utils/AuthContext";
+import UserModel from "../../models/UserModel";
 import { useNavigate } from "react-router-dom";
-import { checkEmail } from "../api/AccountAPI";
-import UserModel from "../models/UserModel";
-import { getUserByUsername } from "../api/UserAPI";
-import fetchWithAuth from "../layouts/utils/AuthService";
+import { getUsernameByToken } from "../../layouts/utils/JwtService";
+import { getUserByUsername } from "../../api/UserAPI";
+import { checkEmail } from "../../api/AccountAPI";
+import fetchWithAuth from "../../layouts/utils/AuthService";
 
 const ChangeEmail: React.FC = () => {
     const { isLoggedIn } = useAuth();
