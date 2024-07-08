@@ -2,47 +2,43 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../layouts/utils/AuthContext";
 import { useEffect, useState } from "react";
 import WishListModel from "../../models/WishListModel";
-import { getIdWishListByUser, getWishListById } from "../../api/WishListAPI";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import { getWishListByUserId } from "../../api/WishListAPI";
+import fetchWithAuth from "../../layouts/utils/AuthService";
 
 const ShowWishListByUser=()=>{
     const {isLoggedIn} = useAuth();
     const navigate = useNavigate();
     const {userId} = useParams();
     const [isLoading,setIsLoading] = useState(false);
+    const [isError,setIsError] = useState(false);
     const [notice,setNotice] = useState("");
     const [wishList,setWishList] = useState<WishListModel[]|null>([]);
     const [showForm,setShowForm] = useState(false);
-    const [newWishListName,setNewWishListName] = useState("");
+    const [newWishListName,setNewWishListName] = useState("");    
+    const [errorNewWishList,setErrorNewWishList] = useState("");
+    const [isUpdate,setIsUpdate] = useState(false);;
+
 
     let userIdNumber = parseInt(userId+"");
     if(!isLoggedIn){
         navigate("/",{replace:true});
     }
 
-    useScrollToTop();
+    useScrollToTop(); // Cuộn lên đầu trang
     useEffect(()=>{
+
         const getIdWishList= async()=>{
             setIsLoading(true);
             try{
-                const idWishList = await getIdWishListByUser(userIdNumber);
-
-                if(idWishList){
-                const fetchWishListPromises = idWishList.map(async (id:any)=>{
-                    const response = await getWishListById(id);
-                    return response;
-                })
-
-                       const wishListResults = await Promise.all(fetchWishListPromises);
-                       // lọc các giá trị null và tạo danh sách wishList[]
-                       const validWishLists = wishListResults.filter(wishList=>wishList!==null) as WishListModel[]; 
-
-                       if(validWishLists.length===0){
-                        setNotice("Danh sách yêu thích hiện đang trống!");
-                       }
-                       setWishList(validWishLists);
+                const data = await getWishListByUserId(userIdNumber);
+                if (data === null) {
+                    navigate("/error-404");
                 }
-                
+                if (data?.length === 0) {
+                    setNotice("Danh sách yêu thích hiện đang trống!");
+                }
+                setWishList(data);
             }catch(error){
                 console.log("Không thể tải được danh sách yêu thích!");
                 navigate("/error-404");
@@ -52,7 +48,7 @@ const ShowWishListByUser=()=>{
         }
        
          getIdWishList();
-    },[userIdNumber,navigate]);
+    },[userIdNumber,navigate,isUpdate]);
 
     const handleDelete=(wishListId:number)=>{
         const userConfirmed = window.confirm("Bạn có chắc chắn muốn xóa!");
@@ -67,13 +63,44 @@ const ShowWishListByUser=()=>{
         setShowForm(!showForm);
     }
 
-    const handleFormSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
+    const handleFormSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
 
-        
-        setShowForm(false);
+        const url:string = `http://localhost:8080/wishList/addWishList`;
+
+        try{
+            const response =await fetchWithAuth(url,{
+                method:"POST",
+                headers:{
+                    "Content-type":"application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+                },
+                body:JSON.stringify({
+                    userId:userId,
+                    newWishListName:newWishListName
+                })
+            });
+     
+            const data = await response.json();
+            if(response.ok){
+                setErrorNewWishList(data.content);
+                setIsError(false)
+                setIsUpdate(prevState=>!prevState)
+            }else{
+                setErrorNewWishList(data.content || "Lỗi tạo danh sách yêu thích");
+                setIsError(true);
+            }
+    
+        }catch(error){
+            setErrorNewWishList("Lỗi tạo danh sách yêu thích!")
+            setIsError(true);
+            console.log({error})
+        }
+
         setNewWishListName("");
     }
+
+
     return(
         <div className="container">
             <h1 className="mt-5 text-center">Danh sách yêu thích</h1>
@@ -81,7 +108,7 @@ const ShowWishListByUser=()=>{
             
         ):( <>
             <div className="col">
-            <div className="col-8 text-end">
+            <div className="col-2">
                 <button className="btn btn-secondary fa fa-plus ms-auto" onClick={toggleForm}></button>  
             </div>
             {
@@ -105,11 +132,11 @@ const ShowWishListByUser=()=>{
                                         </div>
                                     </form>
                         </div>
+                        <div className="text-center" style={{color:isError?"red":"green"}}>{errorNewWishList}</div>
                     </div>
                 )
             }
                 <div className="d-flex justify-content-center">
-                <table className="table-responsive">
                 <table className="table table-striped table-hover">
                 <thead className="thead-light">
                         <tr>
@@ -125,7 +152,7 @@ const ShowWishListByUser=()=>{
                                 <th scope="row">{index}</th>
                                     <td>{wishList.wishListName}</td>
                                     <td style={{whiteSpace:"nowrap"}}>
-                                        <div className="admin-button mt-2 text-end">
+                                        <div className="admin-button mt-2">
                                             <Link to={`/wishList/editWishList/${wishList.wishListId}`} className="btn btn-primary me-2">
                                             <i className="fa fa-edit"></i></Link>
                                                 
@@ -138,7 +165,6 @@ const ShowWishListByUser=()=>{
                         }
                     
                     </tbody>
-                    </table>
                     </table>
                 </div>
             </div>
