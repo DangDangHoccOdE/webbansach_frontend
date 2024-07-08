@@ -2,7 +2,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../layouts/utils/AuthContext";
 import { useEffect, useState } from "react";
 import WishListModel from "../../models/WishListModel";
-import { getWishListByUser } from "../../api/WishListAPI";
+import { getIdWishListByUser, getWishListById } from "../../api/WishListAPI";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 const ShowWishListByUser=()=>{
     const {isLoggedIn} = useAuth();
@@ -19,27 +20,39 @@ const ShowWishListByUser=()=>{
         navigate("/",{replace:true});
     }
 
+    useScrollToTop();
     useEffect(()=>{
-        const getWishList= async()=>{
+        const getIdWishList= async()=>{
             setIsLoading(true);
             try{
-                const result = await getWishListByUser(userIdNumber);
-                setWishList(result);
-                if(result.length===0){
-                    setNotice("Danh sách yêu thích hiện đang trống!");
-                }else{
-                    console.log("Lấy danh sách yêu thích thành công!");
+                const idWishList = await getIdWishListByUser(userIdNumber);
+
+                if(idWishList){
+                const fetchWishListPromises = idWishList.map(async (id:any)=>{
+                    const response = await getWishListById(id);
+                    return response;
+                })
+
+                       const wishListResults = await Promise.all(fetchWishListPromises);
+                       // lọc các giá trị null và tạo danh sách wishList[]
+                       const validWishLists = wishListResults.filter(wishList=>wishList!==null) as WishListModel[]; 
+
+                       if(validWishLists.length===0){
+                        setNotice("Danh sách yêu thích hiện đang trống!");
+                       }
+                       setWishList(validWishLists);
                 }
+                
             }catch(error){
-                setNotice("Không thể tải được danh sách yêu thích!");
-                console.log({error});
+                console.log("Không thể tải được danh sách yêu thích!");
+                navigate("/error-404");
             }finally{
                 setIsLoading(false);
             }
         }
        
-        getWishList();
-    },[userIdNumber]);
+         getIdWishList();
+    },[userIdNumber,navigate]);
 
     const handleDelete=(wishListId:number)=>{
         const userConfirmed = window.confirm("Bạn có chắc chắn muốn xóa!");

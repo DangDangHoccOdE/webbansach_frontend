@@ -33,28 +33,27 @@ const UserInformation: React.FC = () => {
             navigate("/login");
             return;
         }
-
+    
         if (username !== undefined) {
             setIsLoading(true);
             getUserByUsername(username)
-                .then(user => {
-                    setUser(user);
+                .then(data => {
+                    if(data === null){
+                        navigate("/error-404");
+                    }
+                    setUser(data);
                 })
                 .catch(error => {
                     console.error("Lỗi load info user!", error);
-                    setNotice("Không thể load được thông tin user!");
-                    setHasFull(false);
-                    alert("Lỗi load info user!");
+                    navigate("/error-404");
                 })
                 .finally(() => {
                     setIsLoading(false);
                 });
         } else {
-            console.log("Không có thông tin user!");
-            alert("Không có thông tin user!");
-            navigate("/");
+            navigate("/error-404");
         }
-    }, [isLoggedIn, navigate,username]);
+    }, [isLoggedIn, navigate, username]);
 
     useEffect(() => {
         setIsLoading(true);

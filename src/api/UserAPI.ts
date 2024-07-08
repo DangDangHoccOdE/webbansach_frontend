@@ -3,7 +3,7 @@ import UserModel from "../models/UserModel";
 
 export async function getUser(link: string): Promise<UserModel | null> {
   try {
-    const response = await fetch(link);
+    const response = await fetchWithAuth(link);
 
     const userData = await response.json();
     console.log(userData)
@@ -41,8 +41,13 @@ export async function getUserByRemark(remarkId: number): Promise<UserModel | nul
     return getUser(url);
 }
 
+// export async function getUserByUsername(username: string): Promise<UserModel | null> {
+//   const url: string = `http://localhost:8080/users/search/findByUserName?userName=${username}`;
+//     return getUser(url);
+// }
+
 export async function getUserByUsername(username: string): Promise<UserModel | null> {
-  const url: string = `http://localhost:8080/users/search/findByUserName?userName=${username}`;
+  const url: string = `http://localhost:8080/user/findUserByUsername?username=${username}`;
     return getUser(url);
 }
 

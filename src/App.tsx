@@ -10,7 +10,6 @@ import ProductDetail from "./layouts/product/ProductDetail";
 import ResendActivationCode from "./user/account/ResendActivationCode";
 import Login from "./user/Login";
 import Test from "./user/Test";
-import Error_403 from "./layouts/utils/Error_403";
 import UserInformation from "./user/UserInformation";
 import { AuthProvider } from "./layouts/utils/AuthContext";
 import DeleteBook_Admin from "./admin/book/DeleteBook";
@@ -27,6 +26,8 @@ import DeleteUser_Admin from "./admin/user/DeleteUser";
 import AddWishList from "./user/wishList/AddWishList";
 import ShowWishListByUser from "./user/wishList/ShowWishListByUser";
 import DeleteWishList from "./user/wishList/DeleteWishList";
+import { Error403Page } from "./layouts/page/403Page";
+import { Error404Page } from "./layouts/page/404Page";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -46,7 +47,8 @@ function App() {
               <Route path="/login" element={ <Login/>}  />
               <Route path="/user/test" element={<Test/>} />
               <Route path="/admin/addBook" element={<BookForm_Admin/>} />
-              <Route path="/error-403" element={<Error_403/>} />
+              <Route path="/error-403" element={<Error403Page/>} />
+              <Route path="/error-404" element={<Error404Page/>} />
               <Route path="/user/info/:username" element={<UserInformation/>} />
               <Route path="/user/changeEmail" element={<ChangeEmail/>} />
               <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail/>}/>

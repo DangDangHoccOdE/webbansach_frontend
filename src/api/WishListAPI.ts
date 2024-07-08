@@ -1,25 +1,43 @@
 import fetchWithAuth from "../layouts/utils/AuthService";
 import WishListModel from "../models/WishListModel";
 
-export async function getWishListByUser(userId:number) {
-    const url:string = `http://localhost:8080/users/${userId}/wishList`;
+export async function getIdWishListByUser(userId:number) {
+    const url:string = `http://localhost:8080/wishList/showWishList/${userId}`;
 
-    const result:WishListModel[] = [];
     const response = await fetchWithAuth(url);
 
-    const data = await response.json();
     if(!response.ok){
         throw new Error(`Không thể truy cập ${url} !`);
     }
 
-    const responseData = data._embedded.wishLists;
+    const result:number[] = await response.json();
+    return result;
+}
 
-    for(const key in responseData){
-        result.push({
-            wishListId:responseData[key].wishListId,
-            wishListName:responseData[key].wishListName,
-        })
+export async function getWishListById(wishListId:number):Promise<WishListModel|null> {
+    const url:string = `http://localhost:8080/wish-list/${wishListId}`
+
+    try{
+        const response = await fetchWithAuth(url);
+
+        const data = await response.json();
+
+        if(!response.ok){
+            throw new Error(`Không thể truy cập ${url} !`);
+        }
+
+        if(data){
+            return{
+                wishListId:data.wishListId,
+                wishListName:data.wishListName
+            }
+        }else{
+            throw new Error("Danh sách yêu thích không tồn tại!");
+        }
+    }catch(error){
+        console.log("Lỗi tải danh sách yêu thích, ",{error});
+        return null;
     }
 
-    return result;
+
 }
