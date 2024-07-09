@@ -1,10 +1,12 @@
 class WishListModel{
     wishListId:number;
-    wishListName:string
+    wishListName:string;
+    quantity:number
 
-    constructor(wishListId:number,wishListName:string){
+    constructor(wishListId:number,wishListName:string,quantity:number){
         this.wishListId = wishListId;
-        this.wishListName = wishListName
+        this.wishListName = wishListName;
+        this.quantity=quantity
     }
 
 }

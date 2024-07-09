@@ -23,7 +23,6 @@ import GetAllUser_Admin from "./admin/user/GetAllUser";
 import BookForm_Admin from "./admin/book/BookForm";
 import EditBook_Admin from "./admin/book/EditBook";
 import DeleteUser_Admin from "./admin/user/DeleteUser";
-import AddWishList from "./user/wishList/AddWishList";
 import ShowWishListByUser from "./user/wishList/ShowWishListByUser";
 import DeleteWishList from "./user/wishList/DeleteWishList";
 import { Error403Page } from "./layouts/page/403Page";
@@ -58,7 +57,6 @@ function App() {
               <Route path="/admin/deleteBook/:bookId" element={<DeleteBook_Admin/>}/>
               <Route path="/admin/getAllUsers/" element={<GetAllUser_Admin/>}/>
               <Route path="/user/deleteUser/:username" element={<DeleteUser_Admin/>}/>
-              <Route path="/user/addWishList/:bookId" element={<AddWishList/>}/>
               <Route path="/user/showWishList/:userId" element={<ShowWishListByUser/>}/>
               <Route path="/wishList/deleteWishList/:wishListId/:userId" element={<DeleteWishList/>}/>
           </Routes>

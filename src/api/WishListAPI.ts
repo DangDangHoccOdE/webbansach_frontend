@@ -19,6 +19,7 @@ export async function getWishListByUserId(userId:number):Promise<WishListModel[]
                 result.push({
                     wishListId:responseData[key].wishListId,
                     wishListName:responseData[key].wishListName,
+                    quantity:responseData[key].quantity
                 })
             }
 

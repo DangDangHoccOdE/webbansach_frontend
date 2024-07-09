@@ -4,7 +4,6 @@ import { jwtDecode } from "jwt-decode";
 
 interface JwtPayload{
     isAdmin: boolean,
-    isStaff:boolean,
     isUser:boolean,
     
 }

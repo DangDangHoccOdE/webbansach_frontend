@@ -1,11 +1,10 @@
 import { jwtDecode } from 'jwt-decode';
-// interface JwtPayload {
-//     userId: string;
-//     enable: boolean;
-//     isAdmin: boolean;
-//     isStaff: boolean;
-//     isUser: boolean;
-// }
+interface JwtPayload {
+    userId: number;
+    enable: boolean;
+    isAdmin: boolean;
+    isUser: boolean;
+}
 
 export function isTokenExpired(token: string) {
     const decode = jwtDecode(token);
@@ -21,6 +20,13 @@ export function getUsernameByToken(){
     const dataToken = localStorage.getItem('accessToken')
     if(dataToken){
         return jwtDecode(dataToken).sub;
+    }
+}
+export function getUserIdByToken(){
+    const dataToken = localStorage.getItem('accessToken');
+    if(dataToken){
+        const userIdByToken = jwtDecode(dataToken) as JwtPayload;
+        return userIdByToken.userId
     }
 }
 

@@ -142,6 +142,7 @@ const ShowWishListByUser=()=>{
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Tên danh sách</th>
+                            <th scope="col">Số lượng</th>
                             <th scope="col">Tiện ích</th>
                         </tr>
                     </thead>
@@ -151,6 +152,7 @@ const ShowWishListByUser=()=>{
                                 <tr  key={index}>
                                 <th scope="row">{index}</th>
                                     <td>{wishList.wishListName}</td>
+                                    <td>{wishList.quantity}</td>
                                     <td style={{whiteSpace:"nowrap"}}>
                                         <div className="admin-button mt-2">
                                             <Link to={`/wishList/editWishList/${wishList.wishListId}`} className="btn btn-primary me-2">
