@@ -1,9 +1,10 @@
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react"
+import useScrollToTop from "../hooks/ScrollToTop";
 
 const Test = () =>{
     const [username,setUsername] = useState<string|null>(null);
-
+    useScrollToTop();
     useEffect(()=>{
         const token = localStorage.getItem("token");
         if(token){

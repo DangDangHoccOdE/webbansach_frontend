@@ -5,6 +5,7 @@ import WishListModel from "../../models/WishListModel";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import { getWishListByUserId } from "../../api/WishListAPI";
 import fetchWithAuth from "../../layouts/utils/AuthService";
+import AddAndChangeNameWishList from "./AddAndChangeNameWishList";
 
 const ShowWishListByUser=()=>{
     const {isLoggedIn} = useAuth();
@@ -68,36 +69,46 @@ const ShowWishListByUser=()=>{
 
         const url:string = `http://localhost:8080/wishList/addWishList`;
 
-        try{
-            const response =await fetchWithAuth(url,{
-                method:"POST",
-                headers:{
-                    "Content-type":"application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
-                },
-                body:JSON.stringify({
-                    userId:userId,
-                    newWishListName:newWishListName
-                })
-            });
+        // try{
+        //     const response =await fetchWithAuth(url,{
+        //         method:"POST",
+        //         headers:{
+        //             "Content-type":"application/json",
+        //             "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+        //         },
+        //         body:JSON.stringify({
+        //             userId:userId,
+        //             newWishListName:newWishListName
+        //         })
+        //     });
      
-            const data = await response.json();
-            if(response.ok){
-                setErrorNewWishList(data.content);
-                setIsError(false)
-                setIsUpdate(prevState=>!prevState)
-            }else{
-                setErrorNewWishList(data.content || "Lỗi tạo danh sách yêu thích");
-                setIsError(true);
-            }
+        //     const data = await response.json();
+        //     if(response.ok){
+        //         setErrorNewWishList(data.content);
+        //         setIsError(false)
+        //         setIsUpdate(prevState=>!prevState)
+        //     }else{
+        //         setErrorNewWishList(data.content || "Lỗi tạo danh sách yêu thích");
+        //         setIsError(true);
+        //     }
     
-        }catch(error){
-            setErrorNewWishList("Lỗi tạo danh sách yêu thích!")
-            setIsError(true);
-            console.log({error})
-        }
+        // }catch(error){
+        //     setErrorNewWishList("Lỗi tạo danh sách yêu thích!")
+        //     setIsError(true);
+        //     console.log({error})
+        // }
 
-        setNewWishListName("");
+        // setNewWishListName("");
+
+        <AddAndChangeNameWishList url={url}
+                                userId={userIdNumber}
+                                newWishListName={newWishListName}
+                                setIsUpdate={setIsUpdate}
+                                setErrorNewWishList={setErrorNewWishList}
+                                setIsError={setIsError}
+                                setNewWishListName={setNewWishListName}
+
+        />
     }
 
 

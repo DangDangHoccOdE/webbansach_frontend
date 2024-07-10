@@ -14,6 +14,7 @@ export async function getWishListByUserId(userId:number):Promise<WishListModel[]
         }
 
         const responseData = data.wishLists;
+ 
         if(data){
             for(const key in responseData){
                 result.push({
@@ -22,9 +23,38 @@ export async function getWishListByUserId(userId:number):Promise<WishListModel[]
                     quantity:responseData[key].quantity
                 })
             }
-
             return result;
         }else{
+            throw new Error("Danh sách yêu thích không tồn tại!");
+        }
+    }catch(error){
+        console.log("Lỗi tải danh sách yêu thích, ",{error});
+        return null;
+    }
+
+
+}
+
+export async function getWishListByWishListId(wishListId:number):Promise<WishListModel|null> {
+    const url:string = `http://localhost:8080/wish-list/${wishListId}`
+
+    try{
+        const response = await fetchWithAuth(url);
+        const data = await response.json();
+
+        if(!response.ok){
+            throw new Error(`Không thể truy cập ${url} !`);
+        }
+ 
+        if(data){
+          return({
+            wishListId:data.wishListId,
+            wishListName:data.wishListName,
+            quantity:data.quantity
+          })
+                
+            }
+        else{
             throw new Error("Danh sách yêu thích không tồn tại!");
         }
     }catch(error){

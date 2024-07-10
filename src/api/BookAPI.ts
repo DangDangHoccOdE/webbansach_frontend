@@ -91,7 +91,8 @@ export async function getBookByBookId(bookId:number): Promise<BookModel | null> 
                 quantity:bookData.quantity,
                 averageRate:bookData.averageRate,
                 soldQuantity:bookData.soldQuantity,
-                discountPercent:bookData.discountPercent
+                discountPercent:bookData.discountPercent,
+                
             }
         }else{
             throw new Error("Sách không tồn tại!")
@@ -104,4 +105,11 @@ export async function getBookByBookId(bookId:number): Promise<BookModel | null> 
 
 
     
+}
+
+
+export async function getBookListByWishList(wishListId:number,currentPage:number):Promise<ResultInterface> {
+    const link:string=`http://localhost:8080/books/search/findByWishLists_WishListId?wishListId=${wishListId}&page=${currentPage}&size=8`;
+
+    return getBook(link);
 }

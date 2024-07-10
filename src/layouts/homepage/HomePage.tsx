@@ -2,11 +2,13 @@ import Banner from "./components/Banner";
 import Carousel from "./components/Carousel";
 import ListProduct from "../product/ListProduct";
 import { useParams } from "react-router-dom";
+import useScrollToTop from "../../hooks/ScrollToTop";
 interface HomePageProps {
   bookNameFind: string;
 }
 
 function HomePage({ bookNameFind }: HomePageProps) {
+  useScrollToTop();
   const { categoryId } = useParams();
   let categoryNumber = 0;
 

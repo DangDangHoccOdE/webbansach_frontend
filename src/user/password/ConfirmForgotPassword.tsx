@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import FormForgotPassword from "./FormChangePassword";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 const ConfirmForgotPassword=()=>{
     const {username,forgotPasswordCode} = useParams();
     const [isError,setIsError] = useState(false)
     const [notice,setNotice] = useState("")
+    useScrollToTop();
 
     useEffect(()=>{
         const confirm = async()=>{

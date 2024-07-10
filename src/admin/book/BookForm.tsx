@@ -5,9 +5,11 @@ import { getAllCategory } from "../../api/CategoryAPI";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import RequireAdmin from "../RequireAdmin";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 
 const BookForm: React.FC = (props) => {
+    useScrollToTop();
     const [thumbnail,setThumbnail] = useState<string|null>(null);
     const [relatedImage,setRelatedImage] = useState<string[]|null>([])
     const [categoryIsChoose,setCategoryIsChoose] = useState<string[]>([])

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { getUserByRemark } from "../../../api/UserAPI";
 import UserModel from "../../../models/UserModel";
+import useScrollToTop from "../../../hooks/ScrollToTop";
 
 interface UserProps{
     remarkId:number;
@@ -15,7 +16,7 @@ const UserInfo: React.FC<UserProps> = (props) => {
     const [noticeError,setNoticeError] = useState(null);
     const [userInfo,setUserInfo] = useState<UserModel|null>(null);
 
-
+    useScrollToTop();
     useEffect(()=>{
         getUserByRemark(remarkId)
             .then(userData => {

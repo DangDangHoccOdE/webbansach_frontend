@@ -4,6 +4,7 @@ import { getAllUserByAdmin } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
 import { Link, useNavigate } from "react-router-dom";
 import { getRoleByUser } from "../../api/RoleApi";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 const GetAllUser:React.FC=()=>{
     const [isLoading,setIsLoading] = useState(false);
@@ -11,6 +12,7 @@ const GetAllUser:React.FC=()=>{
     const [allUser,setAllUser] = useState<UserModel[]|null>([]);
     const [roles,setRoles] = useState<{ [key:number]: string[]}>({});
     const navigate = useNavigate();
+    useScrollToTop();
     useEffect(()=>{
         const fetchData = async()=>{
             setIsLoading(true);

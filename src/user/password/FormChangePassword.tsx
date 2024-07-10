@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 const FormForgotPassword=()=>{
     const {username} = useParams();
@@ -9,6 +10,8 @@ const FormForgotPassword=()=>{
     const [errorDuplicatePassword,setErrorDuplicatePassword] = useState("")
     const [isError,setIsError] = useState(false);
     const [notice,setNotice] = useState("")
+
+    useScrollToTop()
 
   // password
   const checkPassword =  (password:string)=>{

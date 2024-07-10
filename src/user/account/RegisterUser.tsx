@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../layouts/utils/AuthContext";
 import { checkEmail, checkUserName } from "../../api/AccountAPI";
 import getBase64 from "../../layouts/utils/getBase64";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 function RegisterUser(){
     const {isLoggedIn} = useAuth();
@@ -33,6 +34,8 @@ function RegisterUser(){
     const [hasFull, setHasFull] = useState(true);
     const [hasCalled,setHasCalled] = useState(false)
 
+    useScrollToTop();
+    
     const handleSubmit = async(e:React.FormEvent) =>{
         e.preventDefault();
         setNotice("")

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ResendActivationCode from "./ResendActivationCode";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 function ActivatedAccount() {
   const { email, activationCode } = useParams();
   const [isActivated, setIsActivated] = useState(false);
   const [notice, setNotice] = useState("");
-
+  
+  useScrollToTop();
   useEffect(() => {
     const activatedAccount = async () => {
       try {

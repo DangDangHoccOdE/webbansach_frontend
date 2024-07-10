@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 function ResendActivationCode(){
     const {email} = useParams();
     const [notice,setNotice] = useState("");
     const [isSending,setIsSending] = useState(false);
     const [isError,setIsError] = useState(true);
+    useScrollToTop()
     
     const handleResendActivationCode=async ()=>{
         if(isSending || !email){

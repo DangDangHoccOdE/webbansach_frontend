@@ -3,6 +3,7 @@ import BookModel from "../../models/BookModel";
 import BookProps from "./components/BookProps";
 import { findBook, getAllBook } from "../../api/BookAPI";
 import { Pagination } from "../utils/Pagination";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 interface ListProductProps{
   bookNameFind : string;
@@ -16,6 +17,7 @@ function ListProduct({bookNameFind, categoryId} : ListProductProps){
   const [currentPage,setCurrentPage] = useState(1);
   const [totalPages,setTotalPages] = useState(0);
 
+  useScrollToTop();
   useEffect(() => {
     if(bookNameFind === '' && categoryId === 0 ){
       getAllBook(currentPage-1)

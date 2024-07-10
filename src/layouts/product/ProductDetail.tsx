@@ -7,9 +7,10 @@ import ProductImage from "./components/ProductImage";
 import RemarkProduct from "./components/RemarkProduct";
 import renderRating from "../utils/StarRate";
 import NumberFormat from "../utils/NumberFormat";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 const ProductDetail: React.FC = () => {
-
+    useScrollToTop();
     const {bookId} = useParams(); // Get bookId from url;
     let bookIdNumber = 0;
     try{

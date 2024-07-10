@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 function ConfirmChangeEmail(){
     const {email,emailCode,newEmail} = useParams();
     const [notice,setNotice] = useState("");
     const [hasDone,setHasDone] = useState(false);
+    
+    useScrollToTop();
     useEffect(()=>{
         const confirm = async()=>{
             try{

@@ -11,6 +11,7 @@ import getBase64 from "../../layouts/utils/getBase64";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import RequireAdmin from "../RequireAdmin";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 
 const EditBook: React.FC = () => {
@@ -19,11 +20,13 @@ const EditBook: React.FC = () => {
     const bookIdString = useParams();
     const [editBook,setEditBook] = useState<BookModel|null>(null)
     const [notice,setNotice] = useState("");
-    const [iconImage,setIconImage] = useState<ImageModel[]>([])
+    const [iconImage,setIconImage] = useState<ImageModel|null>(null)
     const [imageList,setImageList] = useState<ImageModel[]>([])
     const [categoryOfBook,setCategoryOfBook] = useState<CategoryModel[]>([])
     const [isLoading,setIsLoading] = useState(true);
     let bookNumber = parseInt(bookIdString.bookId+'');
+
+    useScrollToTop();
 
     // gọi api lấy thông tin sách
     useEffect(()=>{
@@ -102,7 +105,9 @@ const EditBook: React.FC = () => {
             setSoldQuantity(editBook.soldQuantity);
 
             // handle Icon -> ''
-            iconImage.map(icon=>setThumbnail(icon.imageData))
+            if(iconImage){
+                setThumbnail(iconImage.imageData)
+            }
 
             // handle RelatedImage
             const handleRelatedImage = imageList.map(images=>images.imageData).filter((image):image is string => image!==undefined).slice(1);

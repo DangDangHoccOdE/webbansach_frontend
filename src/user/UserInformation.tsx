@@ -5,6 +5,7 @@ import UserModel from "../models/UserModel";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../layouts/utils/AuthContext";
 import fetchWithAuth from "../layouts/utils/AuthService";
+import useScrollToTop from "../hooks/ScrollToTop";
 
 const UserInformation: React.FC = () => {
     const { isLoggedIn } = useAuth();
@@ -28,6 +29,8 @@ const UserInformation: React.FC = () => {
     const [hasFull, setHasFull] = useState(true);
     const {username} = useParams();
 
+    useScrollToTop();
+    
     useEffect(() => {
         if (!isLoggedIn) {
             navigate("/login");

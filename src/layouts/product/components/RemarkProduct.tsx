@@ -3,6 +3,7 @@ import RemarkModel from "../../../models/RemarkModel";
 import { getAllRemarkByBook } from "../../../api/RemarkAPI";
 import UserInfo from "./UserInfo";
 import renderRating from "../../utils/StarRate";
+import useScrollToTop from "../../../hooks/ScrollToTop";
 
 interface RemarkProductProps{
     bookId: number;
@@ -15,6 +16,7 @@ const RemarkProduct: React.FC<RemarkProductProps> = (props) => {
     const [loadingData,setLoadingData] = useState(true);
     const [noticeError,setNoticeError] = useState(null);
 
+    useScrollToTop();
     useEffect(()=>{
         getAllRemarkByBook(bookId)
             .then(remarkList => {

@@ -15,9 +15,7 @@ export async function getImage(link:string) {
     for(const key in responseData){
         result.push({
             imageId:responseData[key].imageId,
-            imageName:responseData[key].imageName,
             isIcon:responseData[key].isIcon,
-            link:responseData[key].link,
             imageData:responseData[key].imageData,
         });
     }
@@ -31,9 +29,23 @@ export async function getAllImagesByBook(bookId:number): Promise<ImageModel[]> {
     return getImage(url);
 }
 
-export async function getIconImageByBook(bookId:number):Promise<ImageModel[]> {
+export async function getIconImageByBook(bookId:number):Promise<ImageModel|null> {
     const url:string= `http://localhost:8080/images/search/findByBook_BookIdAndIsIcon?bookId=${bookId}&isIcon=true`   ;
-    
-    return getImage(url);
+
+    const response = await fetch(url);
+
+    if(!response.ok){
+        throw new Error(`Không thể truy cập ${url}!`);
+    }
+
+    const data = await response.json();
+    const responseData = data._embedded.images;
+
+    return({
+        imageId:responseData[0].imageId,
+        isIcon:responseData[0].isIcon,
+        imageData:responseData[0].imageData,
+    })
+       
 }
 

@@ -2,17 +2,19 @@ import { useEffect, useState } from "react";
 import BookModel from "../../../models/BookModel";
 import ImageModel from "../../../models/ImageModel";
 import { getIconImageByBook } from "../../../api/ImageAPI";
+import useScrollToTop from "../../../hooks/ScrollToTop";
 
 interface BookProps{
     book:BookModel;
 }
 
 const CarouselItem:React.FC<BookProps>=(props)=>{
+  useScrollToTop();
     const bookId = props.book.bookId;
 
     const [loadingData,setLoadingData] = useState(false);
     const [noticeError,setNoticeError] = useState(null);
-    const [imageList,setImageList] = useState<ImageModel[]>([]);
+    const [imageList,setImageList] = useState<ImageModel|null>(null);
 
     useEffect(()=>{
       getIconImageByBook(bookId)
@@ -35,8 +37,8 @@ const CarouselItem:React.FC<BookProps>=(props)=>{
       }
 
       let dataLink:string="";
-      if(imageList[0] && imageList[0].imageData){
-        dataLink= imageList[0].imageData;
+      if(imageList && imageList.imageData){
+        dataLink= imageList.imageData;
       }
     
 

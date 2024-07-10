@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import BookModel from "../../../models/BookModel";
 import { getThreeBooksLatest } from "../../../api/BookAPI";
 import CarouselItem from "./CarouselItem";
+import useScrollToTop from "../../../hooks/ScrollToTop";
 
 const Carousel=()=> {
+  useScrollToTop();
   const [loadingData, setLoadingData] = useState(true);
   const [noticeError, setNoticeError] = useState<string | null>(null);
   const [bookList, setBookList] = useState<BookModel[]>([]);

@@ -5,6 +5,7 @@ import ImageModel from "../../../models/ImageModel";
 import { getAllImagesByBook } from "../../../api/ImageAPI";
 import { Carousel } from "react-responsive-carousel";
 import 'react-responsive-carousel/lib/styles/carousel.min.css' // import css to carousel
+import useScrollToTop from "../../../hooks/ScrollToTop";
 
 interface ProductImageProps{
     bookId: number;
@@ -17,6 +18,7 @@ const ProductImage: React.FC<ProductImageProps> = (props) => {
     const [loadingData,setLoadingData] = useState(true);
     const [noticeError,setNoticeError] = useState(null);
 
+    useScrollToTop();
     useEffect(()=>{
         getAllImagesByBook(bookId)
             .then(imageList => {
@@ -53,7 +55,7 @@ const ProductImage: React.FC<ProductImageProps> = (props) => {
                     {
                         imageList.map((image,index)=>(
                             <div key={index}>
-                                <img src={image.imageData} alt={image.imageName} style={{maxWidth:'250px'}}></img>
+                                <img src={image.imageData} alt="Ảnh" style={{maxWidth:'250px'}}></img>
                             </div>
                         ))
                     }

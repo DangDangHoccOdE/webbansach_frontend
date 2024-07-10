@@ -6,6 +6,7 @@ import { getUsernameByToken } from "../../layouts/utils/JwtService";
 import { getUserByUsername } from "../../api/UserAPI";
 import { checkEmail } from "../../api/AccountAPI";
 import fetchWithAuth from "../../layouts/utils/AuthService";
+import useScrollToTop from "../../hooks/ScrollToTop";
 
 const ChangeEmail: React.FC = () => {
     const { isLoggedIn } = useAuth();
@@ -18,6 +19,7 @@ const ChangeEmail: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false); // State để theo dõi trạng thái loading
     const navigate = useNavigate();
 
+    useScrollToTop()
     useEffect(() => {
         if (!isLoggedIn) {
             navigate("/login");

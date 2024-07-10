@@ -1,6 +1,8 @@
 import React from "react";
+import useScrollToTop from "../../../hooks/ScrollToTop";
 
 function Banner() {
+  useScrollToTop();
   return (
     <div className="p-2 mb-2 bg-dark">
       <div
