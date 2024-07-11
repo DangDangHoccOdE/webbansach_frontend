@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import BookModel from "../../models/BookModel";
@@ -8,6 +8,7 @@ import { getWishListByWishListId } from "../../api/WishListAPI";
 import ImageModel from "../../models/ImageModel";
 import { getIconImageByBook } from "../../api/ImageAPI";
 import { Pagination } from "../../layouts/utils/Pagination";
+import fetchWithAuth from "../../layouts/utils/AuthService";
 
 const EditWishList=()=>{
     useScrollToTop();
@@ -25,6 +26,7 @@ const EditWishList=()=>{
     const [newWishListName,setNewWishListName] = useState("");    
     const [errorNewWishList,setErrorNewWishList] = useState("");
     const [isError,setIsError] = useState(false);
+    const [isUpdate,setIsUpdate] = useState(false)
 
     const wishListIdNumber = parseInt(wishListId+"");
 
@@ -72,7 +74,7 @@ const EditWishList=()=>{
 
         fetchBookListData();
         getWishListById();
-    },[navigate,wishListIdNumber,currentPage])
+    },[navigate,wishListIdNumber,currentPage,isUpdate])
     
     useEffect(()=>{
         const getAllIconImage = async()=>{
@@ -92,15 +94,53 @@ const EditWishList=()=>{
     },[bookList])
 
     const handleDelete=(bookId:number)=>{
-
+        const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa!");
+        if(!userConfirm){
+            return;
+        }else{
+            navigate(`/wishList/deleteBookOfWishList/${bookId}/${wishListIdNumber}`)
+        }
     }
 
     const pagination=(currentPage:number)=>{
         setCurrentPage(currentPage);
     }
 
-    const handleFormSubmit=()=>{
+    const handleFormSubmit=async(e:FormEvent)=>{
+        e.preventDefault();
 
+        const url:string = `http://localhost:8080/wishList/editWishListName`;
+
+        try{
+            const response =await fetchWithAuth(url,{
+                method:"PUT",
+                headers:{
+                    "Content-type":"application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+                },
+                body:JSON.stringify({
+                    wishListId:wishListIdNumber,
+                    newWishListName:newWishListName
+                })
+            });
+     
+            const data = await response.json();
+            if(response.ok){
+                setErrorNewWishList(data.content);
+                setIsError(false)
+                setIsUpdate(prevState=>!prevState)
+            }else{
+                setErrorNewWishList(data.content || "Lỗi đổi tên danh sách yêu thích");
+                setIsError(true);
+            }
+    
+        }catch(error){
+            setErrorNewWishList("Lỗi đổi tên danh sách yêu thích!")
+            setIsError(true);
+            console.log({error})
+        }
+
+        setNewWishListName("");
     }
 
     const toggleForm=()=>{
@@ -112,7 +152,7 @@ const EditWishList=()=>{
         <div className="container">
                 <h2 className="text-center mt-2">{wishList?.wishListName}</h2>
                 {isLoading && <p className="text-center">Đang tải...</p>}
-                    <div className="col-2">
+                    <div className="col-3">
                         <button className="btn btn-secondary ms-auto" onClick={toggleForm}>Đổi tên danh sách yêu thích</button>  
                     </div>
                 {

@@ -28,6 +28,7 @@ import DeleteWishList from "./user/wishList/DeleteWishList";
 import { Error403Page } from "./layouts/page/403Page";
 import { Error404Page } from "./layouts/page/404Page";
 import EditWishList from "./user/wishList/EditWishList";
+import DeleteBookOfWishList from "./user/wishList/DeleteBookOfWishList";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -61,6 +62,7 @@ function App() {
               <Route path="/user/showWishList/:userId" element={<ShowWishListByUser/>}/>
               <Route path="/wishList/deleteWishList/:wishListId/:userId" element={<DeleteWishList/>}/>
               <Route path="/wishList/editWishList/:wishListId" element={<EditWishList/>}/>
+              <Route path="/wishList/deleteBookOfWishList/:bookId/:wishListIdNumber" element={<DeleteBookOfWishList/>}/>
           </Routes>
           <Footer/>
           </AuthProvider>
