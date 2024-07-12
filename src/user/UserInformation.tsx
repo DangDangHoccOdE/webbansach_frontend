@@ -33,7 +33,8 @@ const UserInformation: React.FC = () => {
     
     useEffect(() => {
         if (!isLoggedIn) {
-            navigate("/login");
+            alert("Bạn phải đăng nhập để tiếp tục")
+            navigate("/")
             return;
         }
     
@@ -212,7 +213,11 @@ const UserInformation: React.FC = () => {
         return checkDateOfBirthRegex(e.target.value);
     };
 
-    return (
+    if(!isLoggedIn){
+        return null;
+    }
+
+    return ( 
         <div className="container">
             <h1 className="mt-5 text-center">Chỉnh sửa thông tin</h1>
             <div className="mb-3 col-md-6 col-12 mx-auto">
@@ -328,7 +333,7 @@ const UserInformation: React.FC = () => {
                     </div>
                 </form>
             </div>
-        </div>
+        </div> 
     );
 };
 

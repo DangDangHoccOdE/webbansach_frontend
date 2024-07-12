@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import BookModel from "../../models/BookModel";
 import { getBookListByWishList } from "../../api/BookAPI";
@@ -9,6 +9,9 @@ import ImageModel from "../../models/ImageModel";
 import { getIconImageByBook } from "../../api/ImageAPI";
 import { Pagination } from "../../layouts/utils/Pagination";
 import fetchWithAuth from "../../layouts/utils/AuthService";
+import { useAuth } from "../../layouts/utils/AuthContext";
+import NumberFormat from "../../layouts/utils/NumberFormat";
+import renderRating from "../../layouts/utils/StarRate";
 
 const EditWishList=()=>{
     useScrollToTop();
@@ -27,11 +30,18 @@ const EditWishList=()=>{
     const [errorNewWishList,setErrorNewWishList] = useState("");
     const [isError,setIsError] = useState(false);
     const [isUpdate,setIsUpdate] = useState(false)
+    const {isLoggedIn} = useAuth();
 
     const wishListIdNumber = parseInt(wishListId+"");
 
     useEffect(()=>{
-        const fetchBookListData = async()=>{
+        if (!isLoggedIn) {  // Kiểm tra người dùng đã đăng nhập chưa
+            alert("Bạn phải đăng nhập để tiếp tục")
+            navigate("/")
+            return;
+        }
+
+        const fetchBookListData = async()=>{ // lấy ra ds sách từ wishList
             try{
                 setIsLoading(true);
                 const getBookList = await getBookListByWishList(wishListIdNumber,currentPage-1);
@@ -55,7 +65,7 @@ const EditWishList=()=>{
             
         }
 
-        const getWishListById= async()=>{
+        const getWishListById= async()=>{  // Lấy ra wishList từ id
             setIsLoading(true);
             try{
                 const data = await getWishListByWishListId(wishListIdNumber);
@@ -74,10 +84,10 @@ const EditWishList=()=>{
 
         fetchBookListData();
         getWishListById();
-    },[navigate,wishListIdNumber,currentPage,isUpdate])
+    },[navigate, wishListIdNumber, currentPage, isUpdate, isLoggedIn])
     
     useEffect(()=>{
-        const getAllIconImage = async()=>{
+        const getAllIconImage = async()=>{  // Lấy ra icon của bookList
             if(bookList.length>0){
                 const fetchImageList = bookList.map(async (book:BookModel)=>{
                      const response = await getIconImageByBook(book.bookId);
@@ -93,7 +103,7 @@ const EditWishList=()=>{
         getAllIconImage();
     },[bookList])
 
-    const handleDelete=(bookId:number)=>{
+    const handleDelete=(bookId:number)=>{  // xóa sách trong wishList
         const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa!");
         if(!userConfirm){
             return;
@@ -102,7 +112,7 @@ const EditWishList=()=>{
         }
     }
 
-    const pagination=(currentPage:number)=>{
+    const pagination=(currentPage:number)=>{ // phân trang
         setCurrentPage(currentPage);
     }
 
@@ -147,6 +157,9 @@ const EditWishList=()=>{
         setShowForm(!showForm);
     }
 
+    if(!isLoggedIn){
+        return null;
+    }
 
     return (
         <div className="container">
@@ -198,12 +211,15 @@ const EditWishList=()=>{
                             bookList?.map((book,index)=>(
                                 <tr  key={index}>
                                 <th scope="row">{index}</th>
-                                    <td>{book.bookName}</td>
-                                    <td>
-                                       {imageList[index] && <img src={imageList[index].imageData} alt="Ảnh"  style={{ width: "100px" }}></img>} 
+                              <td>
+                                 <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' ,color:"black"}}> {book.bookName}</Link>     
+                              </td>
+                                    <td> <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' }}>
+                                       {imageList[index] ? <img src={imageList[index].imageData} alt="Ảnh"  style={{ width: "100px" }}></img>: "Sách chưa có ảnh"}
+                                       </Link>
                                     </td>
-                                    <td>{book.averageRate}</td>
-                                    <td>{book.price}</td>
+                                    <td>{renderRating(book.averageRate)}</td>
+                                    <td>{NumberFormat(book.price)} đ</td>
                                     <td>{book.author}</td>
                                     <td>
                                         <div className="mt-2">

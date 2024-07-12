@@ -17,7 +17,7 @@ useEffect(() => {
     if(isLoggedIn){
         navigate("/",{replace:true});
     }
-});
+},[isLoggedIn, navigate]);
 
 const handleLogin=async (e:React.FormEvent) =>{
     e.preventDefault();
@@ -25,7 +25,6 @@ const handleLogin=async (e:React.FormEvent) =>{
         username:username,
         password:password
     }
-    console.log(username)
 
     try{
         const url:string = "http://localhost:8080/user/login";
@@ -56,8 +55,8 @@ const handleLogin=async (e:React.FormEvent) =>{
             }
             setTimeout(() => {
                 navigate('/',{replace:true});
+                setLoggedIn(true)
               }, 2000);
-              setLoggedIn(true)
 
         }else{
             setNotice(data.content)
@@ -101,7 +100,7 @@ const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
                             <h5 className="fw-normal mb-3 pb-3" style={{letterSpacing: "1px"}}>Sign into your account</h5>
 
                             <div data-mdb-input-init className="form-outline mb-4">
-                                <input type="email" id="form2Example17" className="form-control form-control-lg" value={username} onChange={(e) => setUsername(e.target.value)} onKeyDown={handleEnter} />
+                                <input type="email" id="form2Example17" className="form-control form-control-lg" value={username} onChange={(e) => setUsername(e.target.value)} onKeyDown={handleEnter}/>
                                 <label className="form-label" htmlFor="form2Example17">User name</label>
                             </div>
 
@@ -111,7 +110,7 @@ const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
                             </div>
 
                             <div className="pt-1 mb-4">
-                                <button data-mdb-button-init data-mdb-ripple-init className="btn btn-dark btn-lg btn-block" type="submit" onClick={handleLogin} >Login</button>
+                                <button data-mdb-button-init data-mdb-ripple-init className="btn btn-dark btn-lg btn-block" type="submit" onClick={handleLogin}>Login</button>
                             </div>
                             {notice && <div style={{color:isError?"red":"green"}}>{notice}</div>}
 

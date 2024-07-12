@@ -48,14 +48,19 @@ const ProductImage: React.FC<ProductImageProps> = (props) => {
         )
     }
 
+    // tách imageList thành 2 phần rồi gộp lại
+    const sortedImage = [
+        ...imageList.filter(image => image.icon), // tạo 1 ds dựa trên imageList có icon
+        ...imageList.filter(image => !image.icon), // tạo 1 ds dựa trên imageList k có icon
+    ]
     return (
         <div className="row">
             <div className="col-12">
                 <Carousel showArrows={true} showIndicators={true}>
                     {
-                        imageList.map((image,index)=>(
+                        sortedImage.map((image,index)=>(
                             <div key={index}>
-                                <img src={image.imageData} alt="Ảnh" style={{maxWidth:'250px'}}></img>
+                                 <img src={image.imageData} alt="Ảnh" style={{maxWidth:'250px'}}></img>
                             </div>
                         ))
                     }

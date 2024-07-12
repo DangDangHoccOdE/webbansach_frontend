@@ -2,7 +2,7 @@
 import React, {  useEffect, useState } from "react";
 import BookModel from "../../../models/BookModel";
 import ImageModel from "../../../models/ImageModel";
-import { getAllImagesByBook } from "../../../api/ImageAPI";
+import { getIconImageByBook } from "../../../api/ImageAPI";
 import { Link, useNavigate } from "react-router-dom";
 import renderRating from "../../utils/StarRate";
 import NumberFormat from "../../utils/NumberFormat";
@@ -22,7 +22,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
     const bookId = props.book.bookId;
 
     const {isLoggedIn} = useAuth();
-    const [imageList,setImageList] = useState<ImageModel[]>([]);
+    const [iconOfBook,setIconOfBook] = useState<ImageModel|null>(null);
     const [loadingData,setLoadingData] = useState(true);
     const [noticeError,setNoticeError] = useState(null);
     const navigate = useNavigate();
@@ -31,10 +31,10 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
 
 
     useEffect(()=>{
-        getAllImagesByBook(bookId)
+        getIconImageByBook(bookId)
             .then(imageData => {
-                setImageList(imageData);
-                setLoadingData(false);
+                    setIconOfBook(imageData);
+                    setLoadingData(false);
             })
             .catch(error=>{
                 setLoadingData(false);
@@ -61,8 +61,8 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
     }
 
     let imageData:string = "";
-    if(imageList[0] && imageList[0].imageData){
-        imageData = imageList[0].imageData;
+    if(iconOfBook && iconOfBook.imageData){
+        imageData = iconOfBook.imageData;
     }
 
      const handleDelete=()=>{

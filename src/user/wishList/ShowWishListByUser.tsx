@@ -19,16 +19,18 @@ const ShowWishListByUser=()=>{
     const [errorNewWishList,setErrorNewWishList] = useState("");
     const [isUpdate,setIsUpdate] = useState(false);;
 
-
     let userIdNumber = parseInt(userId+"");
-    if(!isLoggedIn){
-        navigate("/",{replace:true});
-    }
 
     useScrollToTop(); // Cuộn lên đầu trang
     useEffect(()=>{
+        if (!isLoggedIn) {  // Kiểm tra người dùng đã đăng nhập chưa
+            alert("Bạn phải đăng nhập để tiếp tục")
+            navigate("/")
+            return;
+        }
 
-        const getIdWishList= async()=>{
+
+        const getIdWishList= async()=>{  // gọi api lấy ra id wishList
             setIsLoading(true);
             try{
                 const data = await getWishListByUserId(userIdNumber);
@@ -48,9 +50,9 @@ const ShowWishListByUser=()=>{
         }
        
          getIdWishList();
-    },[userIdNumber,navigate,isUpdate]);
+    },[userIdNumber, navigate, isUpdate, isLoggedIn]);
 
-    const handleDelete=(wishListId:number)=>{
+    const handleDelete=(wishListId:number)=>{   // thực hiện xóa wishList
         const userConfirmed = window.confirm("Bạn có chắc chắn muốn xóa!");
         if(!userConfirmed){
             return;
@@ -59,7 +61,7 @@ const ShowWishListByUser=()=>{
         }
     }
 
-    const toggleForm=()=>{
+    const toggleForm=()=>{   // Mở form thêm wishList
         setShowForm(!showForm);
     }
 
@@ -100,6 +102,9 @@ const ShowWishListByUser=()=>{
         setNewWishListName("");
     }
 
+    if(!isLoggedIn){
+        return null;
+    }
 
     return(
         <div className="container">

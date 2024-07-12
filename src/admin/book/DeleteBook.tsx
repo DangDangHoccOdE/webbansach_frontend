@@ -7,7 +7,6 @@ import HomePage from "../../layouts/homepage/HomePage";
 const DeleteBook:React.FC=()=>{
     const {bookId} = useParams();
     const navigate = useNavigate();
-
     const handleDelete=async()=>{
         try{
             const url:string=`http://localhost:8080/admin/deleteBook/${bookId}`;
@@ -30,7 +29,7 @@ const DeleteBook:React.FC=()=>{
         }catch(error){
             console.error({error});
         }finally{
-            navigate("/");
+            navigate("/")
         }
     }
     useEffect(()=>{

@@ -15,7 +15,7 @@ export async function getImage(link:string) {
     for(const key in responseData){
         result.push({
             imageId:responseData[key].imageId,
-            isIcon:responseData[key].isIcon,
+            icon:responseData[key].icon,
             imageData:responseData[key].imageData,
         });
     }
@@ -31,21 +31,23 @@ export async function getAllImagesByBook(bookId:number): Promise<ImageModel[]> {
 
 export async function getIconImageByBook(bookId:number):Promise<ImageModel|null> {
     const url:string= `http://localhost:8080/images/search/findByBook_BookIdAndIsIcon?bookId=${bookId}&isIcon=true`   ;
-
     const response = await fetch(url);
-
+    console.log(url)
     if(!response.ok){
         throw new Error(`Không thể truy cập ${url}!`);
     }
+    try{
+        const data = await response.json();
+        const responseData = data._embedded.images;
+        console.log(data)
 
-    const data = await response.json();
-    const responseData = data._embedded.images;
-
-    return({
-        imageId:responseData[0].imageId,
-        isIcon:responseData[0].isIcon,
-        imageData:responseData[0].imageData,
-    })
-       
+        return({
+            imageId:responseData[0].imageId,
+            icon:responseData[0].icon,
+            imageData:responseData[0].imageData,
+        })
+    }catch(error){
+        return null;
+    }
 }
 

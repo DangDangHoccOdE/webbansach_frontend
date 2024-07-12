@@ -1,12 +1,12 @@
 class ImageModel{ 
     imageId:number;
-    isIcon?:boolean;
+    icon?:boolean;
     imageData?:string;
     constructor(imageId:number,
-        isIcon:boolean,
+        icon:boolean,
         imageData:string){
             this.imageId = imageId;
-            this.isIcon = isIcon;
+            this.icon = icon;
             this.imageData = imageData;
     }
 }
