@@ -32,7 +32,6 @@ const GetAllCategory:React.FC=()=>{
                 setIsLoading(false);
             }
         }        
-
         fetchData();
     },[isUpdate])
 

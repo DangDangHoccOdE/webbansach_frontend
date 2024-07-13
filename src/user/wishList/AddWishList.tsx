@@ -7,11 +7,11 @@ interface WishListFormProps{
 }
 
 const AddWishList:React.FC<WishListFormProps>=(props)=>{
-    const [errorNewWishList,setErrorNewWishList] = useState("")
+    const [errorNewWishList,setErrorNewWishList] = useState('')
     const [isError,setIsError] = useState(false);
-    const [newWishListName,setNewWishListName] = useState("")
+    const [newWishListName,setNewWishListName] = useState('')
 
-    const handleFormSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
+    const handleFormSubmit=async(e:React.FormEvent)=>{
         e.preventDefault();
 
         const url:string = `http://localhost:8080/wishList/addWishList`;
@@ -30,21 +30,20 @@ const AddWishList:React.FC<WishListFormProps>=(props)=>{
             });
      
             const data = await response.json();
-            console.log(data)
             if(response.ok){
                 console.log(data.content)
                 setErrorNewWishList(data.content);
-                setIsError(false)
-                props.setIsUpdate(prevState=>!prevState)
+                setIsError(false);
+                props.setIsUpdate(prevState=>!prevState);
             }else{
-                setErrorNewWishList(data.content || "Lỗi tạo danh sách yêu thích");
+                console.log(data.content)
+                setErrorNewWishList(data.content || "Lỗi không thể tạo thể danh sách yêu thích mới");
                 setIsError(true);
             }
-    
         }catch(error){
-            setErrorNewWishList("Lỗi tạo danh sách yêu thích!")
+            console.log({error});
+            setErrorNewWishList("Lỗi, không thể tạo thể danh sách yêu thích mới")
             setIsError(true);
-            console.log({error})
         }
 
     }

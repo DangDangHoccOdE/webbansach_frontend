@@ -19,13 +19,13 @@ const ShowWishListByUser=()=>{
     let userIdNumber = parseInt(userId+"");
 
     useScrollToTop(); // Cuộn lên đầu trang
+
     useEffect(()=>{
         if (!isLoggedIn) {  // Kiểm tra người dùng đã đăng nhập chưa
             alert("Bạn phải đăng nhập để tiếp tục")
             navigate("/")
             return;
         }
-
 
         const getIdWishList= async()=>{  // gọi api lấy ra id wishList
             setIsLoading(true);
@@ -47,7 +47,7 @@ const ShowWishListByUser=()=>{
         }
        
          getIdWishList();
-    },[userIdNumber, navigate, isUpdate, isLoggedIn]);
+    },[isUpdate, navigate, userIdNumber,isLoggedIn])
 
     const handleDelete=(wishListId:number)=>{   // thực hiện xóa wishList
         const userConfirmed = window.confirm("Bạn có chắc chắn muốn xóa!");
@@ -70,9 +70,8 @@ const ShowWishListByUser=()=>{
     return(
         <div className="container">
             <h1 className="mt-5 text-center">Danh sách yêu thích</h1>
-                 {isLoading ?( <div style={{ textAlign: "center" }}>Đang tải...</div>
-            
-        ):( <>
+                 {isLoading && <div style={{ textAlign: "center" }}>Đang tải...</div> }
+        
             <div className="col">
             <div className="col-2">
                 <button className="btn btn-secondary fa fa-plus ms-auto" onClick={toggleForm}></button>  
@@ -119,8 +118,6 @@ const ShowWishListByUser=()=>{
            
                 {notice && <div style={{textAlign:"center", color:"red"}}>{notice}</div>}
 
-            </>
-        )}
         </div>
     )
 }
