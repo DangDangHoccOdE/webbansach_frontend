@@ -4,19 +4,16 @@ import { useEffect, useState } from "react";
 import WishListModel from "../../models/WishListModel";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import { getWishListByUserId } from "../../api/WishListAPI";
-import fetchWithAuth from "../../layouts/utils/AuthService";
+import AddWishList from "./AddWishList";
 
 const ShowWishListByUser=()=>{
     const {isLoggedIn} = useAuth();
     const navigate = useNavigate();
     const {userId} = useParams();
     const [isLoading,setIsLoading] = useState(false);
-    const [isError,setIsError] = useState(false);
     const [notice,setNotice] = useState("");
     const [wishList,setWishList] = useState<WishListModel[]|null>([]);
     const [showForm,setShowForm] = useState(false);
-    const [newWishListName,setNewWishListName] = useState("");    
-    const [errorNewWishList,setErrorNewWishList] = useState("");
     const [isUpdate,setIsUpdate] = useState(false);;
 
     let userIdNumber = parseInt(userId+"");
@@ -65,43 +62,7 @@ const ShowWishListByUser=()=>{
         setShowForm(!showForm);
     }
 
-    const handleFormSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
-        e.preventDefault();
-
-        const url:string = `http://localhost:8080/wishList/addWishList`;
-
-        try{
-            const response =await fetchWithAuth(url,{
-                method:"POST",
-                headers:{
-                    "Content-type":"application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
-                },
-                body:JSON.stringify({
-                    userId:userId,
-                    newWishListName:newWishListName
-                })
-            });
-     
-            const data = await response.json();
-            if(response.ok){
-                setErrorNewWishList(data.content);
-                setIsError(false)
-                setIsUpdate(prevState=>!prevState)
-            }else{
-                setErrorNewWishList(data.content || "Lỗi tạo danh sách yêu thích");
-                setIsError(true);
-            }
-    
-        }catch(error){
-            setErrorNewWishList("Lỗi tạo danh sách yêu thích!")
-            setIsError(true);
-            console.log({error})
-        }
-
-        setNewWishListName("");
-    }
-
+   
     if(!isLoggedIn){
         return null;
     }
@@ -118,27 +79,7 @@ const ShowWishListByUser=()=>{
             </div>
             {
                 showForm&&(
-                    <div className="row justify-content-center mb-3">
-                        <div className="col-md-6">
-                        <form onSubmit={handleFormSubmit}>
-                                        <div className="form-group">
-                                            <label htmlFor="wishListName">Tên danh sách yêu thích</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="wishListName"
-                                                value={newWishListName}
-                                                onChange={(e) => setNewWishListName(e.target.value)}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="mt-3 text-center">
-                                            <button type="submit" className="btn btn-primary">Lưu</button>
-                                        </div>
-                                    </form>
-                        </div>
-                        <div className="text-center" style={{color:isError?"red":"green"}}>{errorNewWishList}</div>
-                    </div>
+                    <AddWishList setIsUpdate={setIsUpdate} userId={userIdNumber}/>
                 )
             }
                 <div className="d-flex justify-content-center">

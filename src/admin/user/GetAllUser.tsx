@@ -58,8 +58,7 @@ const GetAllUser:React.FC=()=>{
             
         ):( <>
             {allUser===null && <span style={{textAlign:"center", color:"red"}}>{notice}</span>}
-            <table className="table-responsive">
-            <table className="table table-striped table-hover">
+            <table className="table table-responsive table-striped table-hover">
               <thead className="thead-light">
                     <tr>
                         <th scope="col">#</th>
@@ -111,7 +110,6 @@ const GetAllUser:React.FC=()=>{
                     }
                    
                 </tbody>
-                </table>
                 </table>
             </>
         )}

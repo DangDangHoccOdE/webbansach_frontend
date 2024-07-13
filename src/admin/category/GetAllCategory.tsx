@@ -4,6 +4,7 @@ import RequireAdmin from "../RequireAdmin"
 import CategoryModel from "../../models/CategoryModel";
 import { getAllCategory } from "../../api/CategoryAPI";
 import { Link, useNavigate } from "react-router-dom";
+import AddCategoryForm from "./AddCategoryForm";
 
 const GetAllCategory:React.FC=()=>{
     useScrollToTop(); // Cuộn lên đầu trang
@@ -11,7 +12,9 @@ const GetAllCategory:React.FC=()=>{
     const [isLoading,setIsLoading] = useState(false);
     const [notice,setNotice] = useState("")
     const [category,setCategory] = useState<CategoryModel[]>([])
+    const [showForm,setShowForm]= useState(false);
     const navigate = useNavigate();
+    const [isUpdate,setIsUpdate] = useState(false);
 
     useEffect(()=>{
         const fetchData =async()=>{
@@ -31,9 +34,9 @@ const GetAllCategory:React.FC=()=>{
         }        
 
         fetchData();
-    },[])
+    },[isUpdate])
 
-    const handleDelete=(categoryId:number)=>{
+    const handleDelete=(categoryId:number)=>{  // Xóa category
         const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa!");
         if(!userConfirm){
             return;
@@ -41,10 +44,24 @@ const GetAllCategory:React.FC=()=>{
             navigate(`/category/deleteCategory/${categoryId}`)
         }
     }
+
+    const toggleForm=()=>{  // thực hiện mở form
+        setShowForm(!showForm)
+    }
+
     return(
         <div className="container">
             <h1 className="text-center">Danh sách thể loại</h1>
             {isLoading&&<p className="text-center">Đang tải...</p>}
+            <div className="col-2">
+                <button className="btn btn-secondary fa fa-plus ms-auto" onClick={toggleForm}></button>  
+            </div>
+
+            { // add category
+                showForm&&(
+                    <AddCategoryForm setIsUpdate={setIsUpdate}/>
+                )
+            }
             <div className="d-flex justify-content-center">
                 <table className="table table-striped table-hover">
                 <thead className="thead-light">
