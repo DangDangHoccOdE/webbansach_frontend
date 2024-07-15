@@ -116,7 +116,7 @@ const EditWishList=()=>{
         setCurrentPage(currentPage);
     }
 
-    const handleFormSubmit=async(e:FormEvent)=>{
+    const handleFormSubmit=async(e:FormEvent)=>{ // form đổi tên danh sách yêu thích
         e.preventDefault();
 
         const url:string = `http://localhost:8080/wishList/editWishListName`;
@@ -215,7 +215,7 @@ const EditWishList=()=>{
                                  <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' ,color:"black"}}> {book.bookName}</Link>     
                               </td>
                                     <td> <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' }}>
-                                       {imageList[index] ? <img src={imageList[index].imageData} alt="Ảnh"  style={{ width: "100px" }}></img>: "Sách chưa có ảnh"}
+                                       {imageList[index] ? <img src={imageList[index].imageData} alt="Ảnh"  style={{ width: "50px" }}></img>: "Sách chưa có ảnh"}
                                        </Link>
                                     </td>
                                     <td>{renderRating(book.averageRate)}</td>

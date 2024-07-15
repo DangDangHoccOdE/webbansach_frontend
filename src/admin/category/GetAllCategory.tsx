@@ -6,7 +6,7 @@ import { getAllCategory } from "../../api/CategoryAPI";
 import { Link, useNavigate } from "react-router-dom";
 import AddCategoryForm from "./AddCategoryForm";
 
-const GetAllCategory:React.FC=()=>{
+const ShowAllCategory:React.FC=()=>{
     useScrollToTop(); // Cuộn lên đầu trang
 
     const [isLoading,setIsLoading] = useState(false);
@@ -67,6 +67,7 @@ const GetAllCategory:React.FC=()=>{
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Tên thể loại</th>
+                            <th scope="col">Số lượng sách</th>
                             <th scope="col">Tiện ích</th>
                         </tr>
                     </thead>
@@ -76,6 +77,7 @@ const GetAllCategory:React.FC=()=>{
                                 <tr  key={index}>
                                 <th scope="row">{index}</th>
                                     <td>{item.categoryName}</td>
+                                    <td>{item.bookQuantity}</td>
                                     <td style={{whiteSpace:"nowrap"}}>
                                         <div className="admin-button mt-2">
                                             <Link to={`/category/editCategory/${item.categoryId}`} className="btn btn-primary me-2">
@@ -96,5 +98,5 @@ const GetAllCategory:React.FC=()=>{
     )
 }
 
-const GetAllCategory_Admin = RequireAdmin(GetAllCategory);
-export default GetAllCategory_Admin;
+const ShowAllCategory_Admin = RequireAdmin(ShowAllCategory);
+export default ShowAllCategory_Admin;

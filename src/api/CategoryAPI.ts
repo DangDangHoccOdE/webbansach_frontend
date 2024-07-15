@@ -13,7 +13,8 @@ export async function getCategory(link :string) {
     for(const key in responseData){
         result.push({
             categoryId: responseData[key].categoryId,
-            categoryName: responseData[key].categoryName
+            categoryName: responseData[key].categoryName,
+            bookQuantity:responseData[key].bookQuantity
         })
     }
 
@@ -28,4 +29,31 @@ export async function getAllCategory():Promise<CategoryModel[]> {
 export async function getCategoryByBook(bookId:number):Promise<CategoryModel[]> {
     const url:string = `http://localhost:8080/books/${bookId}/categoryList?sort=categoryId,asc`;
     return getCategory(url);
+}
+
+export async function getCategoryById(categoryId:number):Promise<CategoryModel|null> {
+    const url:string=`http://localhost:8080/category/${categoryId}`;
+
+    try{
+        const response = await fetch(url);
+        if(!response.ok){
+            throw new Error("Gặp lỗi trong quá trình gọi API Lấy thể loại!");
+        }
+
+
+        const data = await response.json();
+
+        if(data){
+            return({
+                categoryId:data.categoryId,
+                categoryName:data.categoryName,
+                bookQuantity:data.bookQuantity
+            })
+        }else{
+            throw new Error("Lỗi, không thể gọi api lấy thể loại!")
+        }
+    }catch(error){
+        console.log({error})
+        return null;
+    }
 }

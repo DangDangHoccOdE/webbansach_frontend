@@ -113,3 +113,9 @@ export async function getBookListByWishList(wishListId:number,currentPage:number
 
     return getBook(link);
 }
+
+export async function getBookListByCategory(categoryId:number,currentPage:number):Promise<ResultInterface> {
+    const link:string=`http://localhost:8080/books/search/findByCategoryList_categoryId?categoryId=${categoryId}&page=${currentPage}&size=8`;
+
+    return getBook(link);
+}

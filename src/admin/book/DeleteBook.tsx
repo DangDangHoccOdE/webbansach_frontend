@@ -29,7 +29,7 @@ const DeleteBook:React.FC=()=>{
         }catch(error){
             console.error({error});
         }finally{
-            navigate("/")
+            navigate("/",{replace:true})
         }
     }
     useEffect(()=>{

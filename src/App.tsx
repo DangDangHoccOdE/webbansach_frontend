@@ -29,8 +29,10 @@ import { Error403Page } from "./layouts/page/403Page";
 import { Error404Page } from "./layouts/page/404Page";
 import EditWishList from "./user/wishList/EditWishList";
 import DeleteBookOfWishList from "./user/wishList/DeleteBookOfWishList";
-import GetAllCategory_Admin from "./admin/category/GetAllCategory";
 import DeleteCategory_Admin from "./admin/category/DeleteCategory";
+import EditCategory_Admin from "./admin/category/EditCategory";
+import DeleteBookOfCategory_Admin from "./admin/category/DeleteBookOfCategory";
+import ShowAllCategory_Admin from "./admin/category/GetAllCategory";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -65,8 +67,10 @@ function App() {
               <Route path="/wishList/deleteWishList/:wishListId/:userId" element={<DeleteWishList/>}/>
               <Route path="/wishList/editWishList/:wishListId" element={<EditWishList/>}/>
               <Route path="/wishList/deleteBookOfWishList/:bookId/:wishListIdNumber" element={<DeleteBookOfWishList/>}/>
-              <Route path="/category/showAllCategory" element={<GetAllCategory_Admin/>}/>
+              <Route path="/category/showAllCategory" element={<ShowAllCategory_Admin/>}/>
+              <Route path="/category/editCategory/:categoryId" element={<EditCategory_Admin/>}/>
               <Route path="/category/deleteCategory/:categoryId" element={<DeleteCategory_Admin/>}/>
+              <Route path="/category/deleteBookOfCategory/:categoryId/:bookId" element={<DeleteBookOfCategory_Admin/>}/>
           </Routes>
           <Footer/>
           </AuthProvider>

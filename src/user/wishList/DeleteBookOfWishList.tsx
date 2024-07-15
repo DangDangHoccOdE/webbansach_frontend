@@ -37,7 +37,7 @@ const DeleteBookOfWishList=()=>{
                 console.log({error});
                 alert("Lỗi, không thể xóa sách");
             }finally{
-                navigate(`/wishList/editWishList/${wishListId}`);
+                navigate(`/wishList/editWishList/${wishListId}`,{replace:true});
             }
         }
 

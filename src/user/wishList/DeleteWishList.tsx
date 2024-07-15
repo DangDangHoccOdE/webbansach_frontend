@@ -20,7 +20,6 @@ const DeleteWishList=()=>{
             });
              
             const data =await response.json();
-            console.log(data.content)
             if(response.ok){
                 alert(data.content);
             }else{
@@ -29,7 +28,7 @@ const DeleteWishList=()=>{
         }catch(error){
             console.error({error});
         }finally{
-            navigate(`/user/showWishList/${userId}`);
+            navigate(`/user/showWishList/${userId}`,{replace:true});
         }
     }
     useEffect(()=>{

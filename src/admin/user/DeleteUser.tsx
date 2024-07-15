@@ -28,7 +28,7 @@ const DeleteUser:React.FC=()=>{
     }catch(error){
         console.error({error});
     }finally{
-        navigate("/admin/getAllUsers");
+        navigate("/admin/getAllUsers",{replace:true});
     }
 }
     useEffect(()=>{
