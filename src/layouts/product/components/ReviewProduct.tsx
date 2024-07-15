@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from "react";
-import RemarkModel from "../../../models/RemarkModel";
-import { getAllRemarkByBook } from "../../../api/RemarkAPI";
+import FeedbackModel from "../../../models/ReviewModel";
+import {getAllReviewByBook } from "../../../api/ReviewAPI";
 import UserInfo from "./UserInfo";
 import renderRating from "../../utils/StarRate";
 import useScrollToTop from "../../../hooks/ScrollToTop";
 
-interface RemarkProductProps{
+interface ReviewProductProps{
     bookId: number;
 }
 
-const RemarkProduct: React.FC<RemarkProductProps> = (props) => {
+const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
     const bookId = props.bookId;
 
-    const [remarkList,setRemarkList] = useState<RemarkModel[]>([]);
+    const [reviewList,setReviewList] = useState<FeedbackModel[]>([]);
     const [loadingData,setLoadingData] = useState(true);
     const [noticeError,setNoticeError] = useState(null);
 
     useScrollToTop();
     useEffect(()=>{
-        getAllRemarkByBook(bookId)
-            .then(remarkList => {
-                setRemarkList(remarkList);
+        getAllReviewByBook(bookId)
+            .then(reviewList => {
+                setReviewList(reviewList);
                 setLoadingData(false);
             })
             .catch(error=>{
@@ -51,15 +51,15 @@ const RemarkProduct: React.FC<RemarkProductProps> = (props) => {
     return (
         <div className="container mt-2 mb-2 text-center">
             PHẦN ĐÁNH GIÁ
-            {remarkList.map((remark, index) => (
-                <div key={remark.remarkId || index} className="remark">
-                    <UserInfo remarkId={remark.remarkId} />
+            {reviewList.map((review, index) => (
+                <div key={review.reviewId || index} className="Feedback">
+                    <UserInfo feedbackId={review.reviewId} />
                     <div className="row">
                         <div className="col-4 text-end">
-                            <p>{renderRating((remark.rate?remark.rate:0))}</p>
+                            <p>{renderRating((review.rate?review.rate:0))}</p>
                         </div>
                         <div className="col-8 text-start">
-                            <h3>{remark.content}</h3>
+                            <h3>{review.content}</h3>
                         </div>
                     </div>
                 </div>
@@ -68,4 +68,4 @@ const RemarkProduct: React.FC<RemarkProductProps> = (props) => {
     );
     
 }
-export default RemarkProduct;
+export default ReviewProduct;

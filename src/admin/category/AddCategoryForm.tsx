@@ -9,7 +9,7 @@ const AddCategoryForm:React.FC<CategoryFormProps>=(props)=>{
     const [isError,setIsError] = useState(false);
     const [noticeFormSubmit,setNoticeFormSubmit] = useState('');
 
-    const handleFormSubmit=async(e:FormEvent)=>{
+    const handleFormSubmit=async(e:FormEvent)=>{ // form thêm category
         e.preventDefault();
         
         const url:string = `http://localhost:8080/category/addCategory`

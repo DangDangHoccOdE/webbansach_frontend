@@ -1,16 +1,16 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
-import { getUserByRemark } from "../../../api/UserAPI";
 import UserModel from "../../../models/UserModel";
 import useScrollToTop from "../../../hooks/ScrollToTop";
+import { getUserByFeedback } from "../../../api/UserAPI";
 
 interface UserProps{
-    remarkId:number;
+    feedbackId:number;
 }
 
 const UserInfo: React.FC<UserProps> = (props) => {
-    const remarkId = props.remarkId;
+    const feedbackId = props.feedbackId;
 
     const [loadingData,setLoadingData] = useState(true);
     const [noticeError,setNoticeError] = useState(null);
@@ -18,7 +18,7 @@ const UserInfo: React.FC<UserProps> = (props) => {
 
     useScrollToTop();
     useEffect(()=>{
-        getUserByRemark(remarkId)
+        getUserByFeedback(feedbackId)
             .then(userData => {
                 setUserInfo(userData);
                 setLoadingData(false);
@@ -27,7 +27,7 @@ const UserInfo: React.FC<UserProps> = (props) => {
                 setLoadingData(false);
                 setNoticeError(error.message)
             })
-    },[remarkId]
+    },[feedbackId]
     );
 
     if(loadingData){

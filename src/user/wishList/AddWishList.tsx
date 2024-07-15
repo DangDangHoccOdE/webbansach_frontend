@@ -11,8 +11,8 @@ const AddWishList:React.FC<WishListFormProps>=(props)=>{
     const [isError,setIsError] = useState(false);
     const [newWishListName,setNewWishListName] = useState('')
 
-    const handleFormSubmit=async(e:React.FormEvent)=>{
-        e.preventDefault();
+    const handleFormSubmit=async(e:React.FormEvent)=>{ // form thêm wishList
+        e.preventDefault(); 
 
         const url:string = `http://localhost:8080/wishList/addWishList`;
 

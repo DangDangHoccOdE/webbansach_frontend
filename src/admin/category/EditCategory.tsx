@@ -72,9 +72,9 @@ const EditCategory:React.FC=()=>{
     },[categoryIdNumber, currentPage, navigate, isUpdate])
 
 
-    useEffect(() => {
-        const fetchImages = async () => {
-            const images = await getAllIconImage(bookList);
+    useEffect(() => {  
+        const fetchImages = async () => { 
+            const images = await getAllIconImage(bookList); // lấy ra các icon sách
             setImageList(images);
         }
         fetchImages();

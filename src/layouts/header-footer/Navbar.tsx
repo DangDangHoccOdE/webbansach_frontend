@@ -126,7 +126,9 @@ function Navbar({setBookNameFind} : NavbarProps){
           <ul className="navbar-nav me-1">
             <li className="nav-item">
               <a className="nav-link" href="#">
-                <i className="fas fa-shopping-cart"></i>
+                <Link to={`/user/showCart/${user?.userId}`} style={{textDecoration:"none",color:"green"}}>
+                    <i className="fas fa-shopping-cart"></i>
+                </Link>
               </a>
             </li>
           </ul>

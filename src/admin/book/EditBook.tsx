@@ -7,7 +7,7 @@ import CategoryModel from "../../models/CategoryModel";
 import { getBookByBookId } from "../../api/BookAPI";
 import { getAllImagesByBook, getIconImageByBook } from "../../api/ImageAPI";
 import { getAllCategory, getCategoryByBook } from "../../api/CategoryAPI";
-import getBase64 from "../../layouts/utils/getBase64";
+import getBase64 from "../../layouts/utils/GetBase64";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import RequireAdmin from "../RequireAdmin";

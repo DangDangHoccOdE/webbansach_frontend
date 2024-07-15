@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import RequireAdmin from "../RequireAdmin"
 import { useEffect } from "react";
 import fetchWithAuth from "../../layouts/utils/AuthService";
-import GetAllCategory_Admin from "./GetAllCategory";
+import GetAllCategory_Admin from "./ShowAllCategory";
 
 const DeleteCategory:React.FC=()=>{
     const {categoryId} = useParams();

@@ -4,10 +4,10 @@ import { useParams } from "react-router-dom";
 import { getBookByBookId } from "../../api/BookAPI";
 import BookModel from "../../models/BookModel";
 import ProductImage from "./components/ProductImage";
-import RemarkProduct from "./components/RemarkProduct";
 import renderRating from "../utils/StarRate";
 import NumberFormat from "../utils/NumberFormat";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import ReviewProduct from "./components/ReviewProduct";
 
 const ProductDetail: React.FC = () => {
     useScrollToTop();
@@ -137,7 +137,7 @@ const ProductDetail: React.FC = () => {
                 </div>
             </div>
             <div className="row mt-4 mb-4">
-                <RemarkProduct bookId={bookIdNumber}/>              
+                <ReviewProduct bookId={bookIdNumber}/>              
             </div>
         </div>
     );

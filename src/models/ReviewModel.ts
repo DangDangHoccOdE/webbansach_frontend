@@ -1,15 +1,15 @@
-class RemarkModel{ 
-    remarkId:number;
+class ReviewModel{ 
+    reviewId:number;
     rate:number;
     content:string;
 
-    constructor( remarkId:number,
+    constructor( reviewId:number,
         rate:number,
         content:string,){
-            this.remarkId = remarkId;
+            this.reviewId = reviewId;
             this.rate = rate;
             this.content = content;
 
     }
 }
-export default RemarkModel;
+export default ReviewModel;

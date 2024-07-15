@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../layouts/utils/AuthContext";
 import { checkEmail, checkUserName } from "../../api/AccountAPI";
-import getBase64 from "../../layouts/utils/getBase64";
+import getBase64 from "../../layouts/utils/GetBase64";
 import useScrollToTop from "../../hooks/ScrollToTop";
 
 function RegisterUser(){

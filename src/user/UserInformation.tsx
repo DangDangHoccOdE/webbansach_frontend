@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import getBase64 from "../layouts/utils/getBase64";
+import getBase64 from "../layouts/utils/GetBase64";
 import { getUserByUsername } from "../api/UserAPI";
 import UserModel from "../models/UserModel";
 import { Link, useNavigate, useParams } from "react-router-dom";

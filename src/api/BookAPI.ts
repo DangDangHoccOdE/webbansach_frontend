@@ -1,3 +1,4 @@
+import fetchWithAuth from "../layouts/utils/AuthService";
 import BookModel from "../models/BookModel";
 
 interface ResultInterface{
@@ -16,6 +17,7 @@ export async function getBook(link:string):Promise<ResultInterface> {
     }
 
          const data =await response.json();
+         console.log(data)
 
         // get json book
         const responseData = data._embedded.books;
@@ -118,4 +120,39 @@ export async function getBookListByCategory(categoryId:number,currentPage:number
     const link:string=`http://localhost:8080/books/search/findByCategoryList_categoryId?categoryId=${categoryId}&page=${currentPage}&size=8`;
 
     return getBook(link);
+}
+
+export async function getBookListByCart(cartId:number):Promise<BookModel[]> {
+    const url:string = `http://localhost:8080/carts/${cartId}/books`
+    const result:BookModel[] = [];
+    
+        const response = await fetchWithAuth(url);
+    
+        if(!response.ok){
+            throw new Error(`Không thể truy cập ${url}!`);
+        }
+    
+             const data =await response.json();
+             console.log(data)
+    
+            // get json book
+            const responseData = data._embedded.books;
+    
+    
+            for(const key in responseData){
+                    result.push({
+                    bookId: responseData[key].bookId,
+                    bookName: responseData[key].bookName,
+                    price:responseData[key].price,
+                    isbn:responseData[key].isbn,
+                    listedPrice:responseData[key].listedPrice,
+                    description:responseData[key].description,
+                    author:responseData[key].author,
+                    quantity:responseData[key].quantity,
+                    averageRate:responseData[key].averageRate,
+                    soldQuantity:responseData[key].soldQuantity,
+                    discountPercent:responseData[key].discountPercent
+                    });
+        }
+        return result;
 }

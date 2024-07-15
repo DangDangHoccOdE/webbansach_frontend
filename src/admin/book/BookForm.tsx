@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react"
-import getBase64 from "../../layouts/utils/getBase64";
+import getBase64 from "../../layouts/utils/GetBase64";
 import CategoryModel from "../../models/CategoryModel";
 import { getAllCategory } from "../../api/CategoryAPI";
 import fetchWithAuth from "../../layouts/utils/AuthService";

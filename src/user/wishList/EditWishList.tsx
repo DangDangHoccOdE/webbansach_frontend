@@ -6,12 +6,12 @@ import { getBookListByWishList } from "../../api/BookAPI";
 import WishListModel from "../../models/WishListModel";
 import { getWishListByWishListId } from "../../api/WishListAPI";
 import ImageModel from "../../models/ImageModel";
-import { getIconImageByBook } from "../../api/ImageAPI";
 import { Pagination } from "../../layouts/utils/Pagination";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { useAuth } from "../../layouts/utils/AuthContext";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import renderRating from "../../layouts/utils/StarRate";
+import { getAllIconImage } from "../../layouts/utils/ImageService";
 
 const EditWishList=()=>{
     useScrollToTop();
@@ -86,22 +86,13 @@ const EditWishList=()=>{
         getWishListById();
     },[navigate, wishListIdNumber, currentPage, isUpdate, isLoggedIn])
     
-    useEffect(()=>{
-        const getAllIconImage = async()=>{  // Lấy ra icon của bookList
-            if(bookList.length>0){
-                const fetchImageList = bookList.map(async (book:BookModel)=>{
-                     const response = await getIconImageByBook(book.bookId);
-                     return response;
-                 })
-     
-                 const imageListResults= await Promise.all(fetchImageList);
-                 const imageValid = imageListResults.filter(image=>image!==null) as ImageModel[];
-                 setImageList(imageValid);
-             }
+    useEffect(() => { // lấy ra các icon sách
+        const fetchImages = async () => {
+            const images = await getAllIconImage(bookList);
+            setImageList(images);
         }
-
-        getAllIconImage();
-    },[bookList])
+        fetchImages();
+    }, [bookList]);
 
     const handleDelete=(bookId:number)=>{  // xóa sách trong wishList
         const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa!");
