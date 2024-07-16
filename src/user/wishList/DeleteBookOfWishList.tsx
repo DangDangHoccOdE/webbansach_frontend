@@ -30,14 +30,13 @@ const DeleteBookOfWishList=()=>{
                 const data = await response.json();
                 if(response.ok){
                     alert(data.content);
+                    navigate(`/wishList/editWishList/${wishListId}`,{replace:true});
                 }else{
                     alert(data.content || "Lỗi không thể xóa sách")
                 }
             }catch(error){
                 console.log({error});
                 alert("Lỗi, không thể xóa sách");
-            }finally{
-                navigate(`/wishList/editWishList/${wishListId}`,{replace:true});
             }
         }
 

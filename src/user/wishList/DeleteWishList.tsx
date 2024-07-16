@@ -22,13 +22,12 @@ const DeleteWishList=()=>{
             const data =await response.json();
             if(response.ok){
                 alert(data.content);
+                navigate(`/user/showWishList/${userId}`,{replace:true});
             }else{
                 alert(data.content||"Đã có lỗi xảy ra, không thể xóa!");
             }
         }catch(error){
             console.error({error});
-        }finally{
-            navigate(`/user/showWishList/${userId}`,{replace:true});
         }
     }
     useEffect(()=>{

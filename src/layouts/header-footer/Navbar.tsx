@@ -8,6 +8,7 @@ import { getUsernameByToken, isToken, logout } from "../utils/JwtService";
 import { useAuth } from "../utils/AuthContext";
 import { getUserByUsername } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
+import { getAllCartItemByUser } from "../../api/CartItemAPI";
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
   }
@@ -20,9 +21,10 @@ function Navbar({setBookNameFind} : NavbarProps){
   const [user,setUser] = useState<UserModel|null>(null); 
   const navigator = useNavigate();
   const {setLoggedIn} = useAuth();
+  const [itemCounter,setItemCounter] = useState(0)
   
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategories = async () => { // gọi api lấy thể loại
       try {
         const result = await getAllCategory(); 
         setCategoryList(result); 
@@ -31,22 +33,41 @@ function Navbar({setBookNameFind} : NavbarProps){
       }
     };
 
-    const getUser = async () =>{
+    const getUser = async () =>{ // gọi api lấy user
         const username = getUsernameByToken();
         if(username!==undefined){
           try{
               const result = await getUserByUsername(username);
               setUser(result);
           }catch(error){
-            setError("Lỗ khi gọi api user!");
-          }
-      }
-    };
+            setError("Lỗi khi gọi api user!");
+          }          
+      } 
+    }
+
 
     getUser();
     fetchCategories(); 
 
-  },[navigator,setLoggedIn]);
+  },[navigator, setLoggedIn]);
+
+  useEffect(()=>{ // gọi api lấy ra số lượng sản phẩm trong giỏ hàng
+    const cartItemCounter = async()=>{
+      if(user!==null){
+        try{
+          const cart = await getAllCartItemByUser(user.userId);
+          if(cart!==null){
+              setItemCounter(cart.length);
+          }
+        }catch(error){
+          setItemCounter(0);
+          console.log({error})
+        }
+      }
+    };
+    cartItemCounter();
+
+  },[user])
 
   if(error!==null){
     return(
@@ -127,7 +148,8 @@ function Navbar({setBookNameFind} : NavbarProps){
             <li className="nav-item">
               <a className="nav-link" href="#">
                 <Link to={`/user/showCart/${user?.userId}`} style={{textDecoration:"none",color:"green"}}>
-                    <i className="fas fa-shopping-cart"></i>
+                    <i className="fas fa-shopping-cart"></i> 
+                    <span className="badge bg-danger rounded-pill">{itemCounter}</span>
                 </Link>
               </a>
             </li>

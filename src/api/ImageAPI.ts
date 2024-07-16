@@ -32,14 +32,12 @@ export async function getAllImagesByBook(bookId:number): Promise<ImageModel[]> {
 export async function getIconImageByBook(bookId:number):Promise<ImageModel|null> {
     const url:string= `http://localhost:8080/images/search/findByBook_BookIdAndIsIcon?bookId=${bookId}&isIcon=true`   ;
     const response = await fetch(url);
-    console.log(url)
     if(!response.ok){
         throw new Error(`Không thể truy cập ${url}!`);
     }
     try{
         const data = await response.json();
         const responseData = data._embedded.images;
-        console.log(data)
 
         return({
             imageId:responseData[0].imageId,

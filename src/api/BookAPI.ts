@@ -17,7 +17,6 @@ export async function getBook(link:string):Promise<ResultInterface> {
     }
 
          const data =await response.json();
-         console.log(data)
 
         // get json book
         const responseData = data._embedded.books;
@@ -109,7 +108,6 @@ export async function getBookByBookId(bookId:number): Promise<BookModel | null> 
     
 }
 
-
 export async function getBookListByWishList(wishListId:number,currentPage:number):Promise<ResultInterface> {
     const link:string=`http://localhost:8080/books/search/findByWishLists_WishListId?wishListId=${wishListId}&page=${currentPage}&size=8`;
 
@@ -122,37 +120,39 @@ export async function getBookListByCategory(categoryId:number,currentPage:number
     return getBook(link);
 }
 
-export async function getBookListByCart(cartId:number):Promise<BookModel[]> {
-    const url:string = `http://localhost:8080/carts/${cartId}/books`
-    const result:BookModel[] = [];
-    
+export async function getBookByCartItem(cartItemId:number):Promise<BookModel|null> {
+    const url:string = `http://localhost:8080/cart-items/${cartItemId}/books`
+    try{
         const response = await fetchWithAuth(url);
-    
+
         if(!response.ok){
-            throw new Error(`Không thể truy cập ${url}!`);
+            throw new Error("Gặp lỗi trong quá trình gọi API Lấy sách!");
         }
-    
-             const data =await response.json();
-             console.log(data)
-    
-            // get json book
-            const responseData = data._embedded.books;
-    
-    
-            for(const key in responseData){
-                    result.push({
-                    bookId: responseData[key].bookId,
-                    bookName: responseData[key].bookName,
-                    price:responseData[key].price,
-                    isbn:responseData[key].isbn,
-                    listedPrice:responseData[key].listedPrice,
-                    description:responseData[key].description,
-                    author:responseData[key].author,
-                    quantity:responseData[key].quantity,
-                    averageRate:responseData[key].averageRate,
-                    soldQuantity:responseData[key].soldQuantity,
-                    discountPercent:responseData[key].discountPercent
-                    });
+
+        const bookData = await response.json();
+
+        if(bookData){
+            return{
+                bookId: bookData.bookId,
+                bookName: bookData.bookName,
+                price:bookData.price,
+                isbn:bookData.isbn,
+                listedPrice:bookData.listedPrice,
+                description:bookData.description,
+                author:bookData.author,
+                quantity:bookData.quantity,
+                averageRate:bookData.averageRate,
+                soldQuantity:bookData.soldQuantity,
+                discountPercent:bookData.discountPercent,
+                
+            }
+        }else{
+            throw new Error("Sách không tồn tại!")
         }
-        return result;
+
+    }catch(error){
+        console.log("Error: ",error);
+        return null;
+    }
+
 }

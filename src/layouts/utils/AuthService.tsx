@@ -42,7 +42,6 @@ const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise
             },
         });
         console.log("Authorization",`Bearer ${refreshToken}`)
-        console.log("hello cu Dang!")
         const text = await response.text();
 
         if (!response.ok) {

@@ -11,6 +11,7 @@ import { useAuth } from "../../utils/AuthContext";
 import AddBookToWishList from "../../../user/wishList/AddBookToWishList";
 import { Button } from "react-bootstrap";
 import useScrollToTop from "../../../hooks/ScrollToTop";
+import { getUserIdByToken } from "../../utils/JwtService";
 
 interface BookPropsInterface{
     book: BookModel;
@@ -28,7 +29,6 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
     const navigate = useNavigate();
     const [showModal,setShowModal] = useState(false);
     const [noticeSubmit,setNoticeSubmit] = useState("")
-
 
     useEffect(()=>{
         getIconImageByBook(bookId)
@@ -75,7 +75,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
     }
 
 
-    const handleHeartClick=()=>{
+    const handleHeartClick=()=>{ // Thêm vào danh sách yêu thích
         if(!isLoggedIn){
             navigate("/login",{replace:true})
         }
@@ -83,9 +83,17 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
         setShowModal(true);
     }
 
-    const handleClose=()=>{
+    const handleClose=()=>{ // đóng dsyt
         setNoticeSubmit("")
         setShowModal(false);
+    }
+
+    const handleBuyClick = () =>{
+        if(!isLoggedIn){
+            navigate("/login",{replace:true})
+        }else{
+            navigate(`/cart/addCartItem/${bookId}/${getUserIdByToken()}`)
+        }
     }
 
      return (
@@ -118,12 +126,13 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                             <span>{renderRating(props.book.averageRate?props.book.averageRate:0)} ({NumberFormat(props.book.soldQuantity)})</span>
                         </div>
                         <div className="col-6 text-end">
-                            <Button onClick={handleHeartClick} value={props.book.bookId} className="btn btn-secondary btn-block me-2">
+                            <Button onClick={handleHeartClick} className="btn btn-secondary btn-block me-2">
                                 <i className="fas fa-heart"></i>
                             </Button>
-                            <button className="btn btn-danger btn-block">
+                            <Button onClick={handleBuyClick} className="btn btn-danger btn-block">
                                 <i className="fas fa-shopping-cart"></i>
-                            </button>
+                            </Button>
+                            {/* <ToastNotification message="Thêm sản phẩm thành công" showToast={showToast}/> */}
                         </div>
                     </div>
                     {isAdmin() &&  
@@ -137,7 +146,6 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                             )}
                 </div>
             </div>
-
           <AddBookToWishList
                 bookId={bookId}
                 handleClose={handleClose}
