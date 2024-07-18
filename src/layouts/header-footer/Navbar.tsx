@@ -9,6 +9,7 @@ import { useAuth } from "../utils/AuthContext";
 import { getUserByUsername } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
 import { getAllCartItemByUser } from "../../api/CartItemAPI";
+import CartItemModel from "../../models/CartItemModel";
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
   }
@@ -22,6 +23,7 @@ function Navbar({setBookNameFind} : NavbarProps){
   const navigator = useNavigate();
   const {setLoggedIn} = useAuth();
   const [itemCounter,setItemCounter] = useState(0)
+  const [cart,setCart] = useState<CartItemModel[]|null>([])
   
   useEffect(() => {
     const fetchCategories = async () => { // gọi api lấy thể loại
@@ -55,7 +57,7 @@ function Navbar({setBookNameFind} : NavbarProps){
     const cartItemCounter = async()=>{
       if(user!==null){
         try{
-          const cart = await getAllCartItemByUser(user.userId);
+          setCart(await getAllCartItemByUser(user.userId));
           if(cart!==null){
               setItemCounter(cart.length);
           }
@@ -67,7 +69,7 @@ function Navbar({setBookNameFind} : NavbarProps){
     };
     cartItemCounter();
 
-  },[user])
+  },[user,cart])
 
   if(error!==null){
     return(

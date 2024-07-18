@@ -8,10 +8,12 @@ import renderRating from "../utils/StarRate";
 import NumberFormat from "../utils/NumberFormat";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import ReviewProduct from "./components/ReviewProduct";
+import AddCartItem from "../../user/cartItem/AddCartItem";
 
 const ProductDetail: React.FC = () => {
     useScrollToTop();
     const {bookId} = useParams(); // Get bookId from url;
+    // const {isLoggedIn} = useAuth();
     let bookIdNumber = 0;
     try{
         bookIdNumber = parseInt(bookId+'');
@@ -51,10 +53,6 @@ const ProductDetail: React.FC = () => {
     }
 
     const handlePurchase=()=>{
-
-    }
-
-    const addToCard=()=>{
 
     }
 
@@ -129,7 +127,7 @@ const ProductDetail: React.FC = () => {
                                 }
                             <div className="d-grid grap-2">
                                 <button type="button" className="btn btn-danger mt-3" onClick={handlePurchase}>Mua ngay</button>
-                                <button type="button" className="btn btn-outline-secondary mt-2" onClick={addToCard}>Thêm vào giỏ hàng</button>
+                                <AddCartItem bookId={bookIdNumber} quantity={quantity} isIcon={false}/>
                             </div>
                             </div>
                         </div>

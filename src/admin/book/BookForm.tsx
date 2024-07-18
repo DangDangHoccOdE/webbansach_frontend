@@ -126,7 +126,7 @@ const BookForm: React.FC = (props) => {
         event.preventDefault();
     
         const token = localStorage.getItem('accessToken')
-        const response = await fetchWithAuth("http://localhost:8080/admin/addBook",
+        const response = await fetchWithAuth("http://localhost:8080/books/addBook",
             {
                 method:"POST",
                 headers:{

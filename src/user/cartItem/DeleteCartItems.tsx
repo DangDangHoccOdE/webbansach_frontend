@@ -9,7 +9,7 @@ const DeleteCartItems = () => {
     const navigate = useNavigate();
 
     useEffect(()=>{
-        const url:string = `http://localhost:8080/cart-items/${cartItemId}`;
+        const url:string = `http://localhost:8080/cart-items/deleteCartItem/${cartItemId}`;
 
         const handleDelete = async()=>{
             try{

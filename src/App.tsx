@@ -35,7 +35,6 @@ import DeleteBookOfCategory_Admin from "./admin/category/DeleteBookOfCategory";
 import ShowAllCategory_Admin from "./admin/category/ShowAllCategory";
 import ShowCart from "./user/cartItem/ShowCartItemByUser";
 import DeleteBookOfCart from "./user/cartItem/DeleteCartItems";
-import AddCartItem from "./user/cartItem/AddCartItem";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -76,7 +75,6 @@ function App() {
               <Route path="/category/deleteBookOfCategory/:categoryId/:bookId" element={<DeleteBookOfCategory_Admin/>}/>
               <Route path="/user/showCart/:userId" element={<ShowCart/>}></Route>
               <Route path="/cart/deleteCartItem/:cartItemId/:userId" element={<DeleteBookOfCart/>}></Route>
-              <Route path="/cart/addCartItem/:bookId/:userId" element={<AddCartItem/>}></Route>
             </Routes>
           <Footer/>
           </AuthProvider>

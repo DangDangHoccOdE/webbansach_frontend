@@ -11,7 +11,7 @@ import { useAuth } from "../../utils/AuthContext";
 import AddBookToWishList from "../../../user/wishList/AddBookToWishList";
 import { Button } from "react-bootstrap";
 import useScrollToTop from "../../../hooks/ScrollToTop";
-import { getUserIdByToken } from "../../utils/JwtService";
+import AddCartItem from "../../../user/cartItem/AddCartItem";
 
 interface BookPropsInterface{
     book: BookModel;
@@ -88,14 +88,6 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
         setShowModal(false);
     }
 
-    const handleBuyClick = () =>{
-        if(!isLoggedIn){
-            navigate("/login",{replace:true})
-        }else{
-            navigate(`/cart/addCartItem/${bookId}/${getUserIdByToken()}`)
-        }
-    }
-
      return (
         <div className="col-md-3 mt-2">
             <div className="card">  
@@ -129,10 +121,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                             <Button onClick={handleHeartClick} className="btn btn-secondary btn-block me-2">
                                 <i className="fas fa-heart"></i>
                             </Button>
-                            <Button onClick={handleBuyClick} className="btn btn-danger btn-block">
-                                <i className="fas fa-shopping-cart"></i>
-                            </Button>
-                            {/* <ToastNotification message="Thêm sản phẩm thành công" showToast={showToast}/> */}
+                            <AddCartItem bookId={bookId} quantity={1} isIcon={true}/>  {/* Xử lý thêm sách */ }
                         </div>
                     </div>
                     {isAdmin() &&  
@@ -146,7 +135,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                             )}
                 </div>
             </div>
-          <AddBookToWishList
+          <AddBookToWishList // Xử lý thêm sách vào ds yêu thích
                 bookId={bookId}
                 handleClose={handleClose}
                 showModal={showModal}

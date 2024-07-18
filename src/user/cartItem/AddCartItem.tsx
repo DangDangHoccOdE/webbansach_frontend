@@ -1,16 +1,25 @@
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
+import { useAuth } from "../../layouts/utils/AuthContext";
 
-const AddCartItem = ()=>{
-    const {bookId} = useParams();
-    const userId = getUserIdByToken();
+interface AddToCartProps{
+    bookId:number,
+    quantity:number,
+    isIcon:boolean
+}
+const AddCartItem:React.FC<AddToCartProps> = (props)=>{
+    const {isLoggedIn} = useAuth();
     const navigate = useNavigate()
 
-    useEffect(()=>{
-        const url:string = `http://localhost:8080/cart-items`
+
+    const userId = getUserIdByToken();
+        const url:string = `http://localhost:8080/cart-items/addCartItem`
         const addCartItem = async ()=>{
+            if(!isLoggedIn){
+                navigate("/login")
+                return null;
+            }
             try{
                 const response = await fetchWithAuth(url,{
                     method:"POST",
@@ -19,15 +28,17 @@ const AddCartItem = ()=>{
                         "Authorization":`Bearer ${localStorage.getItem("accessToken")}`
                     },
                     body:JSON.stringify({
-                        bookId:bookId,
-                        userId:userId
+                        bookId:props.bookId,
+                        userId:userId,
+                        quantity:props.quantity
                     })
                 });
 
                 const data = await response.json();
                 if(response.ok){
-                    alert(data.content)
-                    navigate("/")
+                    setTimeout(()=>{
+                        alert(data.content)
+                    },1000)
                 }else{
                     alert(data.content || "Lỗi, không thể thêm vào giỏ hàng")
                 }
@@ -36,10 +47,16 @@ const AddCartItem = ()=>{
             }
         }
 
-        addCartItem();
-    },[bookId,userId,navigate])
+    return (
+        !props.isIcon ?
+            <button type="button" className="btn btn-outline-secondary mt-2" onClick={addCartItem}>
+                Thêm vào giỏ hàng
+            </button>
 
-    return null
+        :  <button className="btn btn-danger btn-block" onClick={addCartItem}>
+             <i className="fas fa-shopping-cart"></i>
+         </button>
+    )
 }
 
 export default AddCartItem;

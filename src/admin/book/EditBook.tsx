@@ -203,7 +203,7 @@ const EditBook: React.FC = () => {
         event.preventDefault();
         const token = localStorage.getItem('accessToken')
         try{
-            const response = await fetchWithAuth("http://localhost:8080/admin/editBook",
+            const response = await fetchWithAuth(`http://localhost:8080/books/editBook/${bookId}`,
                 {
                     method:"PUT",
                     headers:{
@@ -211,7 +211,6 @@ const EditBook: React.FC = () => {
                         "Authorization":`Bearer ${token}`
                     },
                     body:JSON.stringify({
-                        bookId,
                         bookName,
                         isbn,
                         price,

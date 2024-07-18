@@ -17,6 +17,9 @@ const ShowCart=()=>{
     const [cartItem,setCartItem] = useState<CartItemModel[]>([])
     const [notice,setNotice] = useState("")
     const [iconImageList,setIconImageList]=useState<ImageModel[]>([])
+    const [selectAll,setSelectAll] = useState(false); // Trạng thái cho checkbox "Tất cả"
+    const [selectedItems, setSelectedItems] = useState<number[]>([]); // Trạng thái cho các checkbox
+    // const [calculateTotal,setCalculateTotal] = useState(0);
 
     const userIdNumber = parseInt(userId+''); 
     useEffect(()=>{
@@ -91,7 +94,7 @@ const ShowCart=()=>{
         if(!isNaN(quantityNow) && quantityNow>=1 && quantityNow<=inventoryNumber){
             const updateCart = cartItem.map((item,index)=>{
                 if(bookListOfCart[index].bookId === book.bookId){
-                    return {...item,quantity:item.quantity+1}
+                    return {...item,quantity:quantityNow}
                 }
                 return item;
             })
@@ -123,86 +126,133 @@ const ShowCart=()=>{
         }
     }
 
+    const handleSelectAll=()=>{ // Xử lý chọn tất cả sản phẩm
+        setSelectAll(!selectAll);
+        if(!selectAll){
+            setSelectedItems(cartItem.map(item=>item.cartItemId));
+        }else{
+            setSelectedItems([]);
+        }
+    }
+
+    const handleSelectItems = (cartItemId:number)=>{ // Xử lý chọn 1 sản phẩm
+        if(selectedItems.includes(cartItemId)){
+            setSelectedItems(selectedItems.filter(item=>item!==cartItemId));
+        }else{
+            setSelectedItems([...selectedItems,cartItemId]);
+        }
+    }
+
+    const calculateTotal = ()=>{ // Tính tổng tiến
+      let total = 0;
+      selectedItems.forEach((cardItemId,index)=>{
+        const book = bookListOfCart[index];
+        const item = cartItem.find(item=>item.cartItemId === cardItemId)
+        if(book && item){
+            total += book.price * item.quantity;
+        }
+      })
+      return total;
+    }
 
     if(!isLoggedIn){
         return null;
     }
     return(
-        <div className="container">
-        <h1 className="mt-5">Giỏ hàng</h1>
-             <div className="d-flex justify-content-center">
-             <table className="table table-striped table-hover">
-                <thead className="thead-light">
-                    <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Tên danh sách</th>
-                    <th scope="col">Ảnh</th>
-                    <th scope="col">Giá</th>
-                    <th scope="col">Số lượng</th>
-                    <th scope="col">Thành tiền</th>
-                    <th scope="col">Tiện ích</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {bookListOfCart?.map((book, index) => (
-                    <tr key={index}>
-                        <th scope="row">{index + 1}</th>
-                        <td>
-                        <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none', color: "black" }}>
-                            {book.bookName}
-                        </Link>
-                        </td>
-                        <td>
-                        <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' }}>
-                            {iconImageList[index] ? (
-                            <img src={iconImageList[index].imageData} alt="Ảnh" style={{ width: "50px", maxHeight: "50px" }} />
-                            ) : "Sách chưa có ảnh"}
-                        </Link>
-                        </td>
-                        <td>{NumberFormat(book.price)} đ</td>
-                        <td className="align-middle">
-                        <div className="d-flex align-items-center">
-                            <button
-                                className="btn btn-outline-secondary me-2"
-                                onClick={() => increaseQuantity(cartItem[index],book)}
-                                style={{ height: "38px" }} // Đặt chiều cao cố định cho nút
-                                >
-                                +
-                            </button>
-                            <input
-                                className="form-control text-center mx-2"
-                                type="number"
-                                min={1}
-                                value={cartItem[index].quantity}
-                                onChange={e => handleQuantity(e, book)}
-                                style={{ width: "100px", height: "38px" }} // Đặt chiều cao cố định cho ô nhập liệu
-                            />
-                            <button
-                                className="btn btn-outline-secondary ms-2"
-                                onClick={()=>reduceQuantity(cartItem[index],book)}
-                                style={{ height: "38px" }} // Đặt chiều cao cố định cho nút
-                                >
-                                -
-                            </button>
+            <div className="container-fluid">
+                <h1 className="mt-5">Giỏ hàng</h1>
+        
+                <div className="row">
+                    <div className="col-md-9">
+                        <div className="card">
+                            <div className="card-body">
+                                <table className="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                                <input type="checkbox" style={{ marginRight: "10px" }} checked={selectAll} onChange={handleSelectAll}></input>
+                                                Tất cả ({cartItem.length} sản phẩm)
+                                            </th>
+                                            <th scope="col">Sản phẩm</th>
+                                            <th scope="col">Đơn giá</th>
+                                            <th scope="col">Số lượng</th>
+                                            <th scope="col">Thành tiền</th>
+                                            <th scope="col">
+                                                    <button className="btn btn-link text-danger" onClick={() => handleDelete(1)}>
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {bookListOfCart?.map((book, index) => (
+                                            <tr key={index}>
+                                                <td>
+                                                    <input type="checkbox"
+                                                        checked={selectedItems.includes(cartItem[index].cartItemId)}
+                                                        onChange={() => handleSelectItems(cartItem[index].cartItemId)}></input>
+                                                </td>
+                                                <td>
+                                                    <div className="d-flex">
+                                                        <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' }}>
+                                                            {iconImageList[index] ? (
+                                                                <img src={iconImageList[index].imageData} alt="Ảnh" style={{ width: "50px", maxHeight: "50px", marginRight: "10px" }} />
+                                                            ) : "Sách chưa có ảnh"}
+                                                        </Link>
+                                                        <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none', color: "black" }}>
+                                                            {book.bookName}
+                                                        </Link>
+                                                    </div>
+                                                </td>
+                                                <td>{NumberFormat(book.price)} đ</td>
+                                                <td>
+                                                    <div className="d-flex align-items-center">
+                                                        <button className="btn btn-outline-secondary" onClick={() => reduceQuantity(cartItem[index], book)}>-</button>
+                                                        <input className="form-control text-center mx-2" type="number" min={1} value={cartItem[index].quantity} onChange={e => handleQuantity(e, book)} style={{ width: "100px" }} />
+                                                        <button className="btn btn-outline-secondary" onClick={() => increaseQuantity(cartItem[index], book)}>+</button>
+                                                    </div>
+                                                </td>
+                                                <td style={{ color: "red" }}>{NumberFormat(cartItem[index].quantity * book.price)} đ</td>
+                                                <td>
+                                                    <button className="btn btn-link text-danger" onClick={() => handleDelete(cartItem[index].cartItemId)}>
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <span className="badge bg-secondary" style={{ fontSize: "12px" }}>
-                                Còn {book.quantity} sản phẩm
-                            </span>
-                        </td>
-                        <td style={{color:"red"}}>{NumberFormat(cartItem[index].quantity * book.price)} đ</td>
-                        <td>
-                        <button className="btn btn-danger" onClick={() => handleDelete(book.bookId)}>
-                            <i className="fas fa-trash"></i>
-                        </button>
-                        </td>
-                    </tr>
-                    ))}
-                </tbody>
-                </table>
-
                     </div>
-                    <p>{notice}</p>
-        </div>
-    )
-}
-export default ShowCart;
+                    
+                    <div className="col-md-3">
+                        <div className="card">
+                            <div className="card-body">
+                                <h5 className="card-title">Tính tiền</h5>
+                                <div className="d-flex justify-content-between mb-2">
+                                    <span>Tạm tính</span>
+                                    <span>{NumberFormat(calculateTotal())} đ</span>
+                                </div>
+                                <hr />
+                                <div className="d-flex justify-content-between mb-3">
+                                    <strong>Tổng tiền</strong>
+                                    <strong style={{ color: "red", fontSize: "18px" }}>{NumberFormat(calculateTotal())} đ</strong>
+                                </div>
+                                <button className="btn btn-danger w-100">Mua hàng</button>
+                                
+                                <div className="mt-3">
+                                    <input type="text" className="form-control mb-2" placeholder="Nhập mã giảm giá" />
+                                    <button className="btn btn-outline-primary w-100">Áp dụng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <p>{notice}</p>
+            </div>
+        );
+    }
+    
+    export default ShowCart;
