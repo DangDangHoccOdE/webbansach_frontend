@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import ShowCart from "./ShowCartItemByUser";
+import { CartContext } from "./CartContext";
 
 const DeleteCartItems = () => {
     const {cartItemId} = useParams();
     const {userId} = useParams();
     const navigate = useNavigate();
+    const {updateCartItemCount} = useContext(CartContext);
 
     useEffect(()=>{
         const url:string = `http://localhost:8080/cart-items/deleteCartItem/${cartItemId}`;
@@ -22,6 +24,7 @@ const DeleteCartItems = () => {
                 });
                 const data = await response.json();
                 if(response.ok){
+                    updateCartItemCount();
                     alert(data.content);
                     navigate(`/user/showCart/${userId}`);
                 }else{
@@ -33,7 +36,7 @@ const DeleteCartItems = () => {
         }
 
         handleDelete();
-    },[navigate, userId, cartItemId])
+    },[navigate, userId, cartItemId, updateCartItemCount])
 
     return(
         <ShowCart/>

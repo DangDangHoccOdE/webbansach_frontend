@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { ChangeEvent, useState ,KeyboardEvent, useEffect} from "react";
+import React, { ChangeEvent, useState ,KeyboardEvent, useEffect, useContext} from "react";
 import {  Link, NavLink, useNavigate } from "react-router-dom";
 import { getAllCategory } from "../../api/CategoryAPI";
 import CategoryModel from "../../models/CategoryModel";
@@ -8,8 +8,7 @@ import { getUsernameByToken, isToken, logout } from "../utils/JwtService";
 import { useAuth } from "../utils/AuthContext";
 import { getUserByUsername } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
-import { getAllCartItemByUser } from "../../api/CartItemAPI";
-import CartItemModel from "../../models/CartItemModel";
+import { CartContext } from "../../user/cartItem/CartContext";
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
   }
@@ -22,8 +21,7 @@ function Navbar({setBookNameFind} : NavbarProps){
   const [user,setUser] = useState<UserModel|null>(null); 
   const navigator = useNavigate();
   const {setLoggedIn} = useAuth();
-  const [itemCounter,setItemCounter] = useState(0)
-  const [cart,setCart] = useState<CartItemModel[]|null>([])
+  const {itemCounter} = useContext(CartContext);
   
   useEffect(() => {
     const fetchCategories = async () => { // gọi api lấy thể loại
@@ -46,30 +44,11 @@ function Navbar({setBookNameFind} : NavbarProps){
           }          
       } 
     }
-
-
     getUser();
     fetchCategories(); 
 
   },[navigator, setLoggedIn]);
 
-  useEffect(()=>{ // gọi api lấy ra số lượng sản phẩm trong giỏ hàng
-    const cartItemCounter = async()=>{
-      if(user!==null){
-        try{
-          setCart(await getAllCartItemByUser(user.userId));
-          if(cart!==null){
-              setItemCounter(cart.length);
-          }
-        }catch(error){
-          setItemCounter(0);
-          console.log({error})
-        }
-      }
-    };
-    cartItemCounter();
-
-  },[user,cart])
 
   if(error!==null){
     return(

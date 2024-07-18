@@ -1,10 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { isToken, isTokenExpired, logout } from "./JwtService";
+import { getUsernameByToken, isToken, isTokenExpired, logout } from "./JwtService";
 import { useNavigate } from "react-router-dom";
+import UserModel from "../../models/UserModel";
+import { getUserByUsername } from "../../api/UserAPI";
 
 interface AuthContextType{
     isLoggedIn:boolean;
     setLoggedIn : any;
+    user:UserModel|null;
+    setUser:(user:UserModel|null) => void
 }
 
 interface AuthContextProps{
@@ -15,6 +19,7 @@ const AuthContext = createContext<AuthContextType|undefined>(undefined);
 
 export const AuthProvider:React.FC<AuthContextProps>=(props)=>{
     const [isLoggedIn,setLoggedIn] = useState(isToken());
+    const [user,setUser] = useState<UserModel|null>(null)
     const navigate = useNavigate();
     useEffect(()=>{
         const checkRefreshToken = async()=>{
@@ -29,10 +34,18 @@ export const AuthProvider:React.FC<AuthContextProps>=(props)=>{
             }
             
         }
+        const getUser = async()=>{
+            const username = getUsernameByToken();
+            if(username){
+                const getUser = await getUserByUsername(username);
+                setUser(getUser);
+            }        
+        }
         checkRefreshToken();
+        getUser();
     },[navigate]);
     return (
-        <AuthContext.Provider value={{isLoggedIn,setLoggedIn}}>
+        <AuthContext.Provider value={{isLoggedIn,setLoggedIn,user,setUser}}>
             {props.children}
         </AuthContext.Provider>
     )

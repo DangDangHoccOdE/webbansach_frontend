@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { useAuth } from "../../layouts/utils/AuthContext";
+import { useContext } from "react";
+import { CartContext } from "./CartContext";
 
 interface AddToCartProps{
     bookId:number,
@@ -11,7 +13,7 @@ interface AddToCartProps{
 const AddCartItem:React.FC<AddToCartProps> = (props)=>{
     const {isLoggedIn} = useAuth();
     const navigate = useNavigate()
-
+    const {updateCartItemCount} = useContext(CartContext);
 
     const userId = getUserIdByToken();
         const url:string = `http://localhost:8080/cart-items/addCartItem`
@@ -36,6 +38,7 @@ const AddCartItem:React.FC<AddToCartProps> = (props)=>{
 
                 const data = await response.json();
                 if(response.ok){
+                    updateCartItemCount();
                     setTimeout(()=>{
                         alert(data.content)
                     },1000)

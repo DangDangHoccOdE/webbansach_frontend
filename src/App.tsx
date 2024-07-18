@@ -35,6 +35,8 @@ import DeleteBookOfCategory_Admin from "./admin/category/DeleteBookOfCategory";
 import ShowAllCategory_Admin from "./admin/category/ShowAllCategory";
 import ShowCart from "./user/cartItem/ShowCartItemByUser";
 import DeleteBookOfCart from "./user/cartItem/DeleteCartItems";
+import Payment from "./user/payment/Payment";
+import { CartProvider } from "./user/cartItem/CartContext";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -42,6 +44,7 @@ function App() {
   return (
       <BrowserRouter>
           <AuthProvider>
+            <CartProvider>
           <Navbar setBookNameFind={setBookNameFind}/>
           <Routes>
               <Route path="/" element={<HomePage  bookNameFind={bookNameFind} />} />
@@ -75,8 +78,10 @@ function App() {
               <Route path="/category/deleteBookOfCategory/:categoryId/:bookId" element={<DeleteBookOfCategory_Admin/>}/>
               <Route path="/user/showCart/:userId" element={<ShowCart/>}></Route>
               <Route path="/cart/deleteCartItem/:cartItemId/:userId" element={<DeleteBookOfCart/>}></Route>
+              <Route path="/payment" element={<Payment/>}></Route>
             </Routes>
           <Footer/>
+           </CartProvider>
           </AuthProvider>
 
         </BrowserRouter>

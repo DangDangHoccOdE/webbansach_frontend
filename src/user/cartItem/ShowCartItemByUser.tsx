@@ -19,8 +19,8 @@ const ShowCart=()=>{
     const [iconImageList,setIconImageList]=useState<ImageModel[]>([])
     const [selectAll,setSelectAll] = useState(false); // Trạng thái cho checkbox "Tất cả"
     const [selectedItems, setSelectedItems] = useState<number[]>([]); // Trạng thái cho các checkbox
-    // const [calculateTotal,setCalculateTotal] = useState(0);
-
+    const [total,setTotal] = useState(0);
+  
     const userIdNumber = parseInt(userId+''); 
     useEffect(()=>{
         if(!isLoggedIn){
@@ -79,6 +79,32 @@ const ShowCart=()=>{
         fetchIconImageList();
     },[bookListOfCart])
 
+    useEffect(() => {
+        const updateTotal = async () => {
+          const totalValue = await calculateTotal();
+          setTotal(totalValue);
+        };
+    
+        updateTotal();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [selectedItems]);
+
+      const calculateTotal = async()=>{ // Tính tổng tiến
+        let total = 0;
+  
+        const calculate = selectedItems.map(async(cardItemId)=>{
+          const book = await getBookByCartItem(cardItemId);
+          const item = cartItem.find(item=>item.cartItemId === cardItemId);
+          if(book && item){
+              return book.price * item.quantity;
+          }
+          return 0;
+      })
+        const totalPrice = await Promise.all(calculate);
+        total = totalPrice.reduce((sum,price)=>sum+price,0); // sum là giá trị tích lũy sau mỗi lần , price là giá hiện tại
+        return total;
+      }
+      
     const handleDelete=(cartItemId:number)=>{ // Xóa sách trong giỏ hàng
         const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa!")
         if(!userConfirm){
@@ -88,7 +114,7 @@ const ShowCart=()=>{
         }
     }
 
-    const handleQuantity = (event:ChangeEvent<HTMLInputElement>,book:BookModel)=>{ 
+    const handleQuantity = (event:ChangeEvent<HTMLInputElement>,book:BookModel)=>{  // Số lượng
         const quantityNow = parseInt(event.target.value);
         const inventoryNumber = book && book.quantity?book.quantity:0;
         if(!isNaN(quantityNow) && quantityNow>=1 && quantityNow<=inventoryNumber){
@@ -143,16 +169,12 @@ const ShowCart=()=>{
         }
     }
 
-    const calculateTotal = ()=>{ // Tính tổng tiến
-      let total = 0;
-      selectedItems.forEach((cardItemId,index)=>{
-        const book = bookListOfCart[index];
-        const item = cartItem.find(item=>item.cartItemId === cardItemId)
-        if(book && item){
-            total += book.price * item.quantity;
+    const handleClickBuy = ()=>{
+        if(selectedItems.length>0){
+            navigate("/payment", { state: { selectedItems, cartItems: cartItem, totalPrice: total } });
+        }else{
+            alert("Vui lòng chọn ít nhất một sản phẩm để mua hàng.");
         }
-      })
-      return total;
     }
 
     if(!isLoggedIn){
@@ -232,14 +254,14 @@ const ShowCart=()=>{
                                 <h5 className="card-title">Tính tiền</h5>
                                 <div className="d-flex justify-content-between mb-2">
                                     <span>Tạm tính</span>
-                                    <span>{NumberFormat(calculateTotal())} đ</span>
+                                    <span>{NumberFormat(total)} đ</span>
                                 </div>
                                 <hr />
                                 <div className="d-flex justify-content-between mb-3">
                                     <strong>Tổng tiền</strong>
-                                    <strong style={{ color: "red", fontSize: "18px" }}>{NumberFormat(calculateTotal())} đ</strong>
+                                    <strong style={{ color: "red", fontSize: "18px" }}>{NumberFormat(total)} đ</strong>
                                 </div>
-                                <button className="btn btn-danger w-100">Mua hàng</button>
+                                <button className="btn btn-danger w-100" onClick={handleClickBuy}>Mua hàng</button>
                                 
                                 <div className="mt-3">
                                     <input type="text" className="form-control mb-2" placeholder="Nhập mã giảm giá" />
