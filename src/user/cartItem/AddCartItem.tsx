@@ -4,6 +4,7 @@ import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { useAuth } from "../../layouts/utils/AuthContext";
 import { useContext } from "react";
 import { CartContext } from "./CartContext";
+import { toast } from "react-toastify";
 
 interface AddToCartProps{
     bookId:number,
@@ -40,10 +41,10 @@ const AddCartItem:React.FC<AddToCartProps> = (props)=>{
                 if(response.ok){
                     updateCartItemCount();
                     setTimeout(()=>{
-                        alert(data.content)
+                        toast.success(data.content)
                     },1000)
                 }else{
-                    alert(data.content || "Lỗi, không thể thêm vào giỏ hàng")
+                    toast.error(data.content || "Lỗi, không thể thêm vào giỏ hàng")
                 }
             }catch(error){
                 console.log({error})

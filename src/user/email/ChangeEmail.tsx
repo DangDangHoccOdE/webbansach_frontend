@@ -7,6 +7,7 @@ import { getUserByUsername } from "../../api/UserAPI";
 import { checkEmail } from "../../api/AccountAPI";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import { toast } from "react-toastify";
 
 const ChangeEmail: React.FC = () => {
     const { isLoggedIn } = useAuth();
@@ -38,14 +39,13 @@ const ChangeEmail: React.FC = () => {
                     .catch((error) => {
                         console.error("Lỗi load info user!", error);
                         setNotice("Không thể load được thông tin user!");
-                        alert("Lỗi load info user!");
+                        toast.error("Lỗi load info user!");
                     })
                     .finally(() => {
                         setIsLoading(false); // Kết thúc hiển thị biểu tượng loading
                     });
             } else {
-                console.log("Không có thông tin user!");
-                alert("Không có thông tin user!");
+                toast.error("Không có thông tin user!");
                 navigate("/");
             }
         }

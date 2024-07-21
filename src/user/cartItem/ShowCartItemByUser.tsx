@@ -8,6 +8,7 @@ import { getAllIconImage } from "../../layouts/utils/ImageService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import CartItemModel from "../../models/CartItemModel";
 import { getBookByCartItem } from "../../api/BookAPI";
+import { toast } from "react-toastify";
 
 const ShowCart=()=>{
     const {userId} = useParams();
@@ -24,8 +25,7 @@ const ShowCart=()=>{
     const userIdNumber = parseInt(userId+''); 
     useEffect(()=>{
         if(!isLoggedIn){
-            alert("Bạn phải đăng nhập để tiếp tục");
-            navigate("/",{replace:true})
+            navigate("/login",{replace:true})
             return;
         }
 
@@ -173,7 +173,7 @@ const ShowCart=()=>{
         if(selectedItems.length>0){
             navigate("/payment", { state: { selectedItems, cartItems: cartItem, totalPrice: total } });
         }else{
-            alert("Vui lòng chọn ít nhất một sản phẩm để mua hàng.");
+            toast.error("Vui lòng chọn ít nhất một sản phẩm để mua hàng.");
         }
     }
 

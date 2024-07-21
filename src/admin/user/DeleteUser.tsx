@@ -3,6 +3,7 @@ import fetchWithAuth from "../../layouts/utils/AuthService";
 import { useEffect } from "react";
 import GetAllUser_Admin from "./GetAllUser";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const DeleteUser:React.FC=()=>{
     const {username} = useParams();
@@ -21,9 +22,9 @@ const DeleteUser:React.FC=()=>{
 
         const data =await response.json();
         if(response.ok){
-            alert(data.content);
+            toast.success(data.content);
         }else{
-            alert(data.content||"Đã có lỗi xảy ra, không thể xóa!");
+            toast.error(data.content||"Đã có lỗi xảy ra, không thể xóa!");
         }
     }catch(error){
         console.error({error});

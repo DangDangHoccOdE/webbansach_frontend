@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import ShowCart from "./ShowCartItemByUser";
 import { CartContext } from "./CartContext";
+import { toast } from "react-toastify";
 
 const DeleteCartItems = () => {
     const {cartItemId} = useParams();
@@ -25,10 +26,10 @@ const DeleteCartItems = () => {
                 const data = await response.json();
                 if(response.ok){
                     updateCartItemCount();
-                    alert(data.content);
+                    toast.success(data.content);
                     navigate(`/user/showCart/${userId}`);
                 }else{
-                    alert(data.content || "Lỗi không thể xóa sách giỏ hàng");
+                    toast.error(data.content || "Lỗi không thể xóa sách giỏ hàng");
                 }
             }catch(error){
                 console.log({error})

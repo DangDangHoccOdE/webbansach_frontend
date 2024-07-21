@@ -22,8 +22,7 @@ const ShowWishListByUser=()=>{
 
     useEffect(()=>{
         if (!isLoggedIn) {  // Kiểm tra người dùng đã đăng nhập chưa
-            alert("Bạn phải đăng nhập để tiếp tục")
-            navigate("/")
+            navigate("/login")
             return;
         }
 

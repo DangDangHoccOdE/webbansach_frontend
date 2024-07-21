@@ -35,3 +35,27 @@ export async function showAllVouchers_Admin() :Promise<VoucherModel[]>{
     return showAllVouchers(url);
 }
 
+export async function getVoucherById(voucherId:number):Promise<VoucherModel|null>{
+    const url:string= `http://localhost:8080/vouchers/${voucherId}`
+
+    try{
+        const response = await fetchWithAuth(url);
+        if(!response){
+            throw new Error("Không thể lấy được voucher!");
+        }
+        const data =await response.json();
+        return({
+            voucherId:data.voucherId,
+            code:data.code,
+            discountValue:data.discountValue,
+            expiredDate:data.expiredDate,
+            isActive:data.isActive,
+            quantity:data.quantity,
+            voucherImage:data.voucherImage,
+            describe:data.describe
+        })
+    }catch(error){
+        console.log({error})
+        return null;
+    }
+}

@@ -6,6 +6,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../layouts/utils/AuthContext";
 import fetchWithAuth from "../layouts/utils/AuthService";
 import useScrollToTop from "../hooks/ScrollToTop";
+import { toast } from "react-toastify";
 
 const UserInformation: React.FC = () => {
     const { isLoggedIn } = useAuth();
@@ -33,8 +34,7 @@ const UserInformation: React.FC = () => {
     
     useEffect(() => {
         if (!isLoggedIn) {
-            alert("Bạn phải đăng nhập để tiếp tục")
-            navigate("/")
+            navigate("/login")
             return;
         }
     
@@ -169,7 +169,7 @@ const UserInformation: React.FC = () => {
             const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
 
             if (fileSizeInBytes > maxSizeInBytes) {
-                alert("Dung lượng file ảnh không được vượt quá 1 MB");
+                toast.error("Dung lượng file ảnh không được vượt quá 1 MB");
                 return;
             }
 

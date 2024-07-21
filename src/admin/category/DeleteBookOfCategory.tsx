@@ -3,6 +3,7 @@ import RequireAdmin from "../RequireAdmin"
 import { useEffect } from "react";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import EditCategory_Admin from "./EditCategory";
+import { toast } from "react-toastify";
 
 const DeleteBookOfCategory:React.FC=()=>{
     const {bookId} = useParams();
@@ -25,9 +26,9 @@ const DeleteBookOfCategory:React.FC=()=>{
                 })
                 const data = await response.json();
                 if(response.ok){
-                    alert(data.content)
+                    toast.success(data.content)
                 }else{
-                    alert(data.content || "Lỗi, không thể xóa sách")
+                    toast.error(data.content || "Lỗi, không thể xóa sách")
                 }
             }catch(error){
                 console.log({error})

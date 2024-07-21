@@ -3,6 +3,7 @@ import { getUsernameByToken, isToken, isTokenExpired, logout } from "./JwtServic
 import { useNavigate } from "react-router-dom";
 import UserModel from "../../models/UserModel";
 import { getUserByUsername } from "../../api/UserAPI";
+import { toast } from "react-toastify";
 
 interface AuthContextType{
     isLoggedIn:boolean;
@@ -26,7 +27,7 @@ export const AuthProvider:React.FC<AuthContextProps>=(props)=>{
             const refreshToken = localStorage.getItem("refreshToken");
 
             if(refreshToken&&isTokenExpired(refreshToken)){
-                alert("Phiên làm việc đã hết, vui lòng đăng nhập lại!")
+                toast.error("Phiên làm việc đã hết, vui lòng đăng nhập lại!")
                 logout();
                 setLoggedIn(false);
                 navigate("/login")

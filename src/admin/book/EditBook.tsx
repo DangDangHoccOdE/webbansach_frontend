@@ -12,6 +12,7 @@ import fetchWithAuth from "../../layouts/utils/AuthService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import RequireAdmin from "../RequireAdmin";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import { toast } from "react-toastify";
 
 
 const EditBook: React.FC = () => {
@@ -41,7 +42,7 @@ const EditBook: React.FC = () => {
                  book=>setEditBook(book)
             ).catch(
                  error=>{
-                    alert("Lỗi không thể tìm thấy sách!");
+                    toast.error("Lỗi không thể tìm thấy sách!");
                     console.error({error});
                  })
 
@@ -50,7 +51,7 @@ const EditBook: React.FC = () => {
             .then(images=>setImageList(images)
             ).catch(
                 error=>{
-                    alert("Lỗi không thể tải ảnh của sách!")
+                    toast.error("Lỗi không thể tải ảnh của sách!")
                     console.error({error});
                 })
 
@@ -59,7 +60,7 @@ const EditBook: React.FC = () => {
                 .then(icon=>setIconImage(icon)
                 ).catch(
                     error=>{
-                        alert("Lỗi không thể tải ảnh của sách!")
+                        toast.error("Lỗi không thể tải ảnh của sách!")
                         console.error({error});
         })
 
@@ -68,7 +69,7 @@ const EditBook: React.FC = () => {
                 .then(category=>setCategoryOfBook(category)
                  ).catch(
                     error=>{
-                        alert("Lỗi không thể tải ảnh của sách!")
+                        toast.error("Lỗi không thể tải ảnh của sách!")
                         console.error({error});
         })
         setIsLoading(false);
@@ -228,10 +229,10 @@ const EditBook: React.FC = () => {
             )})
 
                 if(response.ok){
-                        alert("Đã sửa sách thành công!")
+                    toast.success("Đã sửa sách thành công!")
                             console.log("Đã sửa sách thành công!")
                         }else{
-                            alert("Gặp lỗi trong quá trình sửa sách!")
+                            toast.error("Gặp lỗi trong quá trình sửa sách!")
                             console.log("Sách chưa được sửa!")
                             setIsLoading(false);
                 }

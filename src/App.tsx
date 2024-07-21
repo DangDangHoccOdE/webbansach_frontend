@@ -38,8 +38,11 @@ import DeleteBookOfCart from "./user/cartItem/DeleteCartItems";
 import Payment from "./user/payment/Payment";
 import { CartProvider } from "./user/cartItem/CartContext";
 import AddVoucher_Admin from "./admin/voucher/AddVoucher";
-import ShowAllVoucher_Admin from "./admin/voucher/ShowAllVourcher";
-
+import DeleteVoucher_Admin from "./admin/voucher/DeleteVoucher";
+import EditVoucherAdmin from "./admin/voucher/EditVoucher";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ShowAllVoucher_Admin from "./admin/voucher/ShowAllVoucher";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   
@@ -84,9 +87,12 @@ function App() {
 
               <Route path="/voucher/addVoucher" element={<AddVoucher_Admin/>}></Route>
               <Route path="/voucher/showAllVoucherAdmin" element={<ShowAllVoucher_Admin/>}></Route>
+              <Route path="/voucher/deleteVoucher/:voucherId" element={<DeleteVoucher_Admin/>}></Route>
+              <Route path="/voucher/editVoucher/:voucherId" element={<EditVoucherAdmin/>}></Route>
 
             </Routes>
           <Footer/>
+          <ToastContainer/>
            </CartProvider>
           </AuthProvider>
 

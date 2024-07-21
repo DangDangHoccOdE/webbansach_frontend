@@ -1,27 +1,71 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import RequireAdmin from "../RequireAdmin"
-import getBase64 from "../../layouts/utils/GetBase64";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import VoucherModel from "../../models/VoucherModel";
+import { getVoucherById } from "../../api/Voucher";
 import fetchWithAuth from "../../layouts/utils/AuthService";
+import getBase64 from "../../layouts/utils/GetBase64";
 import useScrollToTop from "../../hooks/ScrollToTop";
 
-const AddVoucher :React.FC=()=>{
+const EditVoucher:React.FC=()=>{
+    const {voucherId} = useParams();
+    const voucherIdNumber = parseInt(voucherId+'')
+    const [findVoucher,setFindVoucher] = useState<VoucherModel|null>(null);
+    const navigate = useNavigate();
+    useScrollToTop();
+
+    useEffect(()=>{
+        const getVoucher = async ()=>{
+            try{
+                const data = await getVoucherById(voucherIdNumber);
+                if(!data){
+                    navigate("error-404",{replace:true});
+                    return;
+                }else{
+                    setFindVoucher(data);
+                }
+            }catch(error){
+                console.log({error})
+                navigate("error-404");
+            }
+            
+        }
+
+        getVoucher();
+    },[navigate, voucherIdNumber])
+
     const [errorDiscountValue,setErrorDiscountValue] = useState("")
     const [errorExpiredDate,setErrorExpiredDate] = useState("")
     const [notice,setNotice] = useState("")
     const [image,setImage] = useState<string|null>(null)
     const [hasCalled,setHasCalled] = useState(false);
     const [isError,setIsError] = useState(false);
-    useScrollToTop();
 
     const [voucher,setVoucher] = useState({
+        voucherId:0,
         code:"",
         describe:"",
         discountValue:0,
         quantity:0,
         expiredDate:"",
-        voucherImage:image,
-        isActive:1,
+        voucherImage:"",
+        isActive:true,
     })
+
+    useEffect(() => {
+        if (findVoucher) {
+            setVoucher({
+                voucherId:findVoucher.voucherId||0,
+                code: findVoucher.code || "",
+                describe: findVoucher.describe || "",
+                discountValue: findVoucher.discountValue || 0,
+                quantity: findVoucher.quantity || 0,
+                expiredDate: findVoucher.expiredDate || "",
+                voucherImage: findVoucher.voucherImage || "",
+                isActive: findVoucher.isActive || true,
+            });
+        }
+    }, [findVoucher]);
 
     useEffect(()=>{
         if(image){
@@ -45,13 +89,14 @@ const AddVoucher :React.FC=()=>{
         const expiredDateValid = !handleExpiredDate();
 
         if(discountValueValid && expiredDateValid){
+            console.log(voucher)
             try{
                 setHasCalled(true);
                 setNotice("Đang xử lý...")
                 setIsError(true);
-                const url:string=`http://localhost:8080/vouchers/addVoucherAdmin`
+                const url:string=`http://localhost:8080/vouchers/editVoucherAdmin/${voucherIdNumber}`
                 const response = await fetchWithAuth(url,{
-                    method:"POST",
+                    method:"PUT",
                     headers:{
                         "Content-Type":"application/json",
                         "Authorization":`Bearer ${localStorage.getItem("accessToken")}`
@@ -67,10 +112,9 @@ const AddVoucher :React.FC=()=>{
                     setNotice(data.content)
                 }else{
                     setIsError(true);
-                    setNotice(data.content || "Lỗi không thể tạo voucher!");
+                    setNotice(data.content || "Lỗi không thể chỉnh sửa voucher!");
                 }
             }catch(error){
-                setNotice("Đã xảy ra lỗi trong quá trình đăng ký tài khoản!")
                 console.log({error})
                 setIsError(true);
             }finally{
@@ -97,7 +141,8 @@ const AddVoucher :React.FC=()=>{
         }
 
         const minDate = new Date("1900-01-01");
-        const nowDate = new Date()
+        const nowDate = new Date();
+        nowDate.setDate(nowDate.getDate()-1);
         const expiredDate = new Date(voucher.expiredDate);
         if(minDate > expiredDate || expiredDate<nowDate){
             setErrorExpiredDate("Ngày hết hạn không hợp lệ!")
@@ -125,7 +170,7 @@ const AddVoucher :React.FC=()=>{
 
     return(
         <div className="container">
-            <h1 className="mt-5 text-center">Thêm voucher</h1>
+            <h1 className="mt-5 text-center">Chỉnh sửa voucher</h1>
             <div className="mb-3 col-md-6 col-12 mx-auto">
                 <form onSubmit={handleSubmit} className="form">
                     <div className="mb-3">
@@ -205,5 +250,5 @@ const AddVoucher :React.FC=()=>{
         )
         }
 
-const AddVoucher_Admin = RequireAdmin(AddVoucher)
-export default AddVoucher_Admin
+const EditVoucherAdmin = RequireAdmin(EditVoucher);
+export default EditVoucherAdmin;

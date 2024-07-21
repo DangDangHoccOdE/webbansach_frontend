@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import EditWishList from "./EditWishList";
+import { toast } from "react-toastify";
 
 const DeleteBookOfWishList=()=>{
     const {bookId} = useParams();
@@ -29,14 +30,14 @@ const DeleteBookOfWishList=()=>{
 
                 const data = await response.json();
                 if(response.ok){
-                    alert(data.content);
+                    toast.success(data.content);
                     navigate(`/wishList/editWishList/${wishListId}`,{replace:true});
                 }else{
-                    alert(data.content || "Lỗi không thể xóa sách")
+                    toast.error(data.content || "Lỗi không thể xóa sách")
                 }
             }catch(error){
                 console.log({error});
-                alert("Lỗi, không thể xóa sách");
+                toast.error("Lỗi, không thể xóa sách");
             }
         }
 

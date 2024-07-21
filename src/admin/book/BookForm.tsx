@@ -6,6 +6,7 @@ import fetchWithAuth from "../../layouts/utils/AuthService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import RequireAdmin from "../RequireAdmin";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import { toast } from "react-toastify";
 
 
 const BookForm: React.FC = (props) => {
@@ -137,7 +138,7 @@ const BookForm: React.FC = (props) => {
             }
         )
             if(response.ok){
-                     alert("Đã thêm sách thành công!")
+                     toast.success("Đã thêm sách thành công!")
                         setBook({
                             bookId:0,
                             bookName:'',
@@ -160,7 +161,7 @@ const BookForm: React.FC = (props) => {
                         handleReset();
                         console.log("Đã thêm sách thành công!")
                     }else{
-                        alert("Gặp lỗi trong quá trình thêm sách!")
+                        toast.error("Gặp lỗi trong quá trình thêm sách!")
                         console.log("Sách chưa được thêm!")
             }
         

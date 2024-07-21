@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ShowWishListByUser from "./ShowWishListByUser";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const DeleteWishList=()=>{
     const {wishListId} = useParams();
@@ -21,10 +22,10 @@ const DeleteWishList=()=>{
              
             const data =await response.json();
             if(response.ok){
-                alert(data.content);
+                toast.success(data.content);
                 navigate(`/user/showWishList/${userId}`,{replace:true});
             }else{
-                alert(data.content||"Đã có lỗi xảy ra, không thể xóa!");
+                toast.error(data.content||"Đã có lỗi xảy ra, không thể xóa!");
             }
         }catch(error){
             console.error({error});
