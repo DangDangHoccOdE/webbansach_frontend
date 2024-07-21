@@ -136,7 +136,6 @@ const BookForm: React.FC = (props) => {
                 body:JSON.stringify(book)
             }
         )
-            console.log(response)
             if(response.ok){
                      alert("Đã thêm sách thành công!")
                         setBook({

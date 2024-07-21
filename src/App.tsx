@@ -37,6 +37,8 @@ import ShowCart from "./user/cartItem/ShowCartItemByUser";
 import DeleteBookOfCart from "./user/cartItem/DeleteCartItems";
 import Payment from "./user/payment/Payment";
 import { CartProvider } from "./user/cartItem/CartContext";
+import AddVoucher_Admin from "./admin/voucher/AddVoucher";
+import ShowAllVoucher_Admin from "./admin/voucher/ShowAllVourcher";
 
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
@@ -79,6 +81,10 @@ function App() {
               <Route path="/user/showCart/:userId" element={<ShowCart/>}></Route>
               <Route path="/cart/deleteCartItem/:cartItemId/:userId" element={<DeleteBookOfCart/>}></Route>
               <Route path="/payment" element={<Payment/>}></Route>
+
+              <Route path="/voucher/addVoucher" element={<AddVoucher_Admin/>}></Route>
+              <Route path="/voucher/showAllVoucherAdmin" element={<ShowAllVoucher_Admin/>}></Route>
+
             </Routes>
           <Footer/>
            </CartProvider>
