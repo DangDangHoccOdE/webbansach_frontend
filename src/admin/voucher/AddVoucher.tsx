@@ -98,6 +98,7 @@ const AddVoucher :React.FC=()=>{
 
         const minDate = new Date("1900-01-01");
         const nowDate = new Date()
+        nowDate.setDate(nowDate.getDate()-1);
         const expiredDate = new Date(voucher.expiredDate);
         if(minDate > expiredDate || expiredDate<nowDate){
             setErrorExpiredDate("Ngày hết hạn không hợp lệ!")

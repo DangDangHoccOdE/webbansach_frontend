@@ -95,7 +95,7 @@ const GetAllUser:React.FC=()=>{
                                 <td>{
                                     Array.isArray(roles[user.userId])?roles[user.userId].join(", "):"Không có vai trò"
                                 }</td>
-                                <td>{user.active ?"1":"0"}</td>
+                                <td>{user.active ?"Đã kích hoạt":"Chưa kích hoạt"}</td>
                                 <td style={{whiteSpace:"nowrap"}}>
                                     <div className="admin-button mt-2 text-end">
                                         <Link to={`/user/info/${user.userName}`} className="btn btn-primary me-2">

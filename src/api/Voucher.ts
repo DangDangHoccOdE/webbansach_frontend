@@ -35,8 +35,24 @@ export async function showAllVouchers_Admin() :Promise<VoucherModel[]>{
     return showAllVouchers(url);
 }
 
-export async function getVoucherById(voucherId:number):Promise<VoucherModel|null>{
+export async function showAllVouchers_User(userId:number) :Promise<VoucherModel[]>{
+    const url:string=`http://localhost:8080/users/${userId}/vouchers`;
+    return showAllVouchers(url);
+}
+
+export async function findVoucherByCodeContaining(code:string) {
+    const url:string=`http://localhost:8080/vouchers/search/findByCodeContaining?code=${code}`;
+
+    return getVoucher(url);
+}
+
+export async function getVoucherById(voucherId:number) {
     const url:string= `http://localhost:8080/vouchers/${voucherId}`
+
+    return getVoucher(url);
+}
+
+export async function getVoucher(url:string):Promise<VoucherModel|null>{
 
     try{
         const response = await fetchWithAuth(url);

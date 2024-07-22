@@ -4,14 +4,18 @@ import VoucherModel from "../../models/VoucherModel";
 import { showAllVouchers_Admin } from "../../api/Voucher";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faEdit, faGift, faPlus, faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import { toast } from "react-toastify";
 
 const ShowAllVoucher : React.FC=()=>{
     const [allVouchers,setAllVouchers] = useState<VoucherModel[]>([])
     const [isLoading,setIsLoading] = useState(false);
     const [notice,setNotice] = useState("")
     const navigate = useNavigate();
+    const [selectedVouchers,setSelectedVouchers] = useState<number[]>([]);
+    const [selectAll,setSelectAll] = useState(false);
+
     useScrollToTop();
 
     useEffect(()=>{
@@ -22,7 +26,18 @@ const ShowAllVoucher : React.FC=()=>{
                 if(vouchers.length===0){
                     setNotice("Hiện chưa có voucher nào!");
                 }
-                setAllVouchers(vouchers);
+                if(vouchers){
+                  const updateVouchers= vouchers.map(voucher=>{
+                      const nowDate = new Date();
+                      nowDate.setDate(nowDate.getDate()-1);
+                      const expiredDate = new Date(voucher.expiredDate);
+                      if(expiredDate<nowDate){
+                         return {...voucher,isActive:false}                    
+                      }
+                      return voucher;
+                  })
+                  setAllVouchers(updateVouchers)
+              }
             }catch(error){
                 console.log({error})
             }finally{
@@ -47,17 +62,66 @@ const ShowAllVoucher : React.FC=()=>{
         }
     }
 
+    const handleSelectAll=()=>{
+        setSelectAll(!selectAll);
+        if(!selectAll){
+          setSelectedVouchers(allVouchers.map(voucher=>voucher.voucherId))
+        }else{
+          setSelectedVouchers([]);
+        }
+    }
+
+    const handleSelectVoucher=(voucherId:number)=>{ // Xóa những voucher đã chọn
+        if(selectedVouchers.includes(voucherId)){
+          setSelectedVouchers(selectedVouchers.filter(id=>id!==voucherId));
+        }else{
+          setSelectedVouchers([...selectedVouchers,voucherId]);
+        }
+    }
+
+    const handleDeleteSelected=()=>{
+
+    }
+
+    const handleGiftVoucher=()=>{ // Tặng voucher cho người dùng
+        const adminConfirm = window.confirm("Bạn muốn tặng voucher cho người dùng");
+        if(!adminConfirm){
+          return;
+        }else{
+          if(selectedVouchers.length>0){
+            navigate("/vouchers/GiftVouchersToUsers",{state:{selectedVouchers}});
+          }else{
+            toast.error("Vui lòng chọn ít nhất 1 voucher để tặng");
+          }
+        }
+    }
+
     return(
         <div className="container">
         <h1 className="mt-4 mb-4">Quản lý Voucher</h1>
         {isLoading && <div className="text-center"><div className="spinner-border" role="status"></div></div>}
-        
-        <div className="d-flex justify-content-end mb-3">
-          <button className="btn btn-primary" onClick={handleAddVoucher}>
+        <div className="d-flex justify-content-center">
+                <label htmlFor="findVoucher"className="form-label me-2">Mã Voucher</label>
+                <input type="text" id="findVoucher" className="form-control-sm me-2" placeholder="Nhập mã voucher của bạn vào đây"></input>
+                <button type="submit" className="btn btn-secondary">Tìm</button>
+            </div>
+        <div className="d-flex justify-content-end mb-3 mt-3">
+          <button className="btn btn-primary me-2" onClick={handleAddVoucher}>
             <FontAwesomeIcon icon={faPlus} className="me-2" /> Thêm Voucher
           </button>
+
+          <button className="btn btn-warning me-2" onClick={handleGiftVoucher}>
+          <FontAwesomeIcon icon={faGift} className="me-2" /> Tặng Voucher
+        </button>
+        <button className="btn btn-danger" onClick={handleDeleteSelected}>
+          <FontAwesomeIcon icon={faTrashAlt} className="me-2" /> Xóa Tất Cả Voucher Đã Chọn
+        </button>
+
         </div>
       
+      <input type="checkbox" style={{marginRight:"10px"}} checked={selectAll} onChange={handleSelectAll}></input>
+      <b>Tất cả ({allVouchers.length})</b>
+
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {allVouchers?.map((voucher, index) => (
             <div key={index} className="col">
@@ -102,6 +166,10 @@ const ShowAllVoucher : React.FC=()=>{
                       <span className={`badge ${voucher.isActive ? 'bg-success' : 'bg-danger'}`}>
                         {voucher.isActive ? 'Kích hoạt' : 'Vô hiệu'}
                       </span>
+                      <input type="checkbox"
+                          checked={selectedVouchers.includes(allVouchers[index].voucherId)}
+                          onChange={()=>handleSelectVoucher(allVouchers[index].voucherId)}
+                          className="ms-3"></input>
                     </div>
                     <div>
                       <Link to={`/voucher/editVoucher/${voucher.voucherId}`} className="btn btn-sm btn-outline-primary me-2">
@@ -119,7 +187,10 @@ const ShowAllVoucher : React.FC=()=>{
         </div>
         
         {notice && <div className="alert alert-info mt-3">{notice}</div>}
+        <div className="d-flex justify-content-end mt-4">
+    
       </div>
+    </div>
     )
 }
 
