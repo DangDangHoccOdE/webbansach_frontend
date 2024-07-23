@@ -45,6 +45,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ShowAllVoucher_Admin from "./admin/voucher/ShowAllVoucher";
 import ShowVoucherUser from "./user/userVoucher/ShowVoucherUser";
 import GiftVouchersToUsers_Admin from "./admin/voucher/GiftVouchersToUsers";
+import DeleteAllVouchersSelected_Admin from "./admin/voucher/DeleteAllVouchersSelected";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   
@@ -92,6 +93,7 @@ function App() {
               <Route path="/voucher/deleteVoucher/:voucherId" element={<DeleteVoucher_Admin/>}></Route>
               <Route path="/voucher/editVoucher/:voucherId" element={<EditVoucherAdmin/>}></Route>
               <Route path="/vouchers/GiftVouchersToUsers" element={<GiftVouchersToUsers_Admin/>}></Route>
+              <Route path="/vouchers/deleteAllVouchersSelected" element={<DeleteAllVouchersSelected_Admin/>}></Route>
 
               <Route path="/user/showVoucherUser" element={<ShowVoucherUser/>}></Route>
 

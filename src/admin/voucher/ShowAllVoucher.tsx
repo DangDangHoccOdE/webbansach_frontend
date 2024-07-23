@@ -79,12 +79,17 @@ const ShowAllVoucher : React.FC=()=>{
         }
     }
 
-    const handleDeleteSelected=()=>{
-
-    }
+    const handleDeleteSelected=()=>{ // Xóa nhưng voucher đã chọn
+        const adminConfirm = window.confirm("Bạn có chắc chắn muốn xóa!")
+        if(!adminConfirm){
+          return;
+        }else{
+          navigate("/vouchers/deleteAllVouchersSelected",{state:{selectedVouchers}})
+        }
+      }
 
     const handleGiftVoucher=()=>{ // Tặng voucher cho người dùng
-        const adminConfirm = window.confirm("Bạn muốn tặng voucher cho người dùng");
+        const adminConfirm = window.confirm("Bạn muốn tặng voucher cho người dùng!");
         if(!adminConfirm){
           return;
         }else{
