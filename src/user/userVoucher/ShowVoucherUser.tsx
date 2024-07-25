@@ -1,11 +1,11 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import VoucherModel from "../../models/VoucherModel";
-import { faClock } from "@fortawesome/free-solid-svg-icons";
-import { showAllVouchers_User } from "../../api/Voucher";
+import { showAllVouchers_User } from "../../api/VoucherAPI";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { useAuth } from "../../layouts/utils/AuthContext";
 import { useNavigate } from "react-router-dom";
+import VouchersProps from "../../layouts/voucher/VouchersProps";
+import handleUpdateIsActiveFromVoucher from "../../layouts/voucher/HandleUpdateIsActiveFromVoucher";
 
 const ShowVoucherUser =()=>{
     const [isLoading,setIsLoading] = useState(false);
@@ -28,16 +28,19 @@ const ShowVoucherUser =()=>{
                     setNotice("Bạn hiện chưa có voucher nào.");
                 }
                 if(fetchVouchers){
-                    const updateVouchers= fetchVouchers.map(voucher=>{
+                    // let counter = 0;
+                    const updateVouchers= fetchVouchers.map(async(voucherItem)=>{
                         const nowDate = new Date();
                         nowDate.setDate(nowDate.getDate()-1);
-                        const expiredDate = new Date(voucher.expiredDate);
-                        if(expiredDate<nowDate){
-                           return {...voucher,isActive:false}                    
+                        const expiredDate = new Date(voucherItem.expiredDate);
+                        if(expiredDate<nowDate && voucherItem.isActive){
+                          const voucher =  await handleUpdateIsActiveFromVoucher(voucherItem.voucherId) // Cập nhật lại trạng thái voucher khi hết hạn
+                          return {...voucherItem,isActive:voucher.isActive};                    
                         }
-                        return voucher;
+                        return voucherItem;
                     })
-                    setAllVouchers(updateVouchers)
+                    const update = await Promise.all(updateVouchers);
+                    setAllVouchers(update)
                 }
             }catch(error){
                 console.log({error});
@@ -49,72 +52,16 @@ const ShowVoucherUser =()=>{
         getVouchers();
     },[isLoggedIn, navigate, userId])
 
-    useEffect(()=>{
-       
-    },[])
-
-
     return(
             <div className="container">
             <h1 className="mt-4 mb-4">Kho Voucher</h1>
             {isLoading && <div className="text-center"><div className="spinner-border" role="status"></div></div>} 
-            <div className="d-flex justify-content-center">
+            <div className="d-flex justify-content-center mb-2">
                 <label htmlFor="findVoucher"className="form-label me-2">Mã Voucher</label>
                 <input type="text" id="findVoucher" className="form-control-sm me-2" placeholder="Nhập mã voucher của bạn vào đây"></input>
                 <button type="submit" className="btn btn-secondary">Lưu</button>
             </div>
-            <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-2">
-            {allVouchers?.map((voucher, index) => (
-                <div key={index} className="col">
-                <div className="card h-100 border-primary">
-                    <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">Mã: {voucher.code}</h5>
-                    <span className="badge bg-light text-primary">#{index + 1}</span>
-                    </div>
-                    <div className="card-body">
-                    <div className="row g-0">
-                        <div className="col-4 d-flex align-items-center p-2">
-                        <img 
-                            src={voucher.voucherImage} 
-                            alt="Ảnh voucher" 
-                            className="img-fluid rounded"
-                            style={{ maxHeight: '100px', objectFit: 'cover' }}
-                        />
-                        </div>
-                        <div className="col-8">
-                        <h5 className="card-title text-primary mb-2">Giảm {voucher.discountValue}%</h5>
-                        <p className="card-text mb-1">
-                            <small>Giảm tối đa </small>
-                            <span className="fw-bold">150.000đ</span>
-                        </p>
-                        <p className="card-text mb-1">
-                            <small>Đơn tối thiểu </small>
-                            <span className="fw-bold">1.000.000đ</span>
-                        </p>
-                        <p className="card-text text-muted">
-                            <small>
-                            <FontAwesomeIcon icon={faClock} className="me-1" />
-                            Hiệu lực đến: {new Date(voucher.expiredDate).toLocaleDateString()}
-                            </small>
-                        </p>
-                        </div>
-                    </div>
-                    </div>
-                    <div className="card-footer bg-transparent">
-                    <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                        <span className={`badge ${voucher.isActive ? 'bg-success' : 'bg-danger'}`}>
-                            {voucher.isActive ? 'Kích hoạt' : 'Vô hiệu'}
-                        </span>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            ))}
-            </div>
-            
-            {notice && <div className="alert alert-info mt-3">{notice}</div>}
+           <VouchersProps key={1} notice={notice} showQuantity={false} vouchers={allVouchers} showSaveVoucher={false}/>            
         </div>
 )      
 }

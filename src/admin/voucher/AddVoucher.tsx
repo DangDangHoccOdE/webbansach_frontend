@@ -20,7 +20,9 @@ const AddVoucher :React.FC=()=>{
         quantity:0,
         expiredDate:"",
         voucherImage:image,
-        isActive:1,
+        isActive:true,
+        isAvailable:false,
+        typeVoucher:""
     })
 
     useEffect(()=>{
@@ -49,6 +51,7 @@ const AddVoucher :React.FC=()=>{
                 setHasCalled(true);
                 setNotice("Đang xử lý...")
                 setIsError(true);
+
                 const url:string=`http://localhost:8080/vouchers/addVoucherAdmin`
                 const response = await fetchWithAuth(url,{
                     method:"POST",
@@ -111,7 +114,6 @@ const AddVoucher :React.FC=()=>{
     const handleVoucherImage=async(e:ChangeEvent<HTMLInputElement>)=>{ // Xử lý ảnh voucher
         if(e.target.files){
             const fileChoose = e.target.files[0];
-            console.log("File: ",fileChoose)
             if(fileChoose){
                 try{
                     const base64VoucherImage = await getBase64(fileChoose);
@@ -122,6 +124,10 @@ const AddVoucher :React.FC=()=>{
                 }
             }
         }
+    }
+
+    const handleChangeTypeVoucher=(e:ChangeEvent<HTMLSelectElement>)=>{ // Xử lý thay đổi loại voucher
+        setVoucher({...voucher,typeVoucher:e.target.value})
     }
 
     return(
@@ -188,6 +194,13 @@ const AddVoucher :React.FC=()=>{
                     />
                     <div style={{color:"red"}}>{errorExpiredDate}</div>
 
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="typeVoucher" className="form-label">Loại voucher</label> <span style={{color:"red"}}> *</span>
+                    <select value={voucher.typeVoucher}  className=" form-select" onChange={handleChangeTypeVoucher}>
+                        <option value="Voucher sách">Voucher sách</option>
+                        <option value="Voucher vận chuyển">Voucher vận chuyển</option>
+                    </select>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="avatar" className="form-label">Ảnh voucher</label> <span style={{color:"red"}}> *</span>

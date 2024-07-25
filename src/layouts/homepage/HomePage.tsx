@@ -3,6 +3,7 @@ import Carousel from "./components/Carousel";
 import ListProduct from "../product/ListProduct";
 import { useParams } from "react-router-dom";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import BookStoreFeatureBar from "./components/BookStoreFeatureBar";
 interface HomePageProps {
   bookNameFind: string;
 }
@@ -27,6 +28,7 @@ function HomePage({ bookNameFind }: HomePageProps) {
     <div>
       <Banner />
       <Carousel />
+      <BookStoreFeatureBar/>
       <ListProduct bookNameFind={bookNameFind} categoryId={categoryNumber} />
     </div>
   );

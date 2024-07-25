@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import RequireAdmin from "../RequireAdmin"
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import VoucherModel from "../../models/VoucherModel";
-import { getVoucherById } from "../../api/Voucher";
+import { getVoucherById } from "../../api/VoucherAPI";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import getBase64 from "../../layouts/utils/GetBase64";
 import useScrollToTop from "../../hooks/ScrollToTop";
@@ -50,6 +50,8 @@ const EditVoucher:React.FC=()=>{
         expiredDate:"",
         voucherImage:"",
         isActive:true,
+        isAvailable:false,
+        typeVoucher:"",
     })
 
     useEffect(() => {
@@ -63,6 +65,8 @@ const EditVoucher:React.FC=()=>{
                 expiredDate: findVoucher.expiredDate || "",
                 voucherImage: findVoucher.voucherImage || "",
                 isActive: findVoucher.isActive || true,
+                isAvailable: findVoucher.isAvailable || false,
+                typeVoucher:findVoucher.typeVoucher || ""
             });
         }
     }, [findVoucher]);
@@ -168,11 +172,24 @@ const EditVoucher:React.FC=()=>{
         }
     }
 
+    
+    const handleChangeTypeVoucher=(e:ChangeEvent<HTMLSelectElement>)=>{ // Xử lý thay đổi loại voucher
+        setVoucher({...voucher,typeVoucher:e.target.value})
+    }
+
     return(
         <div className="container">
             <h1 className="mt-5 text-center">Chỉnh sửa voucher</h1>
             <div className="mb-3 col-md-6 col-12 mx-auto">
                 <form onSubmit={handleSubmit} className="form">
+                <input 
+                            type="number"
+                            id="voucherId"
+                            className="form-control"
+                            value={voucher.voucherId} 
+                            onChange={(e) => setVoucher({...voucher,voucherId:parseInt(e.target.value)})}
+                            readOnly hidden
+                        />
                     <div className="mb-3">
                         <label htmlFor="voucherCode" className="form-label">Mã voucher</label> <span style={{color:"red"}}> *</span>
                         <input 
@@ -181,7 +198,7 @@ const EditVoucher:React.FC=()=>{
                             className="form-control"
                             value={voucher.code} 
                             onChange={(e) => setVoucher({...voucher,code:e.target.value})}
-                            required
+                            
                         />
                     </div> 
                 <div className="mb-3">
@@ -234,8 +251,15 @@ const EditVoucher:React.FC=()=>{
 
                 </div>
                 <div className="mb-3">
+                    <label htmlFor="typeVoucher" className="form-label">Loại voucher</label> <span style={{color:"red"}}> *</span>
+                    <select value={voucher.typeVoucher}  className=" form-select" onChange={handleChangeTypeVoucher}>
+                        <option value="Voucher sách">Voucher sách</option>
+                        <option value="Voucher vận chuyển">Voucher vận chuyển</option>
+                    </select>
+                </div>
+                <div className="mb-3">
                     <label htmlFor="avatar" className="form-label">Ảnh voucher</label> <span style={{color:"red"}}> *</span>
-                    <input type="file" id="avatar"className="form-control mb-3" accept="image/**"onChange={handleVoucherImage} required></input>
+                    <input type="file" id="avatar"className="form-control mb-3" accept="image/**"onChange={handleVoucherImage} ></input>
                     {
                         voucher.voucherImage && <img src={voucher.voucherImage} alt="Ảnh voucher" style={{width:"100px"}}></img>
                     }

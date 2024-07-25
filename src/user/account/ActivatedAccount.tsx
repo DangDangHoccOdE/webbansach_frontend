@@ -37,7 +37,7 @@ function ActivatedAccount() {
   }, [email, activationCode]);
 
   return (
-    <div>
+    <div className="text-center">
       <h1>Kích hoạt tài khoản</h1>
         <h4 style={{color:isActivated?"green":"red"}}>{notice}</h4>
         {

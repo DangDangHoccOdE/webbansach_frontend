@@ -7,6 +7,8 @@ class VoucherModel{
   voucherImage:string;
   quantity:number;
   describe:string;
+  isAvailable:boolean;
+  typeVoucher:string;
 
   constructor(  voucherId:number,
     code:string,
@@ -15,7 +17,8 @@ class VoucherModel{
     isActive:boolean,
     voucherImage:string,
     quantity:number,
-  describe:string){
+  describe:string,  isAvailable:boolean,
+  typeVoucher:string){
         this.voucherId = voucherId;
         this.code= code;
         this.isActive=isActive;
@@ -24,6 +27,8 @@ class VoucherModel{
         this.voucherImage = voucherImage;
         this.quantity =quantity;
         this.describe =describe;
+        this.isAvailable = isAvailable;
+        this.typeVoucher = typeVoucher;
     }
 
 }

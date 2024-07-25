@@ -46,6 +46,8 @@ import ShowAllVoucher_Admin from "./admin/voucher/ShowAllVoucher";
 import ShowVoucherUser from "./user/userVoucher/ShowVoucherUser";
 import GiftVouchersToUsers_Admin from "./admin/voucher/GiftVouchersToUsers";
 import DeleteAllVouchersSelected_Admin from "./admin/voucher/DeleteAllVouchersSelected";
+import AddVouchersToVoucherAvailable_Admin from "./admin/voucher/AddVouchersToVoucherAvailable";
+import ListVoucher from "./layouts/voucher/ListVoucher.tsx";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   
@@ -94,6 +96,9 @@ function App() {
               <Route path="/voucher/editVoucher/:voucherId" element={<EditVoucherAdmin/>}></Route>
               <Route path="/vouchers/GiftVouchersToUsers" element={<GiftVouchersToUsers_Admin/>}></Route>
               <Route path="/vouchers/deleteAllVouchersSelected" element={<DeleteAllVouchersSelected_Admin/>}></Route>
+              <Route path="/vouchers/addVouchersToVoucherAvailable" element={<AddVouchersToVoucherAvailable_Admin/>}></Route>
+
+              <Route path="/vouchers" element={<ListVoucher/>}></Route>
 
               <Route path="/user/showVoucherUser" element={<ShowVoucherUser/>}></Route>
 
