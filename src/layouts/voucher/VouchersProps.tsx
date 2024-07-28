@@ -16,7 +16,7 @@ const VouchersProps:React.FC<VoucherProps>=(props)=>{
                 {
                      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                      {props.vouchers?.map((voucher, index) => (
-                       <div key={index} className="col">
+                       <div key={voucher.voucherId} className="col">
                          <div className="card h-100 border-primary">
                            <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                              <h5 className="mb-0">Mã: {voucher.code}</h5>

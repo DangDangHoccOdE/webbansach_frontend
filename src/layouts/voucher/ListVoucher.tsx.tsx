@@ -5,7 +5,7 @@ import { showVouchersAvailable } from "../../api/VoucherAPI";
 import VouchersProps from "./VouchersProps";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTag, faTruck } from "@fortawesome/free-solid-svg-icons";
-import handleUpdateIsActiveFromVoucher from "./HandleUpdateIsActiveFromVoucher";
+import { updateVoucher } from "./UpdateIsActiveFromVoucher";
 
 const ListVoucher=()=>{
     useScrollToTop();
@@ -13,34 +13,31 @@ const ListVoucher=()=>{
     const [vouchersForBook,setVouchersForBook] = useState<VoucherModel[]>([])
     const [vouchersForShip,setVouchersForShip] = useState<VoucherModel[]>([])
     const [isLoading,setIsLoading] = useState(false)
-    const [notice,setNotice] = useState("");
+    const [noticeBook,setNoticeBook] = useState("");
+    const [noticeShip,setNoticeShip] = useState("");
     useEffect(()=>{
         const fetchData = async()=>{
             try{
                 setIsLoading(true);
                 const vouchersAvailable = await showVouchersAvailable();
-                if(vouchersAvailable.length===0){
-                    setNotice("Hôm nay không có voucher khuyến mại")
-                }
-                const voucherBook = vouchersAvailable.filter(voucher=>voucher.typeVoucher==="Voucher sách")
-                const updateVouchers= voucherBook.map(async(voucherItem)=>{
-                  const nowDate = new Date();
-                  nowDate.setDate(nowDate.getDate()-1);
-                  const expiredDate = new Date(voucherItem.expiredDate);
-                  if(expiredDate<nowDate && voucherItem.isActive){
-                    const voucher =  await handleUpdateIsActiveFromVoucher(voucherItem.voucherId) // Cập nhật lại trạng thái voucher khi hết hạn
-                    return {...voucherItem,isActive:voucher.isActive};                    
-                  }
-                  return voucherItem;
-              })
-              const update = await Promise.all(updateVouchers);
-              setVouchersForBook(update)
+                
+              const voucherBook = vouchersAvailable.filter(voucher=>voucher.typeVoucher==="Voucher sách")
+
+              const updateBook = await updateVoucher(voucherBook);
+              if(updateBook.length===0){
+                setNoticeBook("Hôm nay không có voucher khuyến mại")
+            }
+              setVouchersForBook(updateBook)
 
                 const voucherShip = vouchersAvailable.filter(voucher=>voucher.typeVoucher==="Voucher vận chuyển")
-                setVouchersForShip(voucherShip);
+                if(voucherShip.length===0){
+                  setNoticeShip("Hôm nay không có voucher khuyến mại")
+              }
+                const updateShip = await updateVoucher(voucherShip);
+
+                setVouchersForShip(updateShip);
             }catch(error){
                 console.log({error});
-                setNotice("Lỗi, không thể lấy được dữ liệu voucher")
             }finally{
                 setIsLoading(false);
             }
@@ -63,14 +60,14 @@ const ListVoucher=()=>{
               <FontAwesomeIcon icon={faTag} className="me-2" />
               Voucher giảm giá sách
             </h2>
-            <VouchersProps key={1} notice={notice} vouchers={vouchersForBook} showQuantity={true} showSaveVoucher={true}/>
+            <VouchersProps notice={noticeBook} vouchers={vouchersForBook} showQuantity={true} showSaveVoucher={true}/>
           </div>
           <div>
             <h2 className="mb-4 text-secondary">
               <FontAwesomeIcon icon={faTruck} className="me-2" />
               Voucher vận chuyển
             </h2>
-            <VouchersProps key={2} notice={notice} vouchers={vouchersForShip} showQuantity={true}  showSaveVoucher={true}/>
+            <VouchersProps notice={noticeShip} vouchers={vouchersForShip} showQuantity={true}  showSaveVoucher={true}/>
           </div>
         </div>
       );

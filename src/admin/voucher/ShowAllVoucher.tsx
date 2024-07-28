@@ -28,11 +28,14 @@ const ShowAllVoucher : React.FC=()=>{
             try{
                 setIsLoading(true);
                 const vouchers =await showAllVouchers_Admin(voucherNameFind,condition);
+                console.log(vouchers)
                 if(vouchers.length===0){
+                  console.log("==0")
                     setNotice("Hiện chưa có voucher nào!");
-                }
-                if(vouchers){
-                  // let counter = 0;
+                    setAllVouchers([])
+                }else{
+                  if(vouchers.length>0){
+                    setNotice("")
                   const updateVouchers= vouchers.map(async(voucherItem)=>{
                       const nowDate = new Date();
                       nowDate.setDate(nowDate.getDate()-1);
@@ -45,6 +48,7 @@ const ShowAllVoucher : React.FC=()=>{
                   })
                   const update = await Promise.all(updateVouchers);
                   setAllVouchers(update)
+                }
               }
             }catch(error){
                 console.log({error})

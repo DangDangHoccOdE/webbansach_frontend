@@ -3,9 +3,9 @@ import VoucherModel from "../../models/VoucherModel";
 import { showAllVouchers_User } from "../../api/VoucherAPI";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { useAuth } from "../../layouts/utils/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import VouchersProps from "../../layouts/voucher/VouchersProps";
-import handleUpdateIsActiveFromVoucher from "../../layouts/voucher/HandleUpdateIsActiveFromVoucher";
+import { updateVoucher } from "../../layouts/voucher/UpdateIsActiveFromVoucher";
 
 const ShowVoucherUser =()=>{
     const [isLoading,setIsLoading] = useState(false);
@@ -28,18 +28,8 @@ const ShowVoucherUser =()=>{
                     setNotice("Bạn hiện chưa có voucher nào.");
                 }
                 if(fetchVouchers){
-                    // let counter = 0;
-                    const updateVouchers= fetchVouchers.map(async(voucherItem)=>{
-                        const nowDate = new Date();
-                        nowDate.setDate(nowDate.getDate()-1);
-                        const expiredDate = new Date(voucherItem.expiredDate);
-                        if(expiredDate<nowDate && voucherItem.isActive){
-                          const voucher =  await handleUpdateIsActiveFromVoucher(voucherItem.voucherId) // Cập nhật lại trạng thái voucher khi hết hạn
-                          return {...voucherItem,isActive:voucher.isActive};                    
-                        }
-                        return voucherItem;
-                    })
-                    const update = await Promise.all(updateVouchers);
+
+                    const update = await updateVoucher(fetchVouchers);
                     setAllVouchers(update)
                 }
             }catch(error){
@@ -55,13 +45,21 @@ const ShowVoucherUser =()=>{
     return(
             <div className="container">
             <h1 className="mt-4 mb-4">Kho Voucher</h1>
-            {isLoading && <div className="text-center"><div className="spinner-border" role="status"></div></div>} 
+            <div className="d-flex justify-content-end">
+                <Link to={`/vouchers`} style={{textDecoration:"none",color:"orange"}}>Tìm thêm voucher</Link>
+                <span style={{margin: "0 10px"}}> | </span>
+                <Link to={`/user/vouchers/historyVouchers`} style={{textDecoration:"none",color:"orange"}}> Xem lịch sử voucher</Link>
+            </div>
             <div className="d-flex justify-content-center mb-2">
                 <label htmlFor="findVoucher"className="form-label me-2">Mã Voucher</label>
                 <input type="text" id="findVoucher" className="form-control-sm me-2" placeholder="Nhập mã voucher của bạn vào đây"></input>
                 <button type="submit" className="btn btn-secondary">Lưu</button>
             </div>
-           <VouchersProps key={1} notice={notice} showQuantity={false} vouchers={allVouchers} showSaveVoucher={false}/>            
+            <br/>
+            {isLoading && <div className="text-center"><div className="spinner-border" role="status"></div></div>} 
+
+            <VouchersProps notice={notice} showQuantity={false} vouchers={allVouchers} showSaveVoucher={false}/>            
+
         </div>
 )      
 }

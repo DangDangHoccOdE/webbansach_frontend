@@ -36,8 +36,8 @@ export async function showAllVouchers_Admin(voucherName:string,condition:string)
     let url:string=`http://localhost:8080/vouchers`;
     if(voucherName!=='' && condition===''){
         url=`http://localhost:8080/vouchers/search/findByCodeContaining?code=${voucherName}`
-    }
-    else if((voucherName===''||voucherName!=='') && condition==='Tất cả voucher'){
+    }else 
+    if((voucherName===''||voucherName!=='') && condition==='Tất cả voucher'){
         url=`http://localhost:8080/vouchers/search/findByCodeContaining?code=${voucherName}`
     }
     else if((voucherName===''||voucherName!=='')  && condition==='Voucher hết hạn'){
@@ -56,7 +56,7 @@ export async function showAllVouchers_Admin(voucherName:string,condition:string)
 }
 
 export async function showVouchersAvailable() :Promise<VoucherModel[]>{
-    const url:string = `http://localhost:8080/vouchers/search/findByIsAvailable?isAvailable=true`;
+    const url:string = `http://localhost:8080/vouchers/search/findByIsAvailableAndIsActive?isAvailable=true&isActive=true`;
     const voucher:VoucherModel[] = [];
 
     try{

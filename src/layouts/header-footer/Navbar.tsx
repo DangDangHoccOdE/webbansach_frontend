@@ -127,12 +127,10 @@ function Navbar({setBookNameFind} : NavbarProps){
           {/* Biểu tượng giỏ hàng */}
           <ul className="navbar-nav me-1">
             <li className="nav-item">
-              <a className="nav-link" href="#">
                 <Link to={`/user/showCart/${user?.userId}`} style={{textDecoration:"none",color:"green"}}>
                     <i className="fas fa-shopping-cart"></i> 
                     <span className="badge bg-danger rounded-pill">{itemCounter}</span>
                 </Link>
-              </a>
             </li>
           </ul>
 
