@@ -86,13 +86,42 @@ export async function showVouchersAvailable() :Promise<VoucherModel[]>{
     }
 }
 
-export async function showAllVouchers_User(userId:number,code:string) :Promise<VoucherModel[]>{
-    let url:string=`http://localhost:8080/users/${userId}/vouchers`;
-
-    if(code!==''){
-        url=`http://localhost:8080/vouchers/search/findByCodeContainingAndUsers_UserIdAndIsActive?code=${code}&userId=${userId}&isActive=true`;
+export async function showAllVouchers_User(code:string,userId:number) :Promise<VoucherModel[]>{
+    let url:string;
+    if(code===''){
+        url=`http://localhost:8080/vouchers/showVoucherByUserId/${userId}`;
+    }else{
+        url=`http://localhost:8080/vouchers/findVoucherByVoucherCodeAndUserId/${code}/${userId}`;
     }
-    return showAllVouchers(url);
+
+    const voucher:VoucherModel[] = [];
+
+    try{
+        const response = await fetchWithAuth(url)
+        if(!response){
+            throw new Error("Gặp lỗi trong quá trình tải voucher!")
+        }
+        const data = await response.json();
+        if(response.ok){
+            for(const key in data){
+                voucher.push({
+                    voucherId:data[key].voucherId,
+                    code:data[key].code,
+                    discountValue:data[key].discountValue,
+                    expiredDate:data[key].expiredDate,
+                    isActive:data[key].isActive,
+                    quantity:data[key].quantity,
+                    voucherImage:data[key].voucherImage,
+                    describe:data[key].describe,
+                    isAvailable:data[key].isAvailable,
+                    typeVoucher:data[key].typeVoucher
+                })
+            }
+        }
+        return voucher;
+    }catch(error){
+        return [];
+    }
 }
 
 export async function findVoucherByCodeContaining(code:string) {

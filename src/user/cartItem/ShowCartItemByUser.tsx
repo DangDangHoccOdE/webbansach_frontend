@@ -9,6 +9,10 @@ import CartItemModel from "../../models/CartItemModel";
 import { getBookByCartItem } from "../../api/BookAPI";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGift } from "@fortawesome/free-solid-svg-icons";
+import SelectVoucherToPay from "../payment/SelectVoucherToPay";
+import VoucherModel from "../../models/VoucherModel";
 
 const ShowCart=()=>{
     const {userId} = useParams();
@@ -21,7 +25,11 @@ const ShowCart=()=>{
     const [selectAll,setSelectAll] = useState(false); // Trạng thái cho checkbox "Tất cả"
     const [selectedItems, setSelectedItems] = useState<number[]>([]); // Trạng thái cho các checkbox
     const [total,setTotal] = useState(0);
-  
+    const [totalByVoucher,setTotalByVoucher] = useState(0);
+    const [showModal,setShowModal] = useState(false);
+    const [appliedBookVoucher, setAppliedBookVoucher] = useState<VoucherModel | null>(null);
+    const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(null);
+
     const userIdNumber = parseInt(userId+''); 
     useEffect(()=>{
         if(!isLoggedIn){
@@ -83,11 +91,17 @@ const ShowCart=()=>{
         const updateTotal = async () => {
           const totalValue = await calculateTotal();
           setTotal(totalValue);
+          if(appliedBookVoucher===null){
+            setTotalByVoucher(totalValue);
+          }else{
+            const priceUpdateVoucher = totalValue - totalValue*(appliedBookVoucher.discountValue/100);
+            setTotalByVoucher(priceUpdateVoucher);
+          }
         };
     
         updateTotal();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [selectedItems]);
+      }, [selectedItems,appliedBookVoucher]);
 
       const calculateTotal = async()=>{ // Tính tổng tiến
         let total = 0;
@@ -177,6 +191,28 @@ const ShowCart=()=>{
         }
     }
 
+
+
+    const handleSelectVoucher=()=>{ // Xử lý khi người dùng chọn hiển thị voucher
+        if(!isLoggedIn){
+            navigate("/login",{replace:true})
+        }
+        if(selectedItems.length===0){
+            toast.error("Vui lòng chọn ít nhất 1 sản phẩm để chọn voucher")
+        }else{
+            setShowModal(true);
+        }
+    }
+
+    const handleClose=()=>{ // đóng modal showVoucher
+        setShowModal(false);
+    }
+
+    const handleApplyVoucher=(voucherBook:VoucherModel|null,voucherShip:VoucherModel|null)=>{ // Xử lý khi chọn voucher 
+        setAppliedBookVoucher(voucherBook);
+        setAppliedShipVoucher(voucherShip);
+    }
+
     if(!isLoggedIn){
         return null;
     }
@@ -256,16 +292,32 @@ const ShowCart=()=>{
                                     <span>Tạm tính</span>
                                     <span>{NumberFormat(total)} đ</span>
                                 </div>
+                                {
+                                    appliedBookVoucher &&
+                                    <div className="d-flex justify-content-between mb-2">
+                                    <span>Voucher giảm giá</span>
+                                    <span>- {NumberFormat(total*(appliedBookVoucher.discountValue/100))} đ</span>
+                                </div>
+                                }
+                                {
+                                    appliedShipVoucher && 
+                                    <span>Miễn phí vận chuyển</span>
+                                }
                                 <hr />
                                 <div className="d-flex justify-content-between mb-3">
                                     <strong>Tổng tiền</strong>
-                                    <strong style={{ color: "red", fontSize: "18px" }}>{NumberFormat(total)} đ</strong>
+                                    <strong style={{ color: "red", fontSize: "18px" }}>{NumberFormat(totalByVoucher)} đ</strong>
                                 </div>
                                 <button className="btn btn-danger w-100" onClick={handleClickBuy}>Mua hàng</button>
                                 
                                 <div className="mt-3">
-                                    <input type="text" className="form-control mb-2" placeholder="Nhập mã giảm giá" />
-                                    <button className="btn btn-outline-primary w-100">Áp dụng</button>
+                                    <button className="btn btn-outline-primary w-100" onClick={handleSelectVoucher}>
+                                        <FontAwesomeIcon icon={faGift} className="me-2" /> Chọn hoặc nhập mã voucher
+                                     </button>
+
+                                     {
+                                        <SelectVoucherToPay handleClose={handleClose} showModal={showModal} onApplyVoucher={handleApplyVoucher}/>
+                                     }
                                 </div>
                             </div>
                         </div>

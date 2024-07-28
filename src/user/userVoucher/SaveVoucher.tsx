@@ -24,7 +24,7 @@ const SaveVoucher:React.FC<VoucherProps>=(props)=>{
             }
           const getVouchers = async()=>{
               try{
-                  const fetchVouchers = await showAllVouchers_User(userId,'')
+                  const fetchVouchers = await showAllVouchers_User('',userId)
                   if(fetchVouchers){
                         const check =  fetchVouchers.some(voucher=>voucher.voucherId === props.voucherId);
                         setIsVoucherSaved(check);

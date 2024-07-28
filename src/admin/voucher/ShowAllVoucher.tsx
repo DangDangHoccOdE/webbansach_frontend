@@ -28,9 +28,7 @@ const ShowAllVoucher : React.FC=()=>{
             try{
                 setIsLoading(true);
                 const vouchers =await showAllVouchers_Admin(voucherNameFind,condition);
-                console.log(vouchers)
                 if(vouchers.length===0){
-                  console.log("==0")
                     setNotice("Hiện chưa có voucher nào!");
                     setAllVouchers([])
                 }else{

@@ -25,7 +25,7 @@ const ShowVoucherUser =()=>{
         const getVouchers = async()=>{
             setIsLoading(true);
             try{
-                const fetchVouchers = await showAllVouchers_User(userId,findVoucherName)
+                const fetchVouchers=await showAllVouchers_User(findVoucherName,userId)
                 if(fetchVouchers.length===0){
                     setNotice("Bạn hiện chưa có voucher nào.");
                     setAllVouchers([])
