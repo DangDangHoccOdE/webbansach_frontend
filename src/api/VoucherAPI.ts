@@ -86,8 +86,12 @@ export async function showVouchersAvailable() :Promise<VoucherModel[]>{
     }
 }
 
-export async function showAllVouchers_User(userId:number) :Promise<VoucherModel[]>{
-    const url:string=`http://localhost:8080/users/${userId}/vouchers`;
+export async function showAllVouchers_User(userId:number,code:string) :Promise<VoucherModel[]>{
+    let url:string=`http://localhost:8080/users/${userId}/vouchers`;
+
+    if(code!==''){
+        url=`http://localhost:8080/vouchers/search/findByCodeContainingAndUsers_UserIdAndIsActive?code=${code}&userId=${userId}&isActive=true`;
+    }
     return showAllVouchers(url);
 }
 

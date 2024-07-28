@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import VoucherModel from "../../models/VoucherModel";
 import { showAllVouchers_User } from "../../api/VoucherAPI";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
@@ -14,6 +14,8 @@ const ShowVoucherUser =()=>{
     const userId = getUserIdByToken();
     const {isLoggedIn} = useAuth();
     const navigate = useNavigate();
+    const [findVoucherName,setFindVoucherName] = useState("")
+    const [temporaryVoucherName,setTemporaryVoucherName] = useState("")
     
     useEffect(()=>{
         if(!isLoggedIn || userId===undefined){
@@ -23,12 +25,14 @@ const ShowVoucherUser =()=>{
         const getVouchers = async()=>{
             setIsLoading(true);
             try{
-                const fetchVouchers = await showAllVouchers_User(userId)
+                const fetchVouchers = await showAllVouchers_User(userId,findVoucherName)
                 if(fetchVouchers.length===0){
                     setNotice("Bạn hiện chưa có voucher nào.");
+                    setAllVouchers([])
+                    return;
                 }
-                if(fetchVouchers){
-
+                else if(fetchVouchers.length>0){
+                    setNotice("")
                     const update = await updateVoucher(fetchVouchers);
                     setAllVouchers(update)
                 }
@@ -40,7 +44,21 @@ const ShowVoucherUser =()=>{
 
         }
         getVouchers();
-    },[isLoggedIn, navigate, userId])
+    },[findVoucherName, isLoggedIn, navigate, userId])
+
+    const handleFindVoucher=(e:ChangeEvent<HTMLInputElement>)=>{
+        setTemporaryVoucherName(e.target.value);
+    }
+
+    const handleFindVoucherName=()=>{
+        setFindVoucherName(temporaryVoucherName)
+    }
+
+    const handleEnterFindVoucherName=(e:KeyboardEvent<HTMLInputElement>)=>{
+        if(e.key==="Enter"){
+            handleFindVoucherName();
+        }
+    }
 
     return(
             <div className="container">
@@ -52,8 +70,8 @@ const ShowVoucherUser =()=>{
             </div>
             <div className="d-flex justify-content-center mb-2">
                 <label htmlFor="findVoucher"className="form-label me-2">Mã Voucher</label>
-                <input type="text" id="findVoucher" className="form-control-sm me-2" placeholder="Nhập mã voucher của bạn vào đây"></input>
-                <button type="submit" className="btn btn-secondary">Lưu</button>
+                <input type="text" id="findVoucher" className="form-control-sm me-2" onChange={handleFindVoucher} value={temporaryVoucherName} placeholder="Nhập mã voucher của bạn vào đây" onKeyPress={handleEnterFindVoucherName}></input>
+                <button type="submit" className="btn btn-secondary" onClick={handleFindVoucherName}>Áp dụng</button>
             </div>
             <br/>
             {isLoading && <div className="text-center"><div className="spinner-border" role="status"></div></div>} 
