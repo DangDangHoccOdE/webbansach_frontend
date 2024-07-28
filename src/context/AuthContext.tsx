@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getUsernameByToken, isToken, isTokenExpired, logout } from "./JwtService";
 import { useNavigate } from "react-router-dom";
-import UserModel from "../../models/UserModel";
-import { getUserByUsername } from "../../api/UserAPI";
+
 import { toast } from "react-toastify";
+import UserModel from "../models/UserModel";
+import { getUserByUsername } from "../api/UserAPI";
+import { getUsernameByToken, isToken, isTokenExpired, logout } from "../layouts/utils/JwtService";
 
 interface AuthContextType{
     isLoggedIn:boolean;

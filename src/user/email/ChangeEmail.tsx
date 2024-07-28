@@ -1,5 +1,4 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useAuth } from "../../layouts/utils/AuthContext";
 import UserModel from "../../models/UserModel";
 import { useNavigate } from "react-router-dom";
 import { getUsernameByToken } from "../../layouts/utils/JwtService";
@@ -8,6 +7,7 @@ import { checkEmail } from "../../api/AccountAPI";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext";
 
 const ChangeEmail: React.FC = () => {
     const { isLoggedIn } = useAuth();

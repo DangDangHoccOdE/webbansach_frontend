@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../layouts/utils/AuthContext";
 import { useEffect, useState } from "react";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { toast } from "react-toastify";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import { showAllVouchers_User } from "../../api/VoucherAPI";
+import { useAuth } from "../../context/AuthContext";
 
 interface VoucherProps{
     voucherId:number,

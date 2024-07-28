@@ -1,10 +1,10 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../../layouts/utils/AuthContext";
 import { useEffect, useState } from "react";
 import WishListModel from "../../models/WishListModel";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import { getWishListByUserId } from "../../api/WishListAPI";
 import AddWishList from "./AddWishList";
+import { useAuth } from "../../context/AuthContext";
 
 const ShowWishListByUser=()=>{
     const {isLoggedIn} = useAuth();

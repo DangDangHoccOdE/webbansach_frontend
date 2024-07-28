@@ -2,8 +2,8 @@ import { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import ShowCart from "./ShowCartItemByUser";
-import { CartContext } from "./CartContext";
 import { toast } from "react-toastify";
+import { CartContext } from "../../context/CartContext";
 
 const DeleteCartItems = () => {
     const {cartItemId} = useParams();

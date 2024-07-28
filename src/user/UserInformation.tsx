@@ -3,10 +3,10 @@ import getBase64 from "../layouts/utils/GetBase64";
 import { getUserByUsername } from "../api/UserAPI";
 import UserModel from "../models/UserModel";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../layouts/utils/AuthContext";
 import fetchWithAuth from "../layouts/utils/AuthService";
 import useScrollToTop from "../hooks/ScrollToTop";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const UserInformation: React.FC = () => {
     const { isLoggedIn } = useAuth();

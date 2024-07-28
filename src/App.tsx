@@ -11,7 +11,6 @@ import ResendActivationCode from "./user/account/ResendActivationCode";
 import Login from "./user/Login";
 import Test from "./user/Test";
 import UserInformation from "./user/UserInformation";
-import { AuthProvider } from "./layouts/utils/AuthContext";
 import DeleteBook_Admin from "./admin/book/DeleteBook";
 import RegisterUser from "./user/account/RegisterUser";
 import ActivatedAccount from "./user/account/ActivatedAccount";
@@ -36,7 +35,6 @@ import ShowAllCategory_Admin from "./admin/category/ShowAllCategory";
 import ShowCart from "./user/cartItem/ShowCartItemByUser";
 import DeleteBookOfCart from "./user/cartItem/DeleteCartItems";
 import Payment from "./user/payment/Payment";
-import { CartProvider } from "./user/cartItem/CartContext";
 import AddVoucher_Admin from "./admin/voucher/AddVoucher";
 import DeleteVoucher_Admin from "./admin/voucher/DeleteVoucher";
 import EditVoucherAdmin from "./admin/voucher/EditVoucher";
@@ -48,6 +46,8 @@ import GiftVouchersToUsers_Admin from "./admin/voucher/GiftVouchersToUsers";
 import DeleteAllVouchersSelected_Admin from "./admin/voucher/DeleteAllVouchersSelected";
 import AddVouchersToVoucherAvailable_Admin from "./admin/voucher/AddVouchersToVoucherAvailable";
 import ListVoucher from "./layouts/voucher/ListVoucher.tsx";
+import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   

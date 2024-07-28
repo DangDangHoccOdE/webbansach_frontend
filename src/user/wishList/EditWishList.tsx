@@ -8,10 +8,10 @@ import { getWishListByWishListId } from "../../api/WishListAPI";
 import ImageModel from "../../models/ImageModel";
 import { Pagination } from "../../layouts/utils/Pagination";
 import fetchWithAuth from "../../layouts/utils/AuthService";
-import { useAuth } from "../../layouts/utils/AuthContext";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import renderRating from "../../layouts/utils/StarRate";
 import { getAllIconImage } from "../../layouts/utils/ImageService";
+import { useAuth } from "../../context/AuthContext";
 
 const EditWishList=()=>{
     useScrollToTop();

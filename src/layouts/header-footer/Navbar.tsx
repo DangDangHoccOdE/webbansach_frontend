@@ -5,10 +5,10 @@ import { getAllCategory } from "../../api/CategoryAPI";
 import CategoryModel from "../../models/CategoryModel";
 import { Search } from "react-bootstrap-icons";
 import { getUsernameByToken, isToken, logout } from "../utils/JwtService";
-import { useAuth } from "../utils/AuthContext";
 import { getUserByUsername } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
-import { CartContext } from "../../user/cartItem/CartContext";
+import { useAuth } from "../../context/AuthContext";
+import { CartContext } from "../../context/CartContext";
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
   }

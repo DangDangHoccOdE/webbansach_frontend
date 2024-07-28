@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
-import { useAuth } from "../../layouts/utils/AuthContext";
 import { useContext } from "react";
-import { CartContext } from "./CartContext";
 import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext";
+import { CartContext } from "../../context/CartContext";
 
 interface AddToCartProps{
     bookId:number,

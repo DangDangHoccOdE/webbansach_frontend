@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useAuth } from "../../layouts/utils/AuthContext";
-import { getAllCartItemByUser } from "../../api/CartItemAPI";
-import { getUserIdByToken } from "../../layouts/utils/JwtService";
+import { useAuth } from "./AuthContext";
+import { getUserIdByToken } from "../layouts/utils/JwtService";
+import { getAllCartItemByUser } from "../api/CartItemAPI";
 
 interface CartContextType{
     itemCounter:number,

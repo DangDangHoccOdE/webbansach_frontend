@@ -2,10 +2,10 @@ import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import VoucherModel from "../../models/VoucherModel";
 import { showAllVouchers_User } from "../../api/VoucherAPI";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
-import { useAuth } from "../../layouts/utils/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import VouchersProps from "../../layouts/voucher/VouchersProps";
 import { updateVoucher } from "../../layouts/voucher/UpdateIsActiveFromVoucher";
+import { useAuth } from "../../context/AuthContext";
 
 const ShowVoucherUser =()=>{
     const [isLoading,setIsLoading] = useState(false);

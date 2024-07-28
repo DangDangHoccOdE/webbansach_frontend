@@ -9,11 +9,11 @@ import NumberFormat from "../../layouts/utils/NumberFormat";
 import UserModel from "../../models/UserModel";
 import { getUserByUsername } from "../../api/UserAPI";
 import {getUsernameByToken } from "../../layouts/utils/JwtService";
-import { useAuth } from "../../layouts/utils/AuthContext";
 import moment from "moment";
-import { CartContext } from "../cartItem/CartContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../../context/AuthContext";
+import { CartContext } from "../../context/CartContext";
 
 const Payment:React.FC =()=>{
     const location = useLocation();

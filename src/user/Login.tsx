@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../layouts/utils/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import useScrollToTop from "../hooks/ScrollToTop";
+import { useAuth } from "../context/AuthContext";
 
 const Login=()=>{
 const [username,setUsername] = useState("");

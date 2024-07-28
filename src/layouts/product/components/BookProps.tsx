@@ -7,11 +7,11 @@ import { Link, useNavigate } from "react-router-dom";
 import renderRating from "../../utils/StarRate";
 import NumberFormat from "../../utils/NumberFormat";
 import isAdmin from "../../utils/CheckCurrentRole";
-import { useAuth } from "../../utils/AuthContext";
 import AddBookToWishList from "../../../user/wishList/AddBookToWishList";
 import { Button } from "react-bootstrap";
 import useScrollToTop from "../../../hooks/ScrollToTop";
 import AddCartItem from "../../../user/cartItem/AddCartItem";
+import { useAuth } from "../../../context/AuthContext";
 
 interface BookPropsInterface{
     book: BookModel;
