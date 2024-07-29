@@ -15,6 +15,59 @@ const BookForm: React.FC = (props) => {
     const [relatedImage,setRelatedImage] = useState<string[]|null>([])
     const [categoryIsChoose,setCategoryIsChoose] = useState<string[]>([])
 
+    // page number
+    const [noticePageNumber,setNoticePageNumber] = useState("");
+    const handlePageNumber = ()=>{
+        if(book.pageNumber === 0 ){
+            setNoticePageNumber("Số trang sách không thể bằng 0!")
+            return true;
+        }else{
+            setNoticePageNumber("");
+            return false;
+        }
+    }
+
+    // Listed price
+    const [noticeListedPrice,setNoticeListedPrice] = useState("");
+    const handleListPrice = ()=>{
+        if(book.listedPrice === 0 ){
+            setNoticeListedPrice("Giá niêm yết phải lớn hơn 0!")
+            return true;
+        }else{
+            setNoticeListedPrice("");
+            return false;
+        }
+    }  
+    
+    // Listed price
+    const [noticeQuantity,setNoticeQuantity] = useState("");
+    const handleQuantity = ()=>{
+        if(book.quantity === 0 ){
+            setNoticeQuantity("Số lượng phải lớn hơn 0!")
+            return true;
+        }else{
+            setNoticeQuantity("");
+            return false;
+        }
+    }
+
+    // publishing year
+    const [noticePublishingYear,setNoticePublishingYear] = useState("");
+    const handlePublishingYear = ()=>{
+      const date = new Date();
+        if(book.publishingYear === 0 ){
+            setNoticePublishingYear("Năm xuất bản không thể bằng 0!")
+            return true;
+        }else if(book.publishingYear > date.getFullYear()){
+          setNoticePublishingYear("Năm xuất bản không thể lớn hơn năm hiện tại!")
+          return true;
+      }else{
+            setNoticePublishingYear("");
+            return false;
+        }
+    }
+
+
     // averageRate
     const [noticeAverageRate,setNoticeAverageRate] = useState("");
     const handleAverageRate = ()=>{
@@ -102,6 +155,9 @@ const BookForm: React.FC = (props) => {
         averageRate:0,
         soldQuantity:0,
         discountPercent:0,
+        pageNumber:0,
+        language:'',
+        publishingYear:0,
         thumbnail:thumbnail,
         relatedImage:relatedImage,
         categoryList:categoryIsChoose
@@ -126,45 +182,62 @@ const BookForm: React.FC = (props) => {
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
     
-        const token = localStorage.getItem('accessToken')
-        const response = await fetchWithAuth("http://localhost:8080/books/addBook",
-            {
-                method:"POST",
-                headers:{
-                    "Content-type":"application/json",
-                    "Authorization":`Bearer ${token}`
-                },
-                body:JSON.stringify(book)
-            }
-        )
-            if(response.ok){
-                     toast.success("Đã thêm sách thành công!")
-                        setBook({
-                            bookId:0,
-                            bookName:'',
-                            isbn:'',
-                            price:0,
-                            listedPrice:0,
-                            description:'',
-                            quantity:0,
-                            author:'',
-                            averageRate:0,
-                            thumbnail:"",
-                            categoryList:[],
-                            discountPercent:0,
-                            relatedImage:[],
-                            soldQuantity:0,
-                        })
-                        setCategoryIsChoose([]);
-                        setRelatedImage([]);
-                        setThumbnail('');
-                        handleReset();
-                        console.log("Đã thêm sách thành công!")
-                    }else{
-                        toast.error("Gặp lỗi trong quá trình thêm sách!")
-                        console.log("Sách chưa được thêm!")
-            }
-        
+           // Kiểm tra lại các điều kiện
+           const isPageNumberInvalid = handlePageNumber();
+           const isPublishingYearInvalid = handlePublishingYear();  
+           const isListPriceInvalid = handleListPrice();
+           const isQuantityInvalid = handleQuantity();
+
+   
+           // Nếu bất kỳ điều kiện nào không thỏa mãn, ngăn chặn submit
+           if (isPageNumberInvalid || isPublishingYearInvalid || isListPriceInvalid || isQuantityInvalid) {
+            setNotice("Lỗi, vui lòng kiểm tra lại thông tin !")
+               return;
+           }
+
+            const token = localStorage.getItem('accessToken')
+            const response = await fetchWithAuth("http://localhost:8080/books/addBook",
+                {
+                    method:"POST",
+                    headers:{
+                        "Content-type":"application/json",
+                        "Authorization":`Bearer ${token}`
+                    },
+                    body:JSON.stringify(book)
+                }
+            )
+                if(response.ok){
+                    setNotice("")
+                         toast.success("Đã thêm sách thành công!")
+                            setBook({
+                                bookId:0,
+                                bookName:'',
+                                isbn:'',
+                                price:0,
+                                listedPrice:0,
+                                description:'',
+                                quantity:0,
+                                author:'',
+                                averageRate:0,
+                                thumbnail:"",
+                                categoryList:[],
+                                discountPercent:0,
+                                relatedImage:[],
+                                soldQuantity:0,
+                                pageNumber:0,
+                                language:'',
+                                publishingYear:0,
+                            })
+                            setCategoryIsChoose([]);
+                            setRelatedImage([]);
+                            setThumbnail('');
+                            handleReset();
+                            console.log("Đã thêm sách thành công!")
+                        }else{
+                            toast.error("Gặp lỗi trong quá trình thêm sách!")
+                            console.log("Sách chưa được thêm!")
+                }
+    
     }
     return( 
 <div className="container">
@@ -203,13 +276,15 @@ const BookForm: React.FC = (props) => {
                             className="form-control"
                             type="number" value={book.listedPrice}
                             onChange={e => setBook({ ...book, listedPrice: parseFloat(e.target.value) })}
-                            min={0}
+                            min={0} onBlur={handleListPrice}
                             required
                         />
                         <div className="input-group-append">
                             <span className="input-group-text">VND</span>
                         </div>
                     </div>
+                    <span style={{color:"red"}}>{noticeListedPrice}</span>
+
                 </div>
 
                 <div className="form-group">
@@ -249,8 +324,10 @@ const BookForm: React.FC = (props) => {
                         type="number"
                         value={book.quantity}
                         onChange={e => setBook({ ...book, quantity: parseInt(e.target.value) })}
-                        required
+                        required onBlur={handleQuantity}
                     />
+                    <span style={{color:"red"}}>{noticeQuantity}</span>
+
                 </div>
 
                 <div className="form-group">
@@ -283,6 +360,40 @@ const BookForm: React.FC = (props) => {
                         onChange={e => setBook({ ...book, author: e.target.value })}
                         required
                     />
+                </div>  
+                
+                <div className="form-group">
+                    <label htmlFor="pageNumber">Số trang<span style={{color:"red"}}> *</span></label>
+                    <input 
+                        className="form-control"
+                        type="number" min={0} step={1}
+                        value={book.pageNumber}
+                        onChange={e => setBook({ ...book, pageNumber:parseInt(e.target.value) })}
+                        required onBlur={handlePageNumber}
+                    />  <span style={{color:"red"}}>{noticePageNumber}</span>
+                </div>     
+                
+                 <div className="form-group">
+                    <label htmlFor="language">Ngôn ngữ<span style={{color:"red"}}> *</span></label>
+                    <input 
+                        className="form-control"
+                        type="text"
+                        value={book.language}
+                        onChange={e => setBook({ ...book, language: e.target.value })}
+                        required
+                    />
+                </div> 
+                
+                <div className="form-group">
+                    <label htmlFor="publishingYear">Năm xuất bản<span style={{color:"red"}}> *</span></label>
+                    <input 
+                        className="form-control"
+                        type="number" min={0}
+                        value={book.publishingYear}
+                        onChange={e => setBook({ ...book, publishingYear: parseInt(e.target.value) })}
+                        required onBlur={handlePublishingYear}
+                    />
+                      <span style={{color:"red"}}>{noticePublishingYear}</span>
                 </div>
 
                 <div className="form-group">

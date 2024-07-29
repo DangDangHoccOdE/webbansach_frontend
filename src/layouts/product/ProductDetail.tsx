@@ -9,6 +9,7 @@ import NumberFormat from "../utils/NumberFormat";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import ReviewProduct from "./components/ReviewProduct";
 import AddCartItem from "../../user/cartItem/AddCartItem";
+import SoldQuantityFormat from "../utils/SoldQuantityFormat";
 
 const ProductDetail: React.FC = () => {
     useScrollToTop();
@@ -104,8 +105,12 @@ const ProductDetail: React.FC = () => {
                         <div className="col-8">
                             <h1>{book.bookName}</h1>
                             <h4>{renderRating(book.averageRate?book.averageRate:0)}</h4>
-                            <h5 className="text-end">Đã bán: {NumberFormat(book.soldQuantity)}</h5>
-                            <h4>{NumberFormat(book.price)} đ</h4>
+                            <h5 className="text-end">Đã bán: {SoldQuantityFormat(book.soldQuantity)}</h5>
+                            <h4 style={{color:"red"}}>{NumberFormat(book.price)} đ</h4>
+                            <br/>
+                            <h5>Chi tiết sản phẩm</h5>
+                            <br/>
+                            <h5>Mô tả sản phẩm</h5>
                             <hr/>
                                 <div dangerouslySetInnerHTML={{__html:book.description}}/>
                             <hr/>

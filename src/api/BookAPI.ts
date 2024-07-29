@@ -37,7 +37,10 @@ export async function getBook(link:string):Promise<ResultInterface> {
                 quantity:responseData[key].quantity,
                 averageRate:responseData[key].averageRate,
                 soldQuantity:responseData[key].soldQuantity,
-                discountPercent:responseData[key].discountPercent
+                discountPercent:responseData[key].discountPercent,
+                pageNumber:responseData[key].pageNumber,
+                language:responseData[key].language,
+                publishingYear:responseData[key].publishingYear
                 });
     }
     return {resultBooks:result, totalPages: totalPages , totalBooks: totalBooks};
@@ -93,7 +96,9 @@ export async function getBookByBookId(bookId:number): Promise<BookModel | null> 
                 averageRate:bookData.averageRate,
                 soldQuantity:bookData.soldQuantity,
                 discountPercent:bookData.discountPercent,
-                
+                language:bookData.language,
+                pageNumber:bookData.pageNumber,
+                publishingYear:bookData.publishingYear,
             }
         }else{
             throw new Error("Sách không tồn tại!")
@@ -144,6 +149,9 @@ export async function getBookByCartItem(cartItemId:number):Promise<BookModel|nul
                 averageRate:bookData.averageRate,
                 soldQuantity:bookData.soldQuantity,
                 discountPercent:bookData.discountPercent,
+                language:bookData.language,
+                pageNumber:bookData.pageNumber,
+                publishingYear:bookData.publishingYear,
                 
             }
         }else{

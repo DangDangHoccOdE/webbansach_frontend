@@ -24,6 +24,9 @@ const EditBook: React.FC = () => {
     const [iconImage,setIconImage] = useState<ImageModel|null>(null)
     const [imageList,setImageList] = useState<ImageModel[]>([])
     const [categoryOfBook,setCategoryOfBook] = useState<CategoryModel[]>([])
+    const [pageNumber,setPageNumber] = useState(0)
+    const [publishingYear,setPublishingYear] = useState(0)
+    const [language,setLanguage] = useState('')
     const [isLoading,setIsLoading] = useState(true);
     let bookNumber = parseInt(bookIdString.bookId+'');
 
@@ -104,6 +107,9 @@ const EditBook: React.FC = () => {
             setAuthor(editBook.author);
             setAverageRate(editBook.averageRate);
             setSoldQuantity(editBook.soldQuantity);
+            setPageNumber(editBook.pageNumber);
+            setPublishingYear(editBook.publishingYear);
+            setLanguage(editBook.language);
 
             // handle Icon -> ''
             if(iconImage){
@@ -119,6 +125,59 @@ const EditBook: React.FC = () => {
             setCategoryList(handleCategoryList)
         }
     },[categoryOfBook, editBook, iconImage, imageList])
+
+      // page number
+      const [noticePageNumber,setNoticePageNumber] = useState("");
+      const handlePageNumber = ()=>{
+          if(pageNumber === 0 ){
+              setNoticePageNumber("Số trang sách không thể bằng 0!")
+              return true;
+          }else{
+              setNoticePageNumber("");
+              return false;
+          }
+      }
+  
+      // Listed price
+      const [noticeListedPrice,setNoticeListedPrice] = useState("");
+      const handleListPrice = ()=>{
+          if(listedPrice === 0 ){
+              setNoticeListedPrice("Giá niêm yết phải lớn hơn 0!")
+              return true;
+          }else{
+              setNoticeListedPrice("");
+              return false;
+          }
+      }  
+      
+      // Listed price
+      const [noticeQuantity,setNoticeQuantity] = useState("");
+      const handleQuantity = ()=>{
+          if(quantity === 0 ){
+             setNoticeQuantity("Số lượng phải lớn hơn 0!")
+              return true;
+          }else{
+              setNoticeQuantity("");
+              return false;
+          }
+      }
+  
+      // publishing year
+      const [noticePublishingYear,setNoticePublishingYear] = useState("");
+      const handlePublishingYear = ()=>{
+        const date = new Date();
+          if(publishingYear === 0 ){
+              setNoticePublishingYear("Năm xuất bản không thể bằng 0!")
+              return true;
+          }else if(publishingYear > date.getFullYear()){
+            setNoticePublishingYear("Năm xuất bản không thể lớn hơn năm hiện tại!")
+            return true;
+        }else{
+              setNoticePublishingYear("");
+              return false;
+          }
+      }
+  
 
     // averageRate
     const [noticeAverageRate,setNoticeAverageRate] = useState("");
@@ -202,6 +261,19 @@ const EditBook: React.FC = () => {
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
+
+             // Kiểm tra lại các điều kiện
+             const isPageNumberInvalid = handlePageNumber();
+             const isPublishingYearInvalid = handlePublishingYear();  
+             const isListPriceInvalid = handleListPrice();
+             const isQuantityInvalid = handleQuantity();
+  
+     
+             // Nếu bất kỳ điều kiện nào không thỏa mãn, ngăn chặn submit
+             if (isPageNumberInvalid || isPublishingYearInvalid || isListPriceInvalid || isQuantityInvalid) {
+              setNotice("Lỗi, vui lòng kiểm tra lại thông tin !")
+                 return;
+             }
         const token = localStorage.getItem('accessToken')
         try{
             const response = await fetchWithAuth(`http://localhost:8080/books/editBook/${bookId}`,
@@ -224,11 +296,15 @@ const EditBook: React.FC = () => {
                         categoryList,
                         discountPercent,
                         relatedImage,
-                        soldQuantity
+                        soldQuantity,
+                        pageNumber,
+                        language,
+                        publishingYear
                 }
             )})
 
                 if(response.ok){
+                    setNotice("")
                     toast.success("Đã sửa sách thành công!")
                             console.log("Đã sửa sách thành công!")
                         }else{
@@ -282,13 +358,15 @@ const EditBook: React.FC = () => {
                             className="form-control"
                             type="number" value={listedPrice}
                             onChange={e => setListedPrice(parseFloat(e.target.value))}
-                            min={0}
+                            min={0} onBlur={handleListPrice}
                             required
                         />
                         <div className="input-group-append">
                             <span className="input-group-text">VND</span>
                         </div>
                     </div>
+                    <span style={{color:"red"}}>{noticeListedPrice}</span>
+
                 </div>
 
                 <div className="form-group">
@@ -326,10 +404,12 @@ const EditBook: React.FC = () => {
                     <input 
                         className="form-control"
                         type="number"
-                        value={quantity}
+                        value={quantity} onBlur={handleQuantity}
                         onChange={e => setQuantity(parseInt(e.target.value))}
                         required
                     />
+                    <span style={{color:"red"}}>{noticeQuantity}</span>
+
                 </div>
 
                 <div className="form-group">
@@ -363,6 +443,41 @@ const EditBook: React.FC = () => {
                         required
                     />
                 </div>
+
+                <div className="form-group">
+                    <label htmlFor="pageNumber">Số trang<span style={{color:"red"}}> *</span></label>
+                    <input 
+                        className="form-control"
+                        type="number" min={0} step={1}
+                        value={pageNumber}
+                        onChange={e => setPageNumber(parseInt(e.target.value))}
+                        required onBlur={handlePageNumber}
+                    />  <span style={{color:"red"}}>{noticePageNumber}</span>
+                </div>     
+                
+                 <div className="form-group">
+                    <label htmlFor="language">Ngôn ngữ<span style={{color:"red"}}> *</span></label>
+                    <input 
+                        className="form-control"
+                        type="text"
+                        value={language}
+                        onChange={e => setLanguage(e.target.value)}
+                        required
+                    />
+                </div> 
+                
+                <div className="form-group">
+                    <label htmlFor="publishingYear">Năm xuất bản<span style={{color:"red"}}> *</span></label>
+                    <input 
+                        className="form-control"
+                        type="number" min={0}
+                        value={publishingYear}
+                        onChange={e => setPublishingYear(parseInt(e.target.value))}
+                        required onBlur={handlePublishingYear}
+                    />
+                      <span style={{color:"red"}}>{noticePublishingYear}</span>
+                </div>
+
 
                 <div className="form-group">
                     <label htmlFor="averageRate">Tỉ lệ đánh giá<span style={{color:"red"}}> *</span></label>
