@@ -1,6 +1,6 @@
 import { Button, Modal, Form } from "react-bootstrap";
 import useScrollToTop from "../../hooks/ScrollToTop";
-import {  useEffect, useState } from "react";
+import {  ChangeEvent, useEffect, useState } from "react";
 import VoucherModel from "../../models/VoucherModel";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +27,8 @@ const SelectVoucherToPay: React.FC<SelectVoucherProps> = (props) => {
   const navigate = useNavigate();
   const [noticeVouchersBook,setNoticeVouchersBook] = useState("")
   const [noticeVouchersShip,setNoticeVouchersShip] = useState("")
+  const [findVoucherName,setFindVoucherName] = useState("")
+  const [temporaryVoucherName,setTemporaryVoucherName] = useState("")
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -37,7 +39,7 @@ const SelectVoucherToPay: React.FC<SelectVoucherProps> = (props) => {
     const showAllVoucherUser = async () => {
       try {
         if (userId) {
-          const fetchData = await showAllVouchers_User('',userId);
+          const fetchData = await showAllVouchers_User(findVoucherName,userId);
           const updateData = await updateVoucher(fetchData);
           const filterVoucherBook = updateData.filter(voucher => voucher.typeVoucher === "Voucher sách");
           if(filterVoucherBook.length===0){
@@ -60,7 +62,7 @@ const SelectVoucherToPay: React.FC<SelectVoucherProps> = (props) => {
       }
     };
     showAllVoucherUser();
-  }, [isLoggedIn, navigate, userId]);
+  }, [findVoucherName, isLoggedIn, navigate, userId]);
 
   const handleSubmit = async() => { // Khi người dùng ấn áp dụng voucher
     try{
@@ -86,8 +88,17 @@ const SelectVoucherToPay: React.FC<SelectVoucherProps> = (props) => {
     props.handleClose();
   };
 
+  const handleFindVoucher=(e:ChangeEvent<HTMLInputElement>)=>{
+    setTemporaryVoucherName(e.target.value);
+}
+
+const handleFindVoucherName=()=>{
+    setFindVoucherName(temporaryVoucherName)
+}
+
   const renderVoucherList = (vouchers: VoucherModel[], selectedVoucher: number, setSelectedVoucher: (id: number) => void,notice:string)=> (
     <div className="voucher-list">
+      
       {vouchers.length>0 ? vouchers.map((voucher) => (
         <Form.Check
           key={voucher.voucherId}
@@ -96,6 +107,7 @@ const SelectVoucherToPay: React.FC<SelectVoucherProps> = (props) => {
           name={`voucher-${voucher.typeVoucher}`}
           label={
             <div className="voucher-item d-flex align-items-center">
+                
               <img src={voucher.voucherImage} alt="Voucher" className="voucher-image me-2" style={{ width: '40px', height: '40px', objectFit: 'cover' }} />
               <div>
                 <strong>{voucher.code}</strong> - Giảm {voucher.discountValue}%
@@ -139,6 +151,13 @@ const SelectVoucherToPay: React.FC<SelectVoucherProps> = (props) => {
       </Modal.Header>
       <Modal.Body>
         <Form>
+          <Form.Group>
+          <div className="d-flex justify-content-center mb-2">
+                <label htmlFor="findVoucher"className="form-label me-2">Mã Voucher</label>
+                <input type="text" id="findVoucher" className="form-control-sm me-2" onChange={handleFindVoucher} value={temporaryVoucherName} placeholder="Nhập mã voucher của bạn vào đây"></input>
+                <button type="button" className="btn btn-secondary" onClick={handleFindVoucherName}>Áp dụng</button>
+            </div>
+          </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Ưu đãi phí vận chuyển (Chọn 1 voucher)</Form.Label>
             {renderVoucherList(vouchersShip, selectedShipVoucher, setSelectedShipVoucher,noticeVouchersShip)}

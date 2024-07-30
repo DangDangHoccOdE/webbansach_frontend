@@ -71,7 +71,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
         if (!userConfirmed) {
             return;
         } else {
-            navigate(`/admin/deleteBook/${bookId}`);
+            navigate(`/books/deleteBook/${bookId}`);
         }
     }
 
@@ -132,7 +132,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                     </div>
                     {isAdmin() &&
                         (<div className="admin-button mt-2 text-end">
-                            <Link to={`/admin/editBook/${bookId}`} className="btn btn-primary me-2">
+                            <Link to={`/books/editBook/${bookId}`} className="btn btn-primary me-2">
                                 <i className="fa fa-edit"></i></Link>
 
                             <button className="btn btn-danger" onClick={handleDelete}>

@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGift } from "@fortawesome/free-solid-svg-icons";
 import SelectVoucherToPay from "../payment/SelectVoucherToPay";
 import VoucherModel from "../../models/VoucherModel";
+import updateQuantityOfCarts from "./UpdateQuantityOfCartIItem";
 
 const ShowCart=()=>{
     const {userId} = useParams();
@@ -29,6 +30,7 @@ const ShowCart=()=>{
     const [showModal,setShowModal] = useState(false);
     const [appliedBookVoucher, setAppliedBookVoucher] = useState<VoucherModel | null>(null);
     const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(null);
+    const [totalProduct,setTotalProduct] = useState(0)
 
     const userIdNumber = parseInt(userId+''); 
     useEffect(()=>{
@@ -101,7 +103,7 @@ const ShowCart=()=>{
     
         updateTotal();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [selectedItems,appliedBookVoucher]);
+      }, [selectedItems,appliedBookVoucher,cartItem]);
 
       const calculateTotal = async()=>{ // Tính tổng tiến
         let total = 0;
@@ -128,41 +130,47 @@ const ShowCart=()=>{
         }
     }
 
-    const handleQuantity = (event:ChangeEvent<HTMLInputElement>,book:BookModel)=>{  // Số lượng
+    const handleQuantity = async(event:ChangeEvent<HTMLInputElement>,book:BookModel)=>{  // Số lượng
         const quantityNow = parseInt(event.target.value);
         const inventoryNumber = book && book.quantity?book.quantity:0;
         if(!isNaN(quantityNow) && quantityNow>=1 && quantityNow<=inventoryNumber){
-            const updateCart = cartItem.map((item,index)=>{
+            const updateCart = cartItem.map(async(item,index)=>{
                 if(bookListOfCart[index].bookId === book.bookId){
+                    await updateQuantityOfCarts(cartItem[index].cartItemId,quantityNow);
                     return {...item,quantity:quantityNow}
                 }
                 return item;
             })
-            setCartItem(updateCart);
+            const completedUpdate = await Promise.all(updateCart);
+            setCartItem(completedUpdate);
         }
     }
 
-    const increaseQuantity = (cart:CartItemModel,book:BookModel) => { // Tăng số lượng
+    const increaseQuantity = async(cart:CartItemModel,book:BookModel) => { // Tăng số lượng
         if(cart.quantity< book.quantity){
-             const updateQuantityBooks = cartItem.map((item,index)=>{
+             const updateQuantityBooks = cartItem.map(async(item,index)=>{
                 if(bookListOfCart[index].bookId === book.bookId){
+                    await updateQuantityOfCarts(cartItem[index].cartItemId,item.quantity+1);
                     return {...item,quantity:item.quantity+1}
                 }
                 return item;
              })
-             setCartItem(updateQuantityBooks);
+             const completedUpdate = await Promise.all(updateQuantityBooks);
+             setCartItem(completedUpdate);
         }
     }
 
-    const reduceQuantity = (cart:CartItemModel,book:BookModel) => { // Giảm số lượng
+    const reduceQuantity = async(cart:CartItemModel,book:BookModel) => { // Giảm số lượng
         if(book.quantity>=2 && cart.quantity>1){
-            const updateQuantityBooks = cartItem.map((item,index)=>{
+            const updateQuantityBooks = cartItem.map(async(item,index)=>{
                 if(bookListOfCart[index].bookId === book.bookId){
+                    await updateQuantityOfCarts(cartItem[index].cartItemId,item.quantity-1);
                     return {...item,quantity:item.quantity-1}
                 }
                 return item;
              })
-             setCartItem(updateQuantityBooks);
+             const completedUpdate = await Promise.all(updateQuantityBooks);
+             setCartItem(completedUpdate);
         }
     }
 
@@ -176,16 +184,26 @@ const ShowCart=()=>{
     }
 
     const handleSelectItems = (cartItemId:number)=>{ // Xử lý chọn 1 sản phẩm
-        if(selectedItems.includes(cartItemId)){
-            setSelectedItems(selectedItems.filter(item=>item!==cartItemId));
-        }else{
-            setSelectedItems([...selectedItems,cartItemId]);
+        const cartItemFilter = cartItem.find(cart=>cart.cartItemId === cartItemId)
+        
+        if(cartItemFilter){
+            if(selectedItems.includes(cartItemId)){
+                setTotalProduct(totalProduct-cartItemFilter.quantity);
+                setSelectedItems(selectedItems.filter(item=>item!==cartItemId));
+            }else{
+                setTotalProduct(totalProduct+cartItemFilter.quantity);
+                setSelectedItems([...selectedItems,cartItemId]);
+            }
         }
     }
 
     const handleClickBuy = ()=>{
         if(selectedItems.length>0){
-            navigate("/payment", { state: { selectedItems, cartItems: cartItem, totalPrice: total } });
+            navigate("/payment", { state: { selectedItems, 
+                                            total: total, 
+                                            voucherBook:appliedBookVoucher, 
+                                            shipVoucher:appliedShipVoucher,
+                                            totalProduct:totalProduct } });
         }else{
             toast.error("Vui lòng chọn ít nhất một sản phẩm để mua hàng.");
         }

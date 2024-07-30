@@ -30,3 +30,28 @@ export async function getAllCartItemByUser(userId:number) :Promise<CartItemModel
     }
 }
 
+export async function getCartItemById(cartItemId:number) :Promise<CartItemModel|null>{
+    const url:string = `http://localhost:8080/cart-items/${cartItemId}`
+    try{
+        const response = await fetchWithAuth(url);
+        if(!response.ok){
+            throw new Error("Không thể truy cập api giỏ hàng")
+        }
+        const data = await response.json();
+        console.log(data)
+        if(data){
+                return({
+                    cartItemId:data.cartItemId,
+                    quantity:data.quantity,
+                    createAt:data.createAt
+                })    
+        }else{
+            throw new Error("Giỏ hàng không tồn tại!")
+        }
+   
+    }catch(error){
+        console.log({error})
+        return null;
+    }
+}
+

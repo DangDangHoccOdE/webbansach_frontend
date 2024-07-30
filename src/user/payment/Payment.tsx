@@ -1,6 +1,6 @@
 import CartItemModel from "../../models/CartItemModel";
 import BookModel from "../../models/BookModel";
-import { useContext, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { getBookByCartItem } from "../../api/BookAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import ImageModel from "../../models/ImageModel";
@@ -11,27 +11,36 @@ import { getUserByUsername } from "../../api/UserAPI";
 import {getUsernameByToken } from "../../layouts/utils/JwtService";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faGift } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../context/AuthContext";
-import { CartContext } from "../../context/CartContext";
+import VoucherModel from "../../models/VoucherModel";
+import SelectVoucherToPay from "./SelectVoucherToPay";
+import { getCartItemById } from "../../api/CartItemAPI";
 
 const Payment:React.FC =()=>{
     const location = useLocation();
-    const { selectedItems, cartItems, totalPrice } = location.state as { 
+    const { selectedItems, total,bookVoucher,shipVoucher,totalProduct } = location.state as { 
         selectedItems: number[], 
-        cartItems: CartItemModel[], 
-        totalPrice:number
-    } || { selectedItems: [], cartItems: [],totalPrice:0 };
+        total:number,
+        bookVoucher:VoucherModel|null,
+        shipVoucher:VoucherModel|null,
+        totalProduct:number
+    } || { selectedItems: [],total:0 , bookVoucher:null,shipVoucher:null,totalProduct:0};
+
     const [bookIsChoose, setBookIsChoose] = useState<BookModel[]>([]);
     const [iconImageList,setIconImageList] = useState<ImageModel[]>([])
     const [user,setUser] = useState<UserModel|null>(null);
     const navigate = useNavigate();
-   const {isLoggedIn} = useAuth();
-   const deliveryDate = moment().add(7,'day').format("Do MMMM,YYYY");
-   const dateNow = moment().format("Do MMMM,YYYY");
-   const {itemCounter} = useContext(CartContext);
-   const [showAllBooks,setShowAllBooks] = useState(false);
+    const {isLoggedIn} = useAuth();
+    const deliveryDate = moment().add(7,'day').format("Do MMMM,YYYY");
+    const dateNow = moment().format("Do MMMM,YYYY");
+    const [showAllBooks,setShowAllBooks] = useState(false);
     const [formOfDelivery,setFormOfDelivery] = useState("Nhanh")
+    const [priceShip,setPriceShip] = useState(0)
+    const [showModal,setShowModal] = useState(false);
+    const [appliedBookVoucher, setAppliedBookVoucher] = useState<VoucherModel | null>(null);
+    const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(null);
+    const [cart,setCart] = useState<CartItemModel[]>([])
 
     const renderDetail = ()=>{ // Xử lý chọn phương thức giao hàng
         switch (formOfDelivery){
@@ -78,9 +87,19 @@ const Payment:React.FC =()=>{
                 const bookList = await Promise.all(handleBook);
                 const bookValid = bookList.filter(book=>book!==null) as BookModel[];
                 setBookIsChoose(bookValid);
+
+            const handleCart = selectedItems.map(async(item:number)=>{
+                    const cartItem = await getCartItemById(item);
+                    if(cartItem){
+                        return cartItem;
+                    }
+                })
+                    const careItemList = await Promise.all(handleCart);
+                    const careItemListValid = careItemList.filter(cartItem=>cartItem!==null) as CartItemModel[];
+                    setCart(careItemListValid);
         }
 
-        const handleUser = async()=>{
+        const handleUser = async()=>{ // Lấy user => Hiển thị thông tin thanh toán
             const username = getUsernameByToken();
             if(username){
                 try{
@@ -95,19 +114,38 @@ const Payment:React.FC =()=>{
               
             }
         }
+        const handleSelectDelivery=()=>{ //Xử lý họn phương thức giao hàng
+            if(formOfDelivery==="Nhanh"){
+                setPriceShip(30000);
+            }else{
+                setPriceShip(50000);
+            }
+        }
+        handleSelectDelivery();
         handlePurchase();
         handleUser();
-    },[isLoggedIn, navigate, selectedItems])
+    },[cart, formOfDelivery, isLoggedIn, navigate, selectedItems])
 
     useEffect(()=>{
         const handleIcon = async()=>{  // Lấy ra những icon của sách
             const iconImage = await getAllIconImage(bookIsChoose);
-            console.log(iconImage)
             setIconImageList(iconImage);
 
         }
         handleIcon();
     },[bookIsChoose])
+
+    const handleSelectVoucher=()=>{
+        setShowModal(!showModal)
+    }
+
+    const handleClose=()=>{ // đóng modal showVoucher
+        setShowModal(false);
+    }
+    const handleApplyVoucher=(voucherBook:VoucherModel|null,voucherShip:VoucherModel|null)=>{ // Xử lý khi chọn voucher 
+        setAppliedBookVoucher(voucherBook);
+        setAppliedShipVoucher(voucherShip);
+    }
     return(
         <div className="container">
         <h1 className="text-center mt-3">Thanh toán</h1>
@@ -122,11 +160,18 @@ const Payment:React.FC =()=>{
                   <img src={iconImageList[index].imageData} alt={book.bookName} className="img-fluid me-3" style={{ width: "100px" }} />
                   <div>
                     <h5>{book.bookName}</h5>
-                    <p className="mb-0">Số lượng: {cartItems[index].quantity}</p>
-                    <p className="mb-0">Đơn giá: {NumberFormat(book.price)} đ</p>
-                    <p className="text-danger mb-0">Thành tiền: {NumberFormat(cartItems[index].quantity * book.price)} đ</p>
+                    {cart.length>0 && 
+                           <div>
+                           <p className="mb-0">Số lượng: {cart[index].quantity}</p>
+                           <p className="mb-0">Đơn giá: {NumberFormat(book.price)} đ</p>
+                           <p className="text-danger mb-0">Thành tiền: {NumberFormat(cart[index].quantity * book.price)} đ</p> 
+                       </div>
+                   
+                    }
+                 
                   </div>
                 </div>
+                
               ))}
               {
                 bookIsChoose.length > 3 && (
@@ -188,8 +233,8 @@ const Payment:React.FC =()=>{
 
                     {/* Tổng tiền */}
                     <div className="d-flex justify-content-between mb-3">
-                        <p className="mb-0">Tổng số tiền ({itemCounter} sản phẩm):</p>
-                        <p className="mb-0 text-danger">{NumberFormat(totalPrice + 30000)} đ</p>
+                        <p className="mb-0">Tổng số tiền ({totalProduct} sản phẩm):</p>
+                        <p className="mb-0 text-danger">{NumberFormat(total + priceShip)} đ</p>
                     </div>
                     <hr />
 
@@ -203,8 +248,13 @@ const Payment:React.FC =()=>{
                         BookStore Voucher
                         </h5>
                         <div className="d-flex justify-content-between align-items-center">
-                            <input type="text" placeholder="Nhập mã voucher" className="form-control me-2" />
-                            <button className="btn btn-outline-secondary">Áp dụng</button>
+                        <button className="btn btn-outline-primary w-100" onClick={handleSelectVoucher}>
+                                        <FontAwesomeIcon icon={faGift} className="me-2" /> Chọn hoặc nhập mã voucher
+                                     </button>
+
+                        {
+                             <SelectVoucherToPay handleClose={handleClose} showModal={showModal} onApplyVoucher={handleApplyVoucher}/>
+                        }
                         </div>
                     </div>
                     <hr />
@@ -229,11 +279,32 @@ const Payment:React.FC =()=>{
                     {/* Tổng thanh toán */}
                     <div>
                         <h5><FontAwesomeIcon icon={faCircleInfo} style={{color:"orange"}} /> Chi tiết thanh toán: </h5>
-                        <p>Tổng tiền hàng :{NumberFormat(totalPrice)} đ </p>
-                        <p>Tổng tiền vận chuyển : {NumberFormat(30000)} đ</p>
-                        <h4>Tổng thanh toán:
-                            <span style={{color:"red"}}> {NumberFormat(totalPrice+30000)} đ</span>
-                        </h4>
+                        <div className="d-flex justify-content-between mb-2">
+                           <span>Tổng tiền hàng :  </span>
+                           <span><b>{NumberFormat(total)} đ</b></span>
+                        </div>
+                        <div className="d-flex justify-content-between mb-2">
+                           <span>Tổng tiền vận chuyển :</span>
+                           <span><b>{NumberFormat(priceShip)} đ</b></span>
+                        </div>
+                        {
+                                    appliedBookVoucher &&
+                                    <div className="d-flex justify-content-between mb-2">
+                                    <span>Voucher giảm giá</span>
+                                    <span><b>- {NumberFormat(total*(appliedBookVoucher.discountValue/100))} đ</b></span>
+                                </div>
+                                }
+                                {
+                                    appliedShipVoucher && 
+                                    <div className="d-flex justify-content-between mb-2">
+                                    <span>Giảm giá phí vận chuyển</span>
+                                    <span><b>- {NumberFormat(priceShip*(appliedShipVoucher.discountValue/100))} đ</b></span>
+                                </div>
+                                }
+                                  <div className="d-flex justify-content-between mb-2">
+                                  <h4>Tổng thanh toán:  </h4>
+                                    <h4 style={{color:"red"}}> {NumberFormat(total+priceShip)} đ</h4>                 
+                                </div>
                         <button className="btn btn-success btn-lg">Đặt hàng</button>
                     </div>
                     </div>

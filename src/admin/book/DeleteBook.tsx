@@ -10,7 +10,7 @@ const DeleteBook:React.FC=()=>{
     const navigate = useNavigate();
     const handleDelete=async()=>{
         try{
-            const url:string=`http://localhost:8080/admin/deleteBook/${bookId}`;
+            const url:string=`http://localhost:8080/books/deleteBook/${bookId}`;
             const response = await fetchWithAuth(url,{
                 method:"DELETE",
                 headers:{
@@ -21,7 +21,6 @@ const DeleteBook:React.FC=()=>{
             )
 
             const data =await response.json();
-            console.log(data.content)
             if(response.ok){
                 toast.success(data.content);
             }else{

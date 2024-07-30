@@ -66,7 +66,7 @@ function App() {
               <Route path="/resendActivationCode/:email" element={<ResendActivationCode/>} />
               <Route path="/login" element={ <Login/>}  />
               <Route path="/user/test" element={<Test/>} />
-              <Route path="/admin/addBook" element={<BookForm_Admin/>} />
+              <Route path="/books/addBook" element={<BookForm_Admin/>} />
               <Route path="/error-403" element={<Error403Page/>} />
               <Route path="/error-404" element={<Error404Page/>} />
               <Route path="/user/info/:username" element={<UserInformation/>} />
@@ -74,8 +74,8 @@ function App() {
               <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail/>}/>
               <Route path="/user/forgotPassword" element={<ForgotPassword/>}/>
               <Route path="/user/confirmForgotPassword/:username/:forgotPasswordCode" element={<ConfirmForgotPassword/>}/>
-              <Route path="/admin/editBook/:bookId" element={<EditBook_Admin/>}/>
-              <Route path="/admin/deleteBook/:bookId" element={<DeleteBook_Admin/>}/>
+              <Route path="/books/editBook/:bookId" element={<EditBook_Admin/>}/>
+              <Route path="/books/deleteBook/:bookId" element={<DeleteBook_Admin/>}/>
               <Route path="/admin/getAllUsers/" element={<GetAllUser_Admin/>}/>
               <Route path="/user/deleteUser/:username" element={<DeleteUser_Admin/>}/>
               <Route path="/user/showWishList/:userId" element={<ShowWishListByUser/>}/>
