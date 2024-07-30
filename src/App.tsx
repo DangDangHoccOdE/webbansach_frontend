@@ -34,7 +34,6 @@ import DeleteBookOfCategory_Admin from "./admin/category/DeleteBookOfCategory";
 import ShowAllCategory_Admin from "./admin/category/ShowAllCategory";
 import ShowCart from "./user/cartItem/ShowCartItemByUser";
 import DeleteBookOfCart from "./user/cartItem/DeleteCartItems";
-import Payment from "./user/payment/Payment";
 import AddVoucher_Admin from "./admin/voucher/AddVoucher";
 import DeleteVoucher_Admin from "./admin/voucher/DeleteVoucher";
 import EditVoucherAdmin from "./admin/voucher/EditVoucher";
@@ -48,6 +47,7 @@ import AddVouchersToVoucherAvailable_Admin from "./admin/voucher/AddVouchersToVo
 import ListVoucher from "./layouts/voucher/ListVoucher.tsx";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
+import AddOrder from "./user/order/AddOrder";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   
@@ -88,7 +88,7 @@ function App() {
               <Route path="/category/deleteBookOfCategory/:categoryId/:bookId" element={<DeleteBookOfCategory_Admin/>}/>
               <Route path="/user/showCart/:userId" element={<ShowCart/>}></Route>
               <Route path="/cart/deleteCartItem/:cartItemId/:userId" element={<DeleteBookOfCart/>}></Route>
-              <Route path="/payment" element={<Payment/>}></Route>
+              <Route path="/order/createOrder" element={<AddOrder/>}></Route>
 
               <Route path="/voucher/addVoucher" element={<AddVoucher_Admin/>}></Route>
               <Route path="/voucher/showAllVoucherAdmin" element={<ShowAllVoucher_Admin/>}></Route>

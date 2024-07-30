@@ -11,9 +11,9 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGift } from "@fortawesome/free-solid-svg-icons";
-import SelectVoucherToPay from "../payment/SelectVoucherToPay";
 import VoucherModel from "../../models/VoucherModel";
 import updateQuantityOfCarts from "./UpdateQuantityOfCartIItem";
+import SelectVoucherToAddCreate from "../order/SelectVoucherToAddOrder";
 
 const ShowCart=()=>{
     const {userId} = useParams();
@@ -199,9 +199,9 @@ const ShowCart=()=>{
 
     const handleClickBuy = ()=>{
         if(selectedItems.length>0){
-            navigate("/payment", { state: { selectedItems, 
+            navigate("/order/createOrder", { state: { selectedItems, 
                                             total: total, 
-                                            voucherBook:appliedBookVoucher, 
+                                            bookVoucher:appliedBookVoucher, 
                                             shipVoucher:appliedShipVoucher,
                                             totalProduct:totalProduct } });
         }else{
@@ -334,7 +334,7 @@ const ShowCart=()=>{
                                      </button>
 
                                      {
-                                        <SelectVoucherToPay handleClose={handleClose} showModal={showModal} onApplyVoucher={handleApplyVoucher}/>
+                                        <SelectVoucherToAddCreate handleClose={handleClose} showModal={showModal} onApplyVoucher={handleApplyVoucher} selectedBookVoucher={null} selectedShipVoucher={null}/>
                                      }
                                 </div>
                             </div>

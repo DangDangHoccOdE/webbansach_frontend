@@ -1,6 +1,6 @@
 import CartItemModel from "../../models/CartItemModel";
 import BookModel from "../../models/BookModel";
-import {  useEffect, useState } from "react";
+import {  ChangeEvent, useEffect, useState } from "react";
 import { getBookByCartItem } from "../../api/BookAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import ImageModel from "../../models/ImageModel";
@@ -14,10 +14,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faGift } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../../context/AuthContext";
 import VoucherModel from "../../models/VoucherModel";
-import SelectVoucherToPay from "./SelectVoucherToPay";
+import SelectVoucherToPay from "./SelectVoucherToAddOrder";
 import { getCartItemById } from "../../api/CartItemAPI";
+import OrderModel from "../../models/OrderModel";
+import DeliveryModel from "../../models/DeliveryModel";
+import PaymentModel from "../../models/PaymentModel";
 
-const Payment:React.FC =()=>{
+const AddOrder:React.FC =()=>{
     const location = useLocation();
     const { selectedItems, total,bookVoucher,shipVoucher,totalProduct } = location.state as { 
         selectedItems: number[], 
@@ -38,9 +41,11 @@ const Payment:React.FC =()=>{
     const [formOfDelivery,setFormOfDelivery] = useState("Nhanh")
     const [priceShip,setPriceShip] = useState(0)
     const [showModal,setShowModal] = useState(false);
-    const [appliedBookVoucher, setAppliedBookVoucher] = useState<VoucherModel | null>(null);
-    const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(null);
+    const [appliedBookVoucher, setAppliedBookVoucher] = useState<VoucherModel | null>(bookVoucher);
+    const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(shipVoucher);
     const [cart,setCart] = useState<CartItemModel[]>([])
+    const [noteUser,setNoteUser] = useState('')
+    const [selectMethodPayment,setSelectMethodPayment] = useState("")
 
     const renderDetail = ()=>{ // Xử lý chọn phương thức giao hàng
         switch (formOfDelivery){
@@ -88,7 +93,7 @@ const Payment:React.FC =()=>{
                 const bookValid = bookList.filter(book=>book!==null) as BookModel[];
                 setBookIsChoose(bookValid);
 
-            const handleCart = selectedItems.map(async(item:number)=>{
+            const handleCart = selectedItems.map(async(item:number)=>{ // Chuyển từ cartItemId thành cartItem đẻ lấy quantity
                     const cartItem = await getCartItemById(item);
                     if(cartItem){
                         return cartItem;
@@ -124,7 +129,7 @@ const Payment:React.FC =()=>{
         handleSelectDelivery();
         handlePurchase();
         handleUser();
-    },[cart, formOfDelivery, isLoggedIn, navigate, selectedItems])
+    },[formOfDelivery, isLoggedIn, navigate, selectedItems])
 
     useEffect(()=>{
         const handleIcon = async()=>{  // Lấy ra những icon của sách
@@ -135,7 +140,23 @@ const Payment:React.FC =()=>{
         handleIcon();
     },[bookIsChoose])
 
-    const handleSelectVoucher=()=>{
+
+    const [priceByVoucher,setPriceByVoucher] = useState(total);
+    
+    useEffect(()=>{         // Cập nhật giá tiền
+        let totalPrice = total+priceShip;
+        if(appliedBookVoucher){
+            totalPrice-= totalPrice*(appliedBookVoucher.discountValue/100);
+        }
+         if(appliedShipVoucher){
+            totalPrice-= priceShip*(appliedShipVoucher.discountValue/100);
+        }
+
+        setPriceByVoucher(totalPrice);
+    },[appliedBookVoucher, appliedShipVoucher, priceShip, total])
+
+
+    const handleSelectVoucher=()=>{ // Đóng modal chọn voucher
         setShowModal(!showModal)
     }
 
@@ -143,9 +164,48 @@ const Payment:React.FC =()=>{
         setShowModal(false);
     }
     const handleApplyVoucher=(voucherBook:VoucherModel|null,voucherShip:VoucherModel|null)=>{ // Xử lý khi chọn voucher 
-        setAppliedBookVoucher(voucherBook);
-        setAppliedShipVoucher(voucherShip);
+            setAppliedBookVoucher(voucherBook);
+            setAppliedShipVoucher(voucherShip);
     }
+
+//     const handleSelectMethodPayment=(e:ChangeEvent<HTMLSelectElement>)=>{  // Xử lý chọn phương thức thanh toán
+//         setSelectMethodPayment(e.target.value);
+//     }
+//    const handleSelectMethodDelivery=(e:ChangeEvent<HTMLSelectElement>)=>{  // Xử lý chọn phương thức vận chuyển
+//         setSelectMethodPayment(e.target.value);
+//     }
+
+    const handleClickBuy=()=>{  // Xử lý đặt hàng
+        const confirmUser = window.confirm("Bạn đã chắc chắn muốn đặt hàng");
+        if(!confirmUser){
+            return;
+        }else{  
+            if(user){
+                const order:OrderModel={
+                    orderId:0,
+                    date:new Date(),
+                    deliveryAddress:user.deliveryAddress,
+                    deliveryStatus:"",
+                    orderStatus:'',
+                    paymentCost:priceByVoucher,
+                    purchaseAddress:"",
+                    shippingFee:priceShip,
+                    totalPrice:priceByVoucher,
+                    totalProduct:totalProduct,
+                    noteFromUser:noteUser,
+                    userId:user.userId,
+                    cartItems:selectedItems,
+                    paymentMethod:selectMethodPayment,
+                    deliveryMethod:formOfDelivery
+                }
+
+                navigate("/order/handleCreateOrder",{state:{ order}})
+            }
+        }
+    }
+
+   
+
     return(
         <div className="container">
         <h1 className="text-center mt-3">Thanh toán</h1>
@@ -227,7 +287,7 @@ const Payment:React.FC =()=>{
                     {/*Tin nhắn từ user*/}
                     <div className="mb-3">
                         <label htmlFor="userMessage" className="form-label">Tin nhắn</label>
-                        <input type="text" id="userMessage" placeholder="Lưu ý cho người bán" className="form-control" />
+                        <input type="text" id="userMessage" placeholder="Lưu ý cho người bán" className="form-control" value={noteUser} onChange={e=>setNoteUser(e.target.value)} />
                     </div>
                     <hr />
 
@@ -253,7 +313,7 @@ const Payment:React.FC =()=>{
                                      </button>
 
                         {
-                             <SelectVoucherToPay handleClose={handleClose} showModal={showModal} onApplyVoucher={handleApplyVoucher}/>
+                             <SelectVoucherToPay handleClose={handleClose} showModal={showModal} onApplyVoucher={handleApplyVoucher} selectedBookVoucher={bookVoucher} selectedShipVoucher={shipVoucher}/>
                         }
                         </div>
                     </div>
@@ -269,7 +329,7 @@ const Payment:React.FC =()=>{
                         </svg>
                         Phương thức thanh toán
                         </h5>
-                        <select className="form-select">
+                        <select className="form-select" value={selectMethodPayment} onChange={e=>setSelectMethodPayment(e.target.value)}>
                             <option value="Thanh toán khi nhận hàng">Thanh toán khi nhận hàng</option>
                             <option value="Thanh toán qua ngân hàng">Thanh toán qua ngân hàng</option>
                         </select>
@@ -291,7 +351,7 @@ const Payment:React.FC =()=>{
                                     appliedBookVoucher &&
                                     <div className="d-flex justify-content-between mb-2">
                                     <span>Voucher giảm giá</span>
-                                    <span><b>- {NumberFormat(total*(appliedBookVoucher.discountValue/100))} đ</b></span>
+                                    <span><b>- {NumberFormat((total+priceShip)*(appliedBookVoucher.discountValue/100))} đ</b></span>
                                 </div>
                                 }
                                 {
@@ -303,9 +363,9 @@ const Payment:React.FC =()=>{
                                 }
                                   <div className="d-flex justify-content-between mb-2">
                                   <h4>Tổng thanh toán:  </h4>
-                                    <h4 style={{color:"red"}}> {NumberFormat(total+priceShip)} đ</h4>                 
+                                    <h4 style={{color:"red"}}> {NumberFormat(priceByVoucher)} đ</h4>                 
                                 </div>
-                        <button className="btn btn-success btn-lg">Đặt hàng</button>
+                        <button type="submit" className="btn btn-success btn-lg" onClick={handleClickBuy}>Đặt hàng</button>
                     </div>
                     </div>
                 </div>
@@ -315,4 +375,4 @@ const Payment:React.FC =()=>{
     );
 };
 
-export default Payment;
+export default AddOrder;

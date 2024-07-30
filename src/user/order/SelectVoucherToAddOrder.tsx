@@ -14,14 +14,16 @@ interface SelectVoucherProps {
   showModal: boolean;
   handleClose: () => void;
   onApplyVoucher:(bookVoucher:VoucherModel|null,shipVoucher:VoucherModel|null)=>void;
+  selectedBookVoucher: VoucherModel | null;
+  selectedShipVoucher: VoucherModel | null;
 }
 
-const SelectVoucherToPay: React.FC<SelectVoucherProps> = (props) => {
+const SelectVoucherToAddCreate: React.FC<SelectVoucherProps> = (props) => {
   useScrollToTop();
   const [vouchersBook, setVouchersBook] = useState<VoucherModel[]>([]);
   const [vouchersShip, setVouchersShip] = useState<VoucherModel[]>([]);
-  const [selectedBookVoucher, setSelectedBookVoucher] = useState<number>(0);
-  const [selectedShipVoucher, setSelectedShipVoucher] = useState<number>(0);
+  const [selectedBookVoucher, setSelectedBookVoucher] = useState<number>(props.selectedBookVoucher?.voucherId || 0);
+  const [selectedShipVoucher, setSelectedShipVoucher] = useState<number>(props.selectedShipVoucher?.voucherId || 0);
   const userId = getUserIdByToken();
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -64,27 +66,16 @@ const SelectVoucherToPay: React.FC<SelectVoucherProps> = (props) => {
     showAllVoucherUser();
   }, [findVoucherName, isLoggedIn, navigate, userId]);
 
-  const handleSubmit = async() => { // Khi người dùng ấn áp dụng voucher
-    try{
-      if(selectedBookVoucher!==0 && selectedShipVoucher!==0){
-        const voucherBookIsChoose = await getVoucherById(selectedBookVoucher);  // Xử lý Biến id voucher thành voucher
-        const voucherShipIsChoose = await getVoucherById(selectedShipVoucher);
-        
-        props.onApplyVoucher(voucherBookIsChoose,voucherShipIsChoose);
-      }else if(selectedBookVoucher!==0 && selectedShipVoucher===0){
-        const voucherBookIsChoose = await getVoucherById(selectedBookVoucher); 
-        props.onApplyVoucher(voucherBookIsChoose,null);
-      }else  if(selectedShipVoucher!==0 && selectedBookVoucher === 0){
-        const voucherShipIsChoose = await getVoucherById(selectedShipVoucher);
-
-         props.onApplyVoucher(null,voucherShipIsChoose);
-      }else{
-          props.onApplyVoucher(null,null);
-        }
-    }catch(error){
-        console.error({error})
+  const handleSubmit = async () => {
+    try {
+      const voucherBookIsChoose = selectedBookVoucher !== 0 ? await getVoucherById(selectedBookVoucher) : null;
+      const voucherShipIsChoose = selectedShipVoucher !== 0 ? await getVoucherById(selectedShipVoucher) : null;
+      
+      props.onApplyVoucher(voucherBookIsChoose, voucherShipIsChoose);
+    } catch (error) {
+      console.error({error});
     }
-
+  
     props.handleClose();
   };
 
@@ -180,4 +171,4 @@ const handleFindVoucherName=()=>{
   );
 };
 
-export default SelectVoucherToPay;
+export default SelectVoucherToAddCreate;
