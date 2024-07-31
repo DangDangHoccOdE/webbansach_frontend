@@ -65,8 +65,9 @@ const ShowCart=()=>{
                 if(cartItem){
                   const cart = cartItem.map(async(item:CartItemModel)=>{
                         const bookData = await getBookByCartItem(item.cartItemId);
-                        const quantity = item.quantity;
-                        return {bookData,quantity}
+                        // const quantity = item.quantity;
+                        // return {bookData,quantity}
+                        return {bookData}
                   })
                         const result =await Promise.all(cart);
                         const bookValid = result.map(item=>item.bookData).filter(book => book !== null) as BookModel[];

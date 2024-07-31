@@ -49,6 +49,7 @@ import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import AddOrder from "./user/order/AddOrder";
 import HandleCreateOrder from "./user/order/HandleCreateOrder";
+import ShowOrder from "./user/order/ShowOrder";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   
@@ -91,6 +92,7 @@ function App() {
               <Route path="/cart/deleteCartItem/:cartItemId/:userId" element={<DeleteBookOfCart/>}></Route>
               <Route path="/order/createOrder" element={<AddOrder/>}></Route>
               <Route path="/order/handleCreateOrder" element={<HandleCreateOrder/>}></Route>
+              <Route path="/user/showOrder" element={<ShowOrder/>}></Route>
 
               <Route path="/voucher/addVoucher" element={<AddVoucher_Admin/>}></Route>
               <Route path="/voucher/showAllVoucherAdmin" element={<ShowAllVoucher_Admin/>}></Route>

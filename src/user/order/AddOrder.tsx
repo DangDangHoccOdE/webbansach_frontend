@@ -182,9 +182,9 @@ const AddOrder:React.FC =()=>{
                     date:format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
                     deliveryAddress:user.deliveryAddress,
                     deliveryStatus:"", // Sau này sẽ cập nhật
-                    orderStatus:'',
+                    orderStatus:'Đang xử lý',
                     paymentCost:priceByVoucher,
-                    purchaseAddress:"",
+                    purchaseAddress:"BookStore Hà Nội",
                     shippingFee:priceShip,
                     shippingFeeVoucher:appliedShipVoucher?priceShip-priceShip*(appliedShipVoucher.discountValue/100):priceShip,
                     totalPrice:priceByVoucher,

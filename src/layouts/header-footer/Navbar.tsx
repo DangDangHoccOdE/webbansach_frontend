@@ -151,6 +151,7 @@ function Navbar({setBookNameFind} : NavbarProps){
                  <Link className="dropdown-item" to={`/user/info/${user?.userName}`}>Xem thông tin</Link>
                  <Link className="dropdown-item" to={`/user/showWishList/${user?.userId}`}>Danh sách yêu thích</Link>
                  <Link className="dropdown-item" to={`/user/showVoucherUser`}>Voucher của tôi</Link>
+                 <Link className="dropdown-item" to={`/user/showOrder`}>Đơn hàng</Link>
                    <div className="dropdown-divider"></div>
                    <button className="dropdown-item" onClick={handleLogout}>Đăng xuất</button>
                  </div>

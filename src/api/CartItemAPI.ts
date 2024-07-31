@@ -38,7 +38,6 @@ export async function getCartItemById(cartItemId:number) :Promise<CartItemModel|
             throw new Error("Không thể truy cập api giỏ hàng")
         }
         const data = await response.json();
-        console.log(data)
         if(data){
                 return({
                     cartItemId:data.cartItemId,
