@@ -1,23 +1,24 @@
 
 class OrderModel{
     orderId:number;
-    date:Date;
+    date:string;
     deliveryAddress:string;
     deliveryStatus?:string;
     orderStatus?:string;
     paymentCost:number;
     purchaseAddress?:string;
     shippingFee:number;
+    shippingFeeVoucher:number;
     totalPrice:number;
     totalProduct:number;
-    noteFromUser:string;
+    noteFromUser?:string;
     userId:number;
     cartItems:number[];
     paymentMethod:string;
     deliveryMethod:string;
 
     constructor(    orderId:number,
-        date:Date,
+        date:string,
         deliveryAddress:string,
         deliveryStatus:string,
         orderStatus:string,
@@ -25,6 +26,7 @@ class OrderModel{
         purchaseAddress:string,
         shippingFee:number,
         totalPrice:number,
+        shippingFeeVoucher:number,
         totalProduct:number,
         noteFromUser:string,
         userId:number,
@@ -39,6 +41,7 @@ class OrderModel{
             this.paymentCost = paymentCost;
             this.purchaseAddress = purchaseAddress;
             this.shippingFee = shippingFee;
+            this.shippingFeeVoucher=shippingFeeVoucher;
             this.totalPrice = totalPrice;
             this.totalProduct = totalProduct;
             this.noteFromUser = noteFromUser;

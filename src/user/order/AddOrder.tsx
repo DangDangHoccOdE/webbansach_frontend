@@ -17,8 +17,7 @@ import VoucherModel from "../../models/VoucherModel";
 import SelectVoucherToPay from "./SelectVoucherToAddOrder";
 import { getCartItemById } from "../../api/CartItemAPI";
 import OrderModel from "../../models/OrderModel";
-import DeliveryModel from "../../models/DeliveryModel";
-import PaymentModel from "../../models/PaymentModel";
+import { format } from "date-fns";
 
 const AddOrder:React.FC =()=>{
     const location = useLocation();
@@ -45,7 +44,7 @@ const AddOrder:React.FC =()=>{
     const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(shipVoucher);
     const [cart,setCart] = useState<CartItemModel[]>([])
     const [noteUser,setNoteUser] = useState('')
-    const [selectMethodPayment,setSelectMethodPayment] = useState("")
+    const [selectMethodPayment,setSelectMethodPayment] = useState("Thanh toán khi nhận hàng")
 
     const renderDetail = ()=>{ // Xử lý chọn phương thức giao hàng
         switch (formOfDelivery){
@@ -168,12 +167,9 @@ const AddOrder:React.FC =()=>{
             setAppliedShipVoucher(voucherShip);
     }
 
-//     const handleSelectMethodPayment=(e:ChangeEvent<HTMLSelectElement>)=>{  // Xử lý chọn phương thức thanh toán
-//         setSelectMethodPayment(e.target.value);
-//     }
-//    const handleSelectMethodDelivery=(e:ChangeEvent<HTMLSelectElement>)=>{  // Xử lý chọn phương thức vận chuyển
-//         setSelectMethodPayment(e.target.value);
-//     }
+    const handleSelectMethodPayment=(e:ChangeEvent<HTMLSelectElement>)=>{  // Xử lý chọn phương thức thanh toán
+        setSelectMethodPayment(e.target.value);
+    }
 
     const handleClickBuy=()=>{  // Xử lý đặt hàng
         const confirmUser = window.confirm("Bạn đã chắc chắn muốn đặt hàng");
@@ -183,13 +179,14 @@ const AddOrder:React.FC =()=>{
             if(user){
                 const order:OrderModel={
                     orderId:0,
-                    date:new Date(),
+                    date:format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
                     deliveryAddress:user.deliveryAddress,
-                    deliveryStatus:"",
+                    deliveryStatus:"", // Sau này sẽ cập nhật
                     orderStatus:'',
                     paymentCost:priceByVoucher,
                     purchaseAddress:"",
                     shippingFee:priceShip,
+                    shippingFeeVoucher:appliedShipVoucher?priceShip-priceShip*(appliedShipVoucher.discountValue/100):priceShip,
                     totalPrice:priceByVoucher,
                     totalProduct:totalProduct,
                     noteFromUser:noteUser,
@@ -329,7 +326,7 @@ const AddOrder:React.FC =()=>{
                         </svg>
                         Phương thức thanh toán
                         </h5>
-                        <select className="form-select" value={selectMethodPayment} onChange={e=>setSelectMethodPayment(e.target.value)}>
+                        <select className="form-select" value={selectMethodPayment} onChange={handleSelectMethodPayment}>
                             <option value="Thanh toán khi nhận hàng">Thanh toán khi nhận hàng</option>
                             <option value="Thanh toán qua ngân hàng">Thanh toán qua ngân hàng</option>
                         </select>

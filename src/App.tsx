@@ -48,6 +48,7 @@ import ListVoucher from "./layouts/voucher/ListVoucher.tsx";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import AddOrder from "./user/order/AddOrder";
+import HandleCreateOrder from "./user/order/HandleCreateOrder";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   
@@ -89,6 +90,7 @@ function App() {
               <Route path="/user/showCart/:userId" element={<ShowCart/>}></Route>
               <Route path="/cart/deleteCartItem/:cartItemId/:userId" element={<DeleteBookOfCart/>}></Route>
               <Route path="/order/createOrder" element={<AddOrder/>}></Route>
+              <Route path="/order/handleCreateOrder" element={<HandleCreateOrder/>}></Route>
 
               <Route path="/voucher/addVoucher" element={<AddVoucher_Admin/>}></Route>
               <Route path="/voucher/showAllVoucherAdmin" element={<ShowAllVoucher_Admin/>}></Route>
