@@ -164,3 +164,36 @@ export async function getBookByCartItem(cartItemId:number):Promise<BookModel|nul
     }
 
 }
+
+
+export async function getBooksOfOrders(userId:number):Promise<BookModel[]> {
+    const result:BookModel[] = [];
+    const url:string=`http://localhost:8080/order/getBooksOfOrder/${userId}`
+    const response = await fetchWithAuth(url);
+
+    if(!response.ok){
+        throw new Error(`Không thể truy cập api lấy sách trong đơn hàng!`);
+    }
+
+         const data =await response.json();
+
+        for(const key in data){
+                result.push({
+                bookId: data[key].bookId,
+                bookName: data[key].bookName,
+                price:data[key].price,
+                isbn:data[key].isbn,
+                listedPrice:data[key].listedPrice,
+                description:data[key].description,
+                author:data[key].author,
+                quantity:data[key].quantity,
+                averageRate:data[key].averageRate,
+                soldQuantity:data[key].soldQuantity,
+                discountPercent:data[key].discountPercent,
+                pageNumber:data[key].pageNumber,
+                language:data[key].language,
+                publishingYear:data[key].publishingYear
+                });
+    }
+    return result;
+}

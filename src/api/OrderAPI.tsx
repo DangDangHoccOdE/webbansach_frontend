@@ -40,3 +40,38 @@ export async function showOrders(userId:number,orderStatus:string):Promise<Order
         return null;
     }
 } 
+
+export async function getOrderByOrderId(orderId:number):Promise<OrderModel|null> {
+    const url:string=`http://localhost:8080/orders/${orderId}`;
+
+    try{
+        const response = await fetchWithAuth(url);
+        if(!response){
+            throw new Error(`Lỗi khi gọi api danh sách đặt hàng`)
+        }
+
+        const data = await response.json();
+
+        return({
+            orderId:data.orderId,
+            date:data.date,
+            deliveryAddress:data.deliveryAddress,
+            deliveryStatus:data.deliveryStatus,
+            orderStatus:data.orderStatus,
+            paymentCost:data.paymentCost,
+            purchaseAddress:data.purchaseAddress,
+            shippingFee:data.shippingFee,
+            shippingFeeVoucher:data.shippingFeeVoucher,
+            totalPrice:data.totalPrice,
+            totalProduct:data.totalProduct,
+            noteFromUser:data.noteFromUser,
+            userId:data.userId,
+            cartItems:data.cartItems,
+            paymentMethod:data.paymentMethod,
+            deliveryMethod:data.deliveryMethod,
+        })
+    }catch(error){
+        console.log({error})
+        return null;
+    }
+} 
