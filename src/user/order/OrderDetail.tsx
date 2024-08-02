@@ -11,19 +11,24 @@ import { getOrderByOrderId } from "../../api/OrderAPI";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import { getOrderDetailsFromOrder } from "../../api/OrderDetailAPI";
 import { Box, Card, CardContent, Typography, Button } from "@mui/material";
+import cancelOrder from "./CancelOrder";
+import { getUserIdByToken } from "../../layouts/utils/JwtService";
+import repurchase from "./HanleRepurchase";
 
 interface OrderProps {
   orderId: number;
-  setIsLoading: Dispatch<SetStateAction<boolean>>,
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
+  onCancelOrder: () => void;
 }
 
-const OrderDetail: React.FC<OrderProps> = ({ orderId ,setIsLoading}) => {
+const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading, onCancelOrder }) => {
   const [order, setOrder] = useState<OrderModel | null>(null);
   const [books, setBooks] = useState<BookModel[]>([]);
   const [imageBooks, setImageBooks] = useState<ImageModel[]>([]);
   const [orderDetails, setOrderDetails] = useState<OrderDetailModel[]>([]);
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const userId = getUserIdByToken();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,20 +38,22 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,setIsLoading}) => {
       }
       setIsLoading(true);
       try {
-        const fetchOrder = await getOrderByOrderId(orderId);  // Lấy ra order để lấy trạng thái đơn hàng, vận chuyển ...
-        if (fetchOrder === null) {
+        // Lấy thông tin đơn hàng, order details, books, và images cùng lúc
+        const [fetchOrder, fetchOrderDetails, fetchBooks, fetchImageOfBook] = await Promise.all([
+          getOrderByOrderId(orderId),
+          getOrderDetailsFromOrder(orderId),
+          getBooksOfOrders(orderId),
+          getAllIconImage(await getBooksOfOrders(orderId))
+        ]);
+    
+        if (!fetchOrder) {
           navigate("/error-404", { replace: true });
           return;
         }
+    
         setOrder(fetchOrder);
-
-        const fetchOrderDetails = await getOrderDetailsFromOrder(orderId); // Lấy ra orderDetail để lấy ra số lượng từng book
         setOrderDetails(fetchOrderDetails);
-
-        const fetchBooks = await getBooksOfOrders(orderId); // Lấy ra book trong order
         setBooks(fetchBooks);
-
-        const fetchImageOfBook = await getAllIconImage(fetchBooks); // lấy ra image của book
         setImageBooks(fetchImageOfBook);
       } catch (error) {
         console.error({ error });
@@ -55,22 +62,35 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,setIsLoading}) => {
         setIsLoading(false);
       }
     };
-
-    fetchData();
+    fetchData()    
   }, [isLoggedIn, navigate, orderId, setIsLoading]);
 
-
-  const handleCancelOrder=async()=>{
-    const confirmUser = window.confirm("Bạn có chắc muốn hủy đơn")
-    if(!confirmUser){
+  const handleCancelOrder = async () => {
+    const confirmUser = window.confirm("Bạn có chắc muốn hủy đơn");
+    if (!confirmUser) {
       return;
     }else{
       if(order){
-        console.log("pl")
-        navigate(`/order/cancelOrder/${order.orderId}`)
+        const isUpdate = await cancelOrder(order.orderId);
+        if(isUpdate){
+           onCancelOrder(); // function cancel order
+        }
+
+      }
     }
+
+  };
+
+
+  const handleRepurchase=async()=>{
+      if(order && userId){
+        const cartItemIds = await repurchase(order.orderId);
+        if(cartItemIds){
+          console.log(cartItemIds)
+           navigate(`/user/showCart/${userId}`,{state:{cartItemIds}})  // function repurchase
+        }
+      }
   }
-}
 
   return (
     <Card sx={{ mb: 3 }}>
@@ -127,8 +147,8 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,setIsLoading}) => {
                   </Box> : 
 
                         <Box>
-                             <Button variant="contained" color="error" sx={{ mr: 1 }}>Mua lại</Button>
-                            <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Xem chi tiết hủy đơn</Button>
+                             <Button variant="contained" type="button" onClick={handleRepurchase} color="error" sx={{ mr: 1 }}>Mua lại</Button>
+                            <Button variant="outlined" color="secondary" type="button">Xem chi tiết hủy đơn</Button>
                         </Box>
           }
          

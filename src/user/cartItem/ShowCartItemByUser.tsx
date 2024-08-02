@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ChangeEvent, useEffect, useState } from "react";
 import BookModel from "../../models/BookModel";
 import { getAllCartItemByUser } from "../../api/CartItemAPI";
@@ -16,6 +16,9 @@ import updateQuantityOfCarts from "./UpdateQuantityOfCartIItem";
 import SelectVoucherToAddCreate from "../order/SelectVoucherToAddOrder";
 
 const ShowCart=()=>{
+    const location = useLocation();
+    const { cartItemIds } = location.state as { cartItemIds?: number[] } || {};
+
     const {userId} = useParams();
     const {isLoggedIn} = useAuth();
     const navigate = useNavigate()
@@ -38,6 +41,10 @@ const ShowCart=()=>{
             navigate("/login",{replace:true})
             return;
         }
+    
+        if (cartItemIds && cartItemIds.length > 0) {
+            setSelectedItems(cartItemIds);
+        }
 
         const showCartByUser = async()=>{
             try{
@@ -57,7 +64,7 @@ const ShowCart=()=>{
         }
 
         showCartByUser()
-    },[isLoggedIn, navigate, userIdNumber])
+    },[cartItemIds, isLoggedIn, navigate, userIdNumber])
 
     useEffect(()=>{
         const getBookOfCart = async()=>{
@@ -65,8 +72,6 @@ const ShowCart=()=>{
                 if(cartItem){
                   const cart = cartItem.map(async(item:CartItemModel)=>{
                         const bookData = await getBookByCartItem(item.cartItemId);
-                        // const quantity = item.quantity;
-                        // return {bookData,quantity}
                         return {bookData}
                   })
                         const result =await Promise.all(cart);

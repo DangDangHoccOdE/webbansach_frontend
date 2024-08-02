@@ -1,16 +1,9 @@
-import { useEffect } from "react";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
 
-const CancelOrder=()=>{
-    const navigate = useNavigate();
-    const {orderId} = useParams(); 
+const cancelOrder=async(orderId:number)=>{
 
-    useEffect(()=>{
-        console.log("de")
-        const handleCancelOrder=async()=>{
-            const url:string=`http://localhost:8080/order/cancelOrder/${orderId}`
+        const url:string=`http://localhost:8080/order/cancelOrder/${orderId}`
             try{
               const response = await fetchWithAuth(url,{
                 method:"PUT",
@@ -24,23 +17,14 @@ const CancelOrder=()=>{
               console.log(data)
               if(response.ok){
                   toast.success(data.content)
-                  navigate("/user/showOrder")
-              }else{
+                  return true;
+                }else{
                 toast.error(data.content || "Lỗi, không thể hủy đơn")
               }
             }catch(error){
                 console.error({error})
-            }finally{
-                navigate("/user/showOrder")
+                return false;
             }
-
-          }
-          handleCancelOrder();
-        },[navigate, orderId])
-
-        return(
-            null
-        )
 }
 
-export default CancelOrder;
+export default cancelOrder;
