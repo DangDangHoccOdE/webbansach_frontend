@@ -26,12 +26,10 @@ const OrderList: React.FC<OrderProps> = (props) => {
         } else if (props.value === "2") {
             setOrderStatus("Chờ thanh toán");
         } else if (props.value === "3") {
-            setOrderStatus("Vận chuyển");
-        } else if (props.value === "4") {
             setOrderStatus("Chờ giao hàng");
-        } else if (props.value === "5") {
+        } else if (props.value === "4") {
             setOrderStatus("Hoàn thành");
-        } else if (props.value === "6") {
+        } else if (props.value === "5") {
             setOrderStatus("Đã hủy");
         } else if (props.value === "7") {
             setOrderStatus("Trả hàng/Hoàn tiền");
@@ -53,6 +51,8 @@ const OrderList: React.FC<OrderProps> = (props) => {
                 } else {
                     if (data.length === 0) {
                         setNotice("Chưa có đơn hàng");
+                    }else{
+                        setNotice("")
                     }
                     setOrders(data);
                 }

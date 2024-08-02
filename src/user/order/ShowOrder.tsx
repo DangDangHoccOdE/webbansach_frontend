@@ -18,15 +18,14 @@ const ShowOrder = () => {
     <Container maxWidth="md" sx={{ textAlign: 'center', mt: 4 }}>
       <Box sx={{ width: '100%', typography: 'body1' }}>
         <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList onChange={handleChange} aria-label="Order status tabs">
+        <Box sx={{ display: 'flex', justifyContent: 'center', borderBottom: 1, borderColor: 'divider' }}>
+        <TabList onChange={handleChange} aria-label="Order status tabs">
               <Tab label="Tất cả" value="1" />
               <Tab label="Chờ thanh toán" value="2" />
               <Tab label="Vận chuyển" value="3" />
-              <Tab label="Chờ giao hàng" value="4" />
-              <Tab label="Hoàn thành" value="5" />
-              <Tab label="Đã hủy" value="6" />
-              <Tab label="Trả hàng/Hoàn tiền" value="7" />
+              <Tab label="Hoàn thành" value="4" />
+              <Tab label="Đã hủy" value="5" />
+              <Tab label="Trả hàng/Hoàn tiền" value="6" />
             </TabList>
           </Box>
           <OrderList setIsLoading={setIsLoading} value={value} />

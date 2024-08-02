@@ -40,7 +40,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,setIsLoading}) => {
         }
         setOrder(fetchOrder);
 
-        const fetchOrderDetails = await getOrderDetailsFromOrder(orderId); // lYas ra orderDetail để lấy ra số lượng từng book
+        const fetchOrderDetails = await getOrderDetailsFromOrder(orderId); // Lấy ra orderDetail để lấy ra số lượng từng book
         setOrderDetails(fetchOrderDetails);
 
         const fetchBooks = await getBooksOfOrders(orderId); // Lấy ra book trong order
@@ -60,36 +60,78 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,setIsLoading}) => {
   }, [isLoggedIn, navigate, orderId, setIsLoading]);
 
 
+  const handleCancelOrder=async()=>{
+    const confirmUser = window.confirm("Bạn có chắc muốn hủy đơn")
+    if(!confirmUser){
+      return;
+    }else{
+      if(order){
+        console.log("pl")
+        navigate(`/order/cancelOrder/${order.orderId}`)
+    }
+  }
+}
+
   return (
     <Card sx={{ mb: 3 }}>
       <CardContent>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
           <Typography color={order?.deliveryStatus === "Hoàn thành" ? "green" : "orange"}>
             {order?.deliveryStatus}
           </Typography>
+          <Typography mx={2}>|</Typography>
           <Typography color="orange">{order?.orderStatus}</Typography>
         </Box>
 
         {orderDetails.map((orderDetail, index) => (
-          <Box key={index} display="flex" alignItems="center" mb={2} borderBottom={1} pb={2}>
-            <img
-              src={imageBooks[index]?.imageData}
-              alt="Ảnh"
-              style={{ width: '80px', height: '80px', marginRight: '16px' }}
-            />
-            <Box flexGrow={1}>
-              <Typography variant="h6">{books[index]?.bookName}</Typography>
-              <Typography>x{orderDetail.quantity}</Typography>
-            </Box>
-            <Typography variant="body2" color="error">{NumberFormat(books[index]?.price)}</Typography>
-          </Box>
+         <Box key={index} display="flex" alignItems="flex-start" mb={2} borderBottom={1} pb={2}>
+         <Box display="flex" alignItems="center" flexGrow={1}>
+           <img
+             src={imageBooks[index]?.imageData}
+             alt="Bìa sách"
+             style={{ width: '80px', height: '80px', objectFit: 'cover', marginRight: '16px' }}
+           />
+           <Box display="flex" flexDirection="column">
+             <Typography variant="subtitle1" fontWeight="medium">
+               {books[index]?.bookName}
+             </Typography>
+             <Typography variant="body2" color="text.secondary">
+               x{orderDetail.quantity}
+             </Typography>
+           </Box>
+         </Box>
+         <Typography variant="body1" mr={1} color="#6c757d"  fontSize={14} alignSelf="center">
+          <del>{NumberFormat(books[index]?.listedPrice)} đ</del>
+         </Typography>
+         <Typography variant="body1" color="error" alignSelf="center">
+           {NumberFormat(books[index]?.price)} đ
+         </Typography>
+       </Box>
         ))}
 
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Box>
-            <Button variant="contained" color="error" sx={{ mr: 1 }}>Đánh Giá</Button>
-            <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
-          </Box>
+          {
+            order?.orderStatus!=='Đã hủy' ? 
+                    <Box>
+                    {
+                      order?.orderStatus==='Hoàn thành' ? <Button variant="contained" color="error" sx={{ mr: 1 }}>Đánh Giá</Button>
+                                                :    <Button variant="contained" color="error" sx={{ mr: 1 }}>Đã nhận được hàng</Button>
+
+                    }
+
+                      {
+                      order?.deliveryStatus==='Đã giao hàng thành công' ?  <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
+                                                :          <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button>
+
+                    }
+                  </Box> : 
+
+                        <Box>
+                             <Button variant="contained" color="error" sx={{ mr: 1 }}>Mua lại</Button>
+                            <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Xem chi tiết hủy đơn</Button>
+                        </Box>
+          }
+         
           <Typography variant="h5" color="error">
             Thành tiền: {NumberFormat(order?.totalPrice)} đ
           </Typography>
