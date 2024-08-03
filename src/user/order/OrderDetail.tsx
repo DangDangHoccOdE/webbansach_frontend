@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 import ImageModel from "../../models/ImageModel";
 import BookModel from "../../models/BookModel";
 import OrderDetailModel from "../../models/OrderDetailModel";
@@ -13,15 +13,16 @@ import { getOrderDetailsFromOrder } from "../../api/OrderDetailAPI";
 import { Box, Card, CardContent, Typography, Button } from "@mui/material";
 import cancelOrder from "./CancelOrder";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
-import repurchase from "./HanleRepurchase";
+import repurchase from "./handleRepurchase";
+import confirmReceivedOrder from "./handleConfirmReceivedOrder";
 
 interface OrderProps {
   orderId: number;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
-  onCancelOrder: () => void;
+  onOrderUpdate:(updateOder:OrderModel)=>void
 }
 
-const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading, onCancelOrder }) => {
+const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading ,onOrderUpdate}) => {
   const [order, setOrder] = useState<OrderModel | null>(null);
   const [books, setBooks] = useState<BookModel[]>([]);
   const [imageBooks, setImageBooks] = useState<ImageModel[]>([]);
@@ -65,24 +66,23 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading, onCancelOrde
     fetchData()    
   }, [isLoggedIn, navigate, orderId, setIsLoading]);
 
-  const handleCancelOrder = async () => {
+  const handleCancelOrder = useCallback(async () => {
     const confirmUser = window.confirm("Bạn có chắc muốn hủy đơn");
-    if (!confirmUser) {
+    if (!confirmUser || !order) {
       return;
     }else{
-      if(order){
         const isUpdate = await cancelOrder(order.orderId);
         if(isUpdate){
-           onCancelOrder(); // function cancel order
+          const updateOrder = {...order,orderStatus:"Đã hủy"};
+          onOrderUpdate(updateOrder);
+          setOrder(updateOrder)
         }
-
-      }
     }
 
-  };
+  },[onOrderUpdate, order]);
 
 
-  const handleRepurchase=async()=>{
+  const handleRepurchase=async()=>{ // Xử lý mua lại hàng
       if(order && userId){
         const cartItemIds = await repurchase(order.orderId);
         if(cartItemIds){
@@ -91,14 +91,34 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading, onCancelOrde
       }
   }
 
+  const handleConfirmReceivedOrder=async()=>{ // Xử lý đã nhận đơn hàng
+    const confirmUser = window.confirm("Bạn có chắc muốn xác nhận đã nhận đơn hàng");
+    if (!confirmUser || !order) {
+      return;
+    }else{
+        const isUpdate = await confirmReceivedOrder(order.orderId);
+        if(isUpdate){
+          const updateOrder = {...order,orderStatus:"Hoàn thành"};
+          onOrderUpdate(updateOrder);
+          setOrder(updateOrder);
+      }
+    }
+
+}
+
   return (
     <Card sx={{ mb: 3 }}>
       <CardContent>
         <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
-          <Typography color={order?.deliveryStatus === "Hoàn thành" ? "green" : "orange"}>
-            {order?.deliveryStatus}
-          </Typography>
-          <Typography mx={2}>|</Typography>
+          {
+            order?.deliveryStatus==="Đã giao hàng thành công" &&
+            <>
+                <Typography color={"green"}>
+                  {order?.deliveryStatus}
+              </Typography>
+              <Typography mx={2}>|</Typography>
+            </>
+          }
           <Typography color="orange">{order?.orderStatus}</Typography>
         </Box>
 
@@ -119,9 +139,13 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading, onCancelOrde
              </Typography>
            </Box>
          </Box>
-         <Typography variant="body1" mr={1} color="#6c757d"  fontSize={14} alignSelf="center">
-          <del>{NumberFormat(books[index]?.listedPrice)} đ</del>
+         {
+          books[index].discountPercent &&  
+          <Typography variant="body1" mr={1} color="#6c757d"  fontSize={14} alignSelf="center">
+            <del>{NumberFormat(books[index]?.listedPrice)} đ</del>
          </Typography>
+         }
+        
          <Typography variant="body1" color="error" alignSelf="center">
            {NumberFormat(books[index]?.price)} đ
          </Typography>
@@ -133,16 +157,17 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading, onCancelOrde
             order?.orderStatus!=='Đã hủy' ? 
                     <Box>
                     {
-                      order?.orderStatus==='Hoàn thành' ? <Button variant="contained" color="error" sx={{ mr: 1 }}>Đánh Giá</Button>
-                                                :    <Button variant="contained" color="error" sx={{ mr: 1 }}>Đã nhận được hàng</Button>
-
-                    }
-
-                      {
-                      order?.deliveryStatus==='Đã giao hàng thành công' ?  <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
-                                                :          <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button>
-
-                    }
+                      order?.orderStatus==='Hoàn thành' ?
+                            <>
+                            <Button variant="contained" color="error" sx={{ mr: 1 }}>Đánh Giá</Button>
+                            <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
+                            </>
+                                                :   
+                            <>
+                             <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleConfirmReceivedOrder}>Đã nhận được hàng</Button>
+                            <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button> 
+                            </>
+                      }
                   </Box> : 
 
                         <Box>

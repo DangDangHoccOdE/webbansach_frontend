@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 import OrderModel from "../../models/OrderModel";
 import { useNavigate } from "react-router-dom";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
@@ -18,24 +18,18 @@ const OrderList: React.FC<OrderProps> = (props) => {
   const { isLoggedIn } = useAuth();
   const [notice, setNotice] = useState("");
   const [orderStatus, setOrderStatus] = useState("Tất cả");
-
   useEffect(() => {
     // Set orderStatus based on props.value
-    if (props.value === "1") {
-      setOrderStatus("Tất cả");
-    } else if (props.value === "2") {
-      setOrderStatus("Chờ thanh toán");
-    } else if (props.value === "3") {
-      setOrderStatus("Đang xử lý");
-    } else if (props.value === "4") {
-      setOrderStatus("Đang vận chuyển");
-    } else if (props.value === "5") {
-      setOrderStatus("Đã giao");
-    } else if (props.value === "5") {
-      setOrderStatus("Đã hủy");
-    } else if (props.value === "7") {
-      setOrderStatus("Trả hàng/Hoàn tiền");
+    const statusMap:{ [key:string] :string}={
+      "1":"Tất cả",
+      "2":"Chờ thanh toán",
+      "3":"Đang xử lý",
+      "4":"Đang vận chuyển",
+      "5":"Đã giao",
+      "6":"Đã hủy",
+      "7":"Trả hàng/Hoàn tiền",
     }
+    setOrderStatus(statusMap[props.value] || "Tất cả")
   }, [props.value]);
 
   const fetchOrders = useCallback(async () => {
@@ -58,16 +52,28 @@ const OrderList: React.FC<OrderProps> = (props) => {
         navigate("/error-404", { replace: true });
         return;
       }
+    }else{
+      return;
     }
   }, [userId, orderStatus, navigate]);
 
+  
   useEffect(() => {
     if (!isLoggedIn || !userId) {
       navigate("/login", { replace: true });
       return;
     }
+   
     fetchOrders();
-  }, [isLoggedIn, navigate, orderStatus, userId,fetchOrders]);
+  }, [isLoggedIn, userId, fetchOrders, navigate]);
+
+  const handleOrderUpdate = useCallback((updateOrder:OrderModel)=>{ // Cập nhật lại giao diện ngay khi thay đổi trong Tất cả chỗ order.
+    setOrders(prevOrders=>
+      prevOrders?prevOrders.map(order=>
+        order.orderId===updateOrder.orderId ? updateOrder : order
+      ):null
+    );
+  },[]);
 
   return (
     <div className="container">
@@ -76,7 +82,7 @@ const OrderList: React.FC<OrderProps> = (props) => {
           key={index}
           orderId={order.orderId}
           setIsLoading={props.setIsLoading}
-          onCancelOrder={fetchOrders}
+          onOrderUpdate={handleOrderUpdate}
         />
       ))}
       {notice && <p className="text-danger">{notice}</p>}

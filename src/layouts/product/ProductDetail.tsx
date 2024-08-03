@@ -103,72 +103,59 @@ const ProductDetail: React.FC = () => {
   }
 
   return (
-<div className="container mt-5" style={{ backgroundColor: '#f8f9fa', border: '1px solid gray' }}>
-      <div className="border border-white" style={{ padding: '1rem' }}>
+    <div className="container mt-5 p-4" style={{ backgroundColor: '#f8f9fa', borderRadius: '10px', border: '1px solid gray' }}>
       <div className="row">
         {/* Product Image Section */}
-        <div className="col-lg-4">
+        <div className="col-lg-4 mb-4">
           <ProductImage bookId={bookIdNumber} />
         </div>
-  
+
         {/* Product Info and Purchase Section */}
         <div className="col-lg-8">
           <div className="row">
-            <div className="col-8">
-              <div className="product-info">
-                <h1 className="product-title">{book.bookName}</h1>
-                <div className="product-meta">
-                  <div className="product-rating">
-                    <span className="ml-2">{book.averageRate}</span>
-                    {renderRating(book.averageRate || 0)}
-                  </div>
-                  <span className="product-sales">Đã bán: {SoldQuantityFormat(book.soldQuantity)}</span>
+            <div className="col-12">
+              <h1 className="product-title">{book.bookName}</h1>
+              <div className="product-meta">
+                <div className="product-rating d-flex align-items-center">
+                  <span className="me-2">{book.averageRate}</span>
+                  {renderRating(book.averageRate || 0)}
                 </div>
-                <div className="border border-secondary" style={{ backgroundColor: '#f8f9fa', padding: '0.5rem' }}>                    <div className="d-flex justify-content-start align-items-center">
-                    {book.discountPercent > 0 && (
-                      <del className="me-3" style={{ color: "gray" }}>
-                        {NumberFormat(book.listedPrice)} đ
-                      </del>
-                    )}
-                    <h2 className="product-price" style={{ color: "red" }}>
-                      {NumberFormat(book.price)} đ
-                    </h2>
-                  </div>
-                </div>
-                <span>Chính Sách Trả Hàng 
-                      <span>Trả hàng 15 ngày </span>
-                      <span style={{color:"grey"}}>Đổi ý miễn phí</span>
-                  </span>
+                <span className="product-sales ms-4">Đã bán: {SoldQuantityFormat(book.soldQuantity)}</span>
               </div>
+              <div className="product-price mt-3">
+                {book.discountPercent > 0 && (
+                  <del className="me-3 text-secondary">
+                    {NumberFormat(book.listedPrice)} đ
+                  </del>
+                )}
+                <h2 className="text-danger">
+                  {NumberFormat(book.price)} đ
+                </h2>
+              </div>
+              <p className="mt-2">Chính Sách Trả Hàng: Trả hàng 15 ngày - <span className="text-muted">Đổi ý miễn phí</span></p>
             </div>
   
-            <div className="col-4">
-              {/* Purchase Options */}
-              <div className="purchase-options mt-4">
-                <div className="mb-2">Số lượng</div>
-                <div className="d-flex align-items-center">
-                  <button className="btn btn-outline-secondary me-2" onClick={reduceQuantity}>-</button>
-                  <input type="number" className="form-control text-center" value={quantity} onChange={handleQuantity} min={1} max={book.quantity} />
-                  <button className="btn btn-outline-secondary ms-2" onClick={increaseQuantity}>+</button>
-                </div>
-                {book.price && (
-                  <div className="mt-2 text-center">
-                    Số tiền tạm tính: <br />
-                    <h4>{NumberFormat(quantity * book.price)} đ</h4>
-                  </div>
-                )}
-                <div className="d-grid gap-2">
-                  <button type="button" className="btn btn-danger mt-3" onClick={handlePurchase}>Mua ngay</button>
-                  <AddCartItem bookId={bookIdNumber} quantity={quantity} isIcon={false} />
-                </div>
+            <div className="col-12 mt-4">
+              <div className="d-flex align-items-center">
+                <button className="btn btn-outline-secondary me-2" onClick={reduceQuantity}>-</button>
+                <input type="number" className="form-control text-center" value={quantity} onChange={handleQuantity} min={1} max={book.quantity} />
+                <button className="btn btn-outline-secondary ms-2" onClick={increaseQuantity}>+</button>
+              </div>
+              <div className="mt-3 text-center">
+                Số tiền tạm tính: <br />
+                <h4>{NumberFormat(quantity * book.price)} đ</h4>
+              </div>
+              <div className="d-grid gap-2 mt-3">
+                <button type="button" className="btn btn-danger" onClick={handlePurchase}>Mua ngay</button>
+                <AddCartItem bookId={bookIdNumber} quantity={quantity} isIcon={false} />
               </div>
             </div>
           </div>
   
           {/* Product Details */}
-          <div className="product-details mt-5">
+          <div className="mt-5">
             <h3>Chi tiết sản phẩm</h3>
-            <table className="table">
+            <table className="table table-bordered">
               <tbody>
                 <tr><td>Thể loại:</td><td>{categoryOfBook.map(c => c.categoryName).join(', ')}</td></tr>
                 <tr><td>Ngôn ngữ:</td><td>{book.language}</td></tr>
@@ -180,7 +167,7 @@ const ProductDetail: React.FC = () => {
           </div>
   
           {/* Product Description */}
-          <div className="product-description mt-5">
+          <div className="mt-5">
             <h3>Mô tả sản phẩm</h3>
             <div dangerouslySetInnerHTML={{ __html: book.description }} />
           </div>
@@ -195,8 +182,7 @@ const ProductDetail: React.FC = () => {
         </div>
       </div>
     </div>
-  </div>
-  )
+  );
 }
   
 export default ProductDetail;
