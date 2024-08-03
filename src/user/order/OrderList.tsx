@@ -26,12 +26,14 @@ const OrderList: React.FC<OrderProps> = (props) => {
     } else if (props.value === "2") {
       setOrderStatus("Chờ thanh toán");
     } else if (props.value === "3") {
-      setOrderStatus("Chờ giao hàng");
+      setOrderStatus("Đang xử lý");
     } else if (props.value === "4") {
-      setOrderStatus("Hoàn thành");
+      setOrderStatus("Đang vận chuyển");
+    } else if (props.value === "5") {
+      setOrderStatus("Đã giao");
     } else if (props.value === "5") {
       setOrderStatus("Đã hủy");
-    } else if (props.value === "6") {
+    } else if (props.value === "7") {
       setOrderStatus("Trả hàng/Hoàn tiền");
     }
   }, [props.value]);

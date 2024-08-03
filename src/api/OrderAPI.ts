@@ -2,7 +2,12 @@ import fetchWithAuth from "../layouts/utils/AuthService";
 import OrderModel from "../models/OrderModel";
 
 export async function showOrders(userId:number,orderStatus:string):Promise<OrderModel[]|null> {
-    const url:string=`http://localhost:8080/orders/search/findByUser_UserIdAndOrderStatusContaining?userId=${userId}&orderStatus=${orderStatus}`;
+    let url:string=``;
+    if(orderStatus==="Tất cả"){
+        url=`http://localhost:8080/orders/search/findByUser_UserId?userId=${userId}&sort=date,desc`;
+    }else{
+        url=`http://localhost:8080/orders/search/findByUser_UserIdAndOrderStatusContaining?userId=${userId}&orderStatus=${orderStatus}&sort=date,desc`;
+    }
     const result:OrderModel[] = [];
 
     try{

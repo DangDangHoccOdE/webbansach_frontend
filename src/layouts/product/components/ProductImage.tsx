@@ -6,6 +6,7 @@ import { getAllImagesByBook } from "../../../api/ImageAPI";
 import { Carousel } from "react-responsive-carousel";
 import 'react-responsive-carousel/lib/styles/carousel.min.css' // import css to carousel
 import useScrollToTop from "../../../hooks/ScrollToTop";
+import { CircularProgress } from "@mui/material";
 
 interface ProductImageProps{
     bookId: number;
@@ -33,20 +34,15 @@ const ProductImage: React.FC<ProductImageProps> = (props) => {
     );
 
     if(loadingData){
-        return(
-            <div>
-                <h1>Đang tải dữ liệu</h1>
+        return (
+            <div className="text-center mt-5">
+                <CircularProgress color="inherit" />
             </div>
-        )
+          );
     }
-
-    if(noticeError){
-        return(
-            <div>
-                <h1>Error: {noticeError}</h1>
-            </div>
-        )
-    }
+    if (noticeError) {
+        return <div className="alert alert-danger text-center" role="alert">{noticeError}</div>;
+   }
 
     // tách imageList thành 2 phần rồi gộp lại
     const sortedImage = [
