@@ -14,12 +14,12 @@ const cancelOrder=async(orderId:number)=>{
               })
     
               const data = await response.json();
-              console.log(data)
               if(response.ok){
                   toast.success(data.content)
                   return true;
                 }else{
                 toast.error(data.content || "Lỗi, không thể hủy đơn")
+                return false;
               }
             }catch(error){
                 console.error({error})

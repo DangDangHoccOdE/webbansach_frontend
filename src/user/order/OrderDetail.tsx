@@ -86,7 +86,6 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading, onCancelOrde
       if(order && userId){
         const cartItemIds = await repurchase(order.orderId);
         if(cartItemIds){
-          console.log(cartItemIds)
            navigate(`/user/showCart/${userId}`,{state:{cartItemIds}})  // function repurchase
         }
       }

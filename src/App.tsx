@@ -33,7 +33,6 @@ import EditCategory_Admin from "./admin/category/EditCategory";
 import DeleteBookOfCategory_Admin from "./admin/category/DeleteBookOfCategory";
 import ShowAllCategory_Admin from "./admin/category/ShowAllCategory";
 import ShowCart from "./user/cartItem/ShowCartItemByUser";
-import DeleteBookOfCart from "./user/cartItem/DeleteCartItems";
 import AddVoucher_Admin from "./admin/voucher/AddVoucher";
 import DeleteVoucher_Admin from "./admin/voucher/DeleteVoucher";
 import EditVoucherAdmin from "./admin/voucher/EditVoucher";
@@ -88,8 +87,7 @@ function App() {
               <Route path="/category/editCategory/:categoryId" element={<EditCategory_Admin/>}/>
               <Route path="/category/deleteCategory/:categoryId" element={<DeleteCategory_Admin/>}/>
               <Route path="/category/deleteBookOfCategory/:categoryId/:bookId" element={<DeleteBookOfCategory_Admin/>}/>
-              <Route path="/user/showCart/:userId" element={<ShowCart/>}></Route>
-              <Route path="/cart/deleteCartItem/:cartItemId/:userId" element={<DeleteBookOfCart/>}></Route>
+              <Route path="/user/showCart" element={<ShowCart/>}></Route>
               <Route path="/order/createOrder" element={<AddOrder/>}></Route>
               <Route path="/order/handleCreateOrder" element={<HandleCreateOrder/>}></Route>
               <Route path="/user/showOrder" element={<ShowOrder/>}></Route>

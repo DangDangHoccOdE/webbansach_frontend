@@ -1,5 +1,5 @@
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { ChangeEvent, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import BookModel from "../../models/BookModel";
 import { getAllCartItemByUser } from "../../api/CartItemAPI";
 import ImageModel from "../../models/ImageModel";
@@ -10,16 +10,19 @@ import { getBookByCartItem } from "../../api/BookAPI";
 import { toast } from "react-toastify";
 import { useAuth } from "../../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGift } from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping, faGift } from "@fortawesome/free-solid-svg-icons";
 import VoucherModel from "../../models/VoucherModel";
-import updateQuantityOfCarts from "./UpdateQuantityOfCartIItem";
 import SelectVoucherToAddCreate from "../order/SelectVoucherToAddOrder";
+import { CartContext } from "../../context/CartContext";
+import { deleteAllCartItemsIsChoose } from "./deleteAllCartItem";
+import { deleteCartItem } from "./deleteCartItem";
+import { getUserIdByToken } from "../../layouts/utils/JwtService";
+import updateQuantityOfCarts from "./updateQuantityOfCarts";
 
 const ShowCart=()=>{
     const location = useLocation();
     const { cartItemIds } = location.state as { cartItemIds?: number[] } || {};
 
-    const {userId} = useParams();
     const {isLoggedIn} = useAuth();
     const navigate = useNavigate()
     const [bookListOfCart,setBookListOfCart] = useState<BookModel[]>([])
@@ -34,10 +37,12 @@ const ShowCart=()=>{
     const [appliedBookVoucher, setAppliedBookVoucher] = useState<VoucherModel | null>(null);
     const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(null);
     const [totalProduct,setTotalProduct] = useState(0)
+    const {updateCartItemCount} = useContext(CartContext);
+    const [cartUpdated, setCartUpdated] = useState(false);
+    const userId = getUserIdByToken();
 
-    const userIdNumber = parseInt(userId+''); 
     useEffect(()=>{
-        if(!isLoggedIn){
+        if(!isLoggedIn || !userId){
             navigate("/login",{replace:true})
             return;
         }
@@ -45,10 +50,9 @@ const ShowCart=()=>{
         if (cartItemIds && cartItemIds.length > 0) {
             setSelectedItems(cartItemIds);
         }
-
         const showCartByUser = async()=>{
             try{
-                const cartItemData = await getAllCartItemByUser(userIdNumber);
+                const cartItemData = await getAllCartItemByUser(userId);
                 if(cartItemData===null){
                     navigate("/error-404",{replace:true});
                     return;
@@ -62,9 +66,8 @@ const ShowCart=()=>{
                 navigate("/error-404",{replace:true});                
             }
         }
-
         showCartByUser()
-    },[cartItemIds, isLoggedIn, navigate, userIdNumber])
+    },[cartItemIds, isLoggedIn, navigate, cartUpdated, userId])
 
     useEffect(()=>{
         const getBookOfCart = async()=>{
@@ -93,7 +96,7 @@ const ShowCart=()=>{
         }
 
         fetchIconImageList();
-    },[bookListOfCart])
+    },[bookListOfCart,])
 
     useEffect(() => {
         const updateTotal = async () => {
@@ -127,14 +130,40 @@ const ShowCart=()=>{
         return total;
       }
       
-    const handleDelete=(cartItemId:number)=>{ // Xóa sách trong giỏ hàng
-        const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa!")
+    const handleDelete=async(cartItemId:number)=>{ // Xóa sách trong giỏ hàng
+        const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa khỏi giỏ hàng!")
         if(!userConfirm){
             return;
         }else{
-            navigate(`/cart/deleteCartItem/${cartItemId}/${userId}`,{replace:true});
+            const isUpdate = await deleteCartItem(cartItemId);
+            if(isUpdate===true){
+                setCartUpdated(prev=>!prev)
+                updateCartItemCount();
+            }else{
+                navigate("/error-404")
+            }
         }
     }
+
+    const handleDeleteBooksIsChoose=async()=>{ // Xóa sách đã chọn trong giỏ hàng
+        if(selectedItems.length===0){
+            toast.error("Bạn cần chọn ít nhất 1 sản phẩm để xóa!")
+        }else{
+            const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa những những sách đã chọn khỏi giỏ hàng!")
+            if(!userConfirm){
+                return;
+            }else{
+                const isUpdate = await deleteAllCartItemsIsChoose(selectedItems);
+                if(isUpdate){
+                    setCartUpdated(prev=>!prev)
+                    updateCartItemCount();
+                    setSelectedItems([])
+                }
+            }
+        }
+      
+    }
+
 
     const handleQuantity = async(event:ChangeEvent<HTMLInputElement>,book:BookModel)=>{  // Số lượng
         const quantityNow = parseInt(event.target.value);
@@ -260,7 +289,7 @@ const ShowCart=()=>{
                                             <th scope="col">Số lượng</th>
                                             <th scope="col">Thành tiền</th>
                                             <th scope="col">
-                                                    <button className="btn btn-link text-danger" onClick={() => handleDelete(1)}>
+                                                    <button className="btn btn-link text-danger" onClick={handleDeleteBooksIsChoose}>
                                                         <i className="fas fa-trash"></i>
                                                     </button>
                                             </th>
@@ -268,6 +297,8 @@ const ShowCart=()=>{
                                     </thead>
                                     <tbody>
                                         {bookListOfCart?.map((book, index) => (
+                                            cartItem[index] && (
+        
                                             <tr key={index}>
                                                 <td>
                                                     <input type="checkbox"
@@ -301,11 +332,16 @@ const ShowCart=()=>{
                                                     </button>
                                                 </td>
                                             </tr>
-                                        ))}
+                                        )))}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+                        {
+                            notice && <p className="alert alert-info mt-3 text-center"><FontAwesomeIcon icon={faCartShopping} /> {notice}</p>
+
+                        }
+
                     </div>
                     
                     <div className="col-md-3">
@@ -348,8 +384,8 @@ const ShowCart=()=>{
                     </div>
                 </div>
         
-                <p>{notice}</p>
-            </div>
+                </div>
+        
         );
     }
     

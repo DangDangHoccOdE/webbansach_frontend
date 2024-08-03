@@ -40,9 +40,7 @@ const AddCartItem:React.FC<AddToCartProps> = (props)=>{
                 const data = await response.json();
                 if(response.ok){
                     updateCartItemCount();
-                    setTimeout(()=>{
                         toast.success(data.content)
-                    },1000)
                 }else{
                     toast.error(data.content || "Lỗi, không thể thêm vào giỏ hàng")
                 }
