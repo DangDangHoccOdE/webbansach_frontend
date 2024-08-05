@@ -109,6 +109,10 @@ const BookForm: React.FC = (props) => {
     // RelateImageChange
     const handleRelatedImagesChange=async (e:ChangeEvent<HTMLInputElement>)=>{
         if(e.target.files){
+            if(e.target.files.length>5){
+                setNotice("Vui lòng chọn tối đa 5 ảnh")
+                return;
+            }
             const files = Array.from(e.target.files);
             const base64Images = await Promise.all(
                 files.map(async (file)=>{

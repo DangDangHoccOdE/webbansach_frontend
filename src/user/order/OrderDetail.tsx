@@ -15,6 +15,7 @@ import cancelOrder from "./CancelOrder";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import repurchase from "./handleRepurchase";
 import confirmReceivedOrder from "./handleConfirmReceivedOrder";
+import ReviewOrder from "./ReviewOrder";
 
 interface OrderProps {
   orderId: number;
@@ -30,6 +31,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading ,onOrderUpdat
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const userId = getUserIdByToken();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,6 +108,26 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading ,onOrderUpdat
 
 }
 
+  const handleClose=()=>{  // Mở form đánh giá sản phẩm
+      setShowModal(false);
+  }
+
+  const handleReviewClick=()=>{
+    if (!isLoggedIn) {
+      navigate("/login", { replace: true });
+    }else{
+      setShowModal(true);
+    }
+  }
+
+  const handleReviewSubmit=useCallback(()=>{
+    if(order){
+      const updateOrder = {...order,orderStatus:"Đánh giá"};
+      onOrderUpdate(updateOrder);
+      setOrder(updateOrder);
+    }
+  },[onOrderUpdate, order])
+
   return (
     <Card sx={{ mb: 3 }}>
       <CardContent>
@@ -154,26 +176,43 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading ,onOrderUpdat
 
         <Box display="flex" justifyContent="space-between" alignItems="center">
           {
-            order?.orderStatus!=='Đã hủy' ? 
-                    <Box>
-                    {
-                      order?.orderStatus==='Hoàn thành' ?
-                            <>
-                            <Button variant="contained" color="error" sx={{ mr: 1 }}>Đánh Giá</Button>
-                            <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
-                            </>
-                                                :   
-                            <>
-                             <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleConfirmReceivedOrder}>Đã nhận được hàng</Button>
-                            <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button> 
-                            </>
-                      }
-                  </Box> : 
-
-                        <Box>
-                             <Button variant="contained" type="button" onClick={handleRepurchase} color="error" sx={{ mr: 1 }}>Mua lại</Button>
-                            <Button variant="outlined" color="secondary" type="button">Xem chi tiết hủy đơn</Button>
-                        </Box>
+           <Box>
+           {
+             order?.orderStatus !== 'Đã hủy' && order?.orderStatus !== 'Đánh giá' ? (
+               order?.orderStatus === 'Hoàn thành' ? (
+                 <>
+                   <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleReviewClick}>Đánh Giá</Button>
+                   <ReviewOrder 
+                     onReviewSubmit={handleReviewSubmit} 
+                     books={books} 
+                     handleClose={handleClose} 
+                     imageOfBooks={imageBooks} 
+                     showModal={showModal} 
+                     orderId={orderId} 
+                   />
+                   <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
+                 </>
+               ) : (
+                 <>
+                   <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleConfirmReceivedOrder}>Đã nhận được hàng</Button>
+                   <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button>
+                 </>
+               )
+             ) : (
+               <>
+                 <Button variant="contained" type="button" onClick={handleRepurchase} color="error" sx={{ mr: 1 }}>Mua lại</Button>
+                 {
+                   order?.orderStatus === 'Đánh giá' ? (
+                     <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
+                   ) : (
+                     <Button variant="outlined" color="secondary" type="button">Xem chi tiết hủy đơn</Button>
+                   )
+                 }
+               </>
+             )
+           }
+         </Box>
+         
           }
          
           <Typography variant="h5" color="error">
