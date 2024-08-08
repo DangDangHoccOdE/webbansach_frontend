@@ -85,7 +85,17 @@ const OrderList: React.FC<OrderProps> = (props) => {
           onOrderUpdate={handleOrderUpdate}
         />
       ))}
-      {notice && <p className="text-danger">{notice}</p>}
+      {
+        notice && 
+        <div className="container mt-4 mb-3">
+        <div className="border text-center py-4" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+          <i className="fas fa-shopping-cart" style={{ fontSize: "100px", color: "#ccc" }}></i>
+          <p className="text-danger mt-3">{notice || "Chưa có đơn hàng"}</p>
+        </div>
+      </div>
+      }
+      
+
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { Camera, CameraVideo } from "react-bootstrap-icons";
 import getBase64 from "../../layouts/utils/GetBase64";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { toast } from "react-toastify";
+import { format } from "date-fns";
 
 interface ReviewOrderProps{
     handleClose:()=>void;
@@ -75,6 +76,16 @@ const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,showModal,books,image
 
         const url:string=`http://localhost:8080/review/addReviewOrder/${orderId}`
 
+        console.log(JSON.stringify({
+            productRating,
+            shopRating,
+            deliveryRating,
+            mapStarsOfBook:mapToObject(mapStarsOfBook),
+            mapImagesOfBook:mapToObject(mapImagesOfBook),
+            mapContentsOfBook:mapToObject(mapContentsOfBook),
+            mapVideoOfBook:mapToObject(mapVideoOfBook),
+            date:format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
+        }))
             try{
                 const response = await fetchWithAuth(url,{
                     method:"POST",
@@ -89,7 +100,8 @@ const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,showModal,books,image
                         mapStarsOfBook:mapToObject(mapStarsOfBook),
                         mapImagesOfBook:mapToObject(mapImagesOfBook),
                         mapContentsOfBook:mapToObject(mapContentsOfBook),
-                        mapVideoOfBook:mapToObject(mapVideoOfBook)
+                        mapVideoOfBook:mapToObject(mapVideoOfBook),
+                        date:format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
                     })
 
                 })

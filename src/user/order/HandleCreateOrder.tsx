@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import OrderModel from "../../models/OrderModel";
 import { useAuth } from "../../context/AuthContext";
 import Loading from "../../layouts/utils/Loading";
+import { CartContext } from "../../context/CartContext";
 
 const HandleCreateOrder: React.FC = () => {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ const HandleCreateOrder: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notice, setNotice] = useState("");
   const [isError, setIsError] = useState(true);
+  const {updateCartItemCount} = useContext(CartContext);
+
 
   const { order } = (location.state as { order: OrderModel }) || { order: null };
 
@@ -37,7 +40,9 @@ const HandleCreateOrder: React.FC = () => {
         const data = await response.json();
         if (response.ok) {
           setNotice(data.content);
-          setIsError(false);
+          setIsError(false); 
+          updateCartItemCount();
+
         } else {
           setNotice(data.content || "Đặt hàng không thành công!");
           setIsError(true);
@@ -52,7 +57,7 @@ const HandleCreateOrder: React.FC = () => {
     };
 
     handle();
-  }, [order, navigate, isLoggedIn]);
+  }, [order, navigate, isLoggedIn, updateCartItemCount]);
 
   return (
     <div className="container mt-5">

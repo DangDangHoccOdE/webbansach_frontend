@@ -177,7 +177,7 @@ const ProductDetail: React.FC = () => {
       {/* Reviews Section */}
       <div className="row mt-5">
         <div className="col-12">
-          <h2>Đánh giá của khách hàng</h2>
+          <h3>Đánh giá của khách hàng</h3>
           <ReviewProduct bookId={bookIdNumber} />
         </div>
       </div>
