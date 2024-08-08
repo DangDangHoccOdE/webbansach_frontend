@@ -36,8 +36,8 @@ export async function getUser(link: string): Promise<UserModel | null> {
   }
 }
 
-export async function getUserByFeedback(feedbackId: number): Promise<UserModel | null> {
-  const url: string = `http://localhost:8080/feedbacks/${feedbackId}/user`;
+export async function getUserByReviewId(reviewId: number): Promise<UserModel | null> {
+  const url: string = `http://localhost:8080/reviews/${reviewId}/user`;
     return getUser(url);
 }
 

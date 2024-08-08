@@ -1,7 +1,7 @@
 import CartItemModel from "../../models/CartItemModel";
 import BookModel from "../../models/BookModel";
 import {  ChangeEvent, useEffect, useState } from "react";
-import { getBookByCartItem } from "../../api/BookAPI";
+import {  getBookByBookId, getBookByCartItem } from "../../api/BookAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import ImageModel from "../../models/ImageModel";
 import { getAllIconImage } from "../../layouts/utils/ImageService";
@@ -21,13 +21,14 @@ import { format } from "date-fns";
 
 const AddOrder:React.FC =()=>{
     const location = useLocation();
-    const { selectedItems, total,bookVoucher,shipVoucher,totalProduct } = location.state as { 
+    const { selectedItems, total,bookVoucher,shipVoucher,totalProduct,isBuyNow} = location.state as { 
         selectedItems: number[], 
         total:number,
         bookVoucher:VoucherModel|null,
         shipVoucher:VoucherModel|null,
-        totalProduct:number
-    } || { selectedItems: [],total:0 , bookVoucher:null,shipVoucher:null,totalProduct:0};
+        totalProduct:number,
+        isBuyNow:boolean
+    } || { selectedItems: [],total:0 , bookVoucher:null,shipVoucher:null,totalProduct:0,isBuyNow:false};
 
     const [bookIsChoose, setBookIsChoose] = useState<BookModel[]>([]);
     const [iconImageList,setIconImageList] = useState<ImageModel[]>([])
@@ -82,26 +83,32 @@ const AddOrder:React.FC =()=>{
             return ;
         }
         const handlePurchase = async()=>{ // xử lý chuyển từ id cartItem thành sách
-            const handleBook = selectedItems.map(async(item:number)=>{
-                const book = await getBookByCartItem(item);
-                if(book){
-                    return book;
-                }
-            })
-                const bookList = await Promise.all(handleBook);
-                const bookValid = bookList.filter(book=>book!==null) as BookModel[];
-                setBookIsChoose(bookValid);
+            if(isBuyNow){
+                const book = getBookByBookId(selectedItems[0]);
+                setBookIsChoose(prev=>({...prev,books:[book]}));
+            }else{
+                    const handleBook = selectedItems.map(async(item:number)=>{
+                        const book = await getBookByCartItem(item);
+                        if(book){ 
+                            return book;
+                        }
+                    })
+                        const bookList = await Promise.all(handleBook);
+                        const bookValid = bookList.filter(book=>book!==null) as BookModel[];
+                        setBookIsChoose(bookValid);
 
-            const handleCart = selectedItems.map(async(item:number)=>{ // Chuyển từ cartItemId thành cartItem đẻ lấy quantity
-                    const cartItem = await getCartItemById(item);
-                    if(cartItem){
-                        return cartItem;
-                    }
-                })
-                    const careItemList = await Promise.all(handleCart);
-                    const careItemListValid = careItemList.filter(cartItem=>cartItem!==null) as CartItemModel[];
-                    setCart(careItemListValid);
-        }
+                        const handleCart = selectedItems.map(async(item:number)=>{ // Chuyển từ cartItemId thành cartItem đẻ lấy quantity
+                            const cartItem = await getCartItemById(item);
+                            if(cartItem){
+                                return cartItem;
+                            }
+                        })
+
+                        const careItemList = await Promise.all(handleCart);
+                        const careItemListValid = careItemList.filter(cartItem=>cartItem!==null) as CartItemModel[];
+                        setCart(careItemListValid);
+                }
+            }
 
         const handleUser = async()=>{ // Lấy user => Hiển thị thông tin thanh toán
             const username = getUsernameByToken();
@@ -128,14 +135,18 @@ const AddOrder:React.FC =()=>{
         handleSelectDelivery();
         handlePurchase();
         handleUser();
-    },[formOfDelivery, isLoggedIn, navigate, selectedItems])
+    },[formOfDelivery, isBuyNow, isLoggedIn, navigate, selectedItems])
 
     useEffect(()=>{
         const handleIcon = async()=>{  // Lấy ra những icon của sách
-            const iconImage = await getAllIconImage(bookIsChoose);
-            setIconImageList(iconImage);
-
+            if(bookIsChoose.length>0){
+                const iconImage = await getAllIconImage(bookIsChoose);
+                console.log(iconImage)
+                setIconImageList(iconImage);
+    
+            }
         }
+  
         handleIcon();
     },[bookIsChoose])
 
@@ -217,14 +228,19 @@ const AddOrder:React.FC =()=>{
                   <img src={iconImageList[index].imageData} alt={book.bookName} className="img-fluid me-3" style={{ width: "100px" }} />
                   <div>
                     <h5>{book.bookName}</h5>
-                    {cart.length>0 && 
+                    {cart.length>0 ?  
                            <div>
                            <p className="mb-0">Số lượng: {cart[index].quantity}</p>
                            <p className="mb-0">Đơn giá: {NumberFormat(book.price)} đ</p>
                            <p className="text-danger mb-0">Thành tiền: {NumberFormat(cart[index].quantity * book.price)} đ</p> 
                        </div>
-                   
-                    }
+                            :
+                            <div>
+                            <p className="mb-0">Số lượng: {totalProduct}</p>
+                            <p className="mb-0">Đơn giá: {NumberFormat(book.price)} đ</p>
+                            <p className="text-danger mb-0">Thành tiền: {NumberFormat(totalProduct * book.price)} đ</p> 
+                        </div>
+                    }   
                  
                   </div>
                 </div>

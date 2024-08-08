@@ -3,14 +3,14 @@
 import React, { useEffect, useState } from "react";
 import UserModel from "../../../models/UserModel";
 import useScrollToTop from "../../../hooks/ScrollToTop";
-import { getUserByFeedback } from "../../../api/UserAPI";
+import { getUserByReviewId } from "../../../api/UserAPI";
 
 interface UserProps{
-    feedbackId:number;
+    reviewId:number;
 }
 
 const UserInfo: React.FC<UserProps> = (props) => {
-    const feedbackId = props.feedbackId;
+    const reviewId = props.reviewId;
 
     const [loadingData,setLoadingData] = useState(true);
     const [noticeError,setNoticeError] = useState(null);
@@ -18,7 +18,7 @@ const UserInfo: React.FC<UserProps> = (props) => {
 
     useScrollToTop();
     useEffect(()=>{
-        getUserByFeedback(feedbackId)
+        getUserByReviewId(reviewId)
             .then(userData => {
                 setUserInfo(userData);
                 setLoadingData(false);
@@ -27,7 +27,7 @@ const UserInfo: React.FC<UserProps> = (props) => {
                 setLoadingData(false);
                 setNoticeError(error.message)
             })
-    },[feedbackId]
+    },[reviewId]
     );
 
     if(loadingData){

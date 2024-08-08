@@ -8,9 +8,9 @@ function SoldQuantityFormat(x:number | undefined){
     }
 
     if(x>=1_000_000){
-        return (x/1_000_000).toFixed(1)+' tr';
+        return (x/1_000_000).toFixed(1)+'tr';
     }else if(x>=1_000){
-        return (x/1_000).toFixed(1)+' k'
+        return (x/1_000).toFixed(1)+'k'
     }
 
     // toLocaleString

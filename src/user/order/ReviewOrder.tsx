@@ -76,16 +76,6 @@ const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,showModal,books,image
 
         const url:string=`http://localhost:8080/review/addReviewOrder/${orderId}`
 
-        console.log(JSON.stringify({
-            productRating,
-            shopRating,
-            deliveryRating,
-            mapStarsOfBook:mapToObject(mapStarsOfBook),
-            mapImagesOfBook:mapToObject(mapImagesOfBook),
-            mapContentsOfBook:mapToObject(mapContentsOfBook),
-            mapVideoOfBook:mapToObject(mapVideoOfBook),
-            date:format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
-        }))
             try{
                 const response = await fetchWithAuth(url,{
                     method:"POST",

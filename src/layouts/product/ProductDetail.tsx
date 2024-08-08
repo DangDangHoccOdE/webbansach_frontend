@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getBookByBookId } from "../../api/BookAPI";
 import BookModel from "../../models/BookModel";
 import ProductImage from "./components/ProductImage";
@@ -11,7 +11,9 @@ import AddCartItem from "../../user/cartItem/AddCartItem";
 import SoldQuantityFormat from "../utils/SoldQuantityFormat";
 import CategoryModel from "../../models/CategoryModel";
 import { getCategoryByBook } from "../../api/CategoryAPI";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Container, Grid, Card, CardContent, Typography, Button, IconButton } from "@mui/material";
+import { getNumberOfReviewByBookId } from "../../api/ReviewAPI";
+import { AddShoppingCart, RemoveShoppingCart } from "@mui/icons-material";
 
 const ProductDetail: React.FC = () => {
   useScrollToTop();
@@ -27,12 +29,15 @@ const ProductDetail: React.FC = () => {
     bookIdNumber = 0;
     console.error("Error: ", error);
   }
+  const bookIdSelected:number[] = [bookIdNumber];
 
   const [book, setBook] = useState<BookModel | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [noticeError, setNoticeError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [categoryOfBook, setCategoryOfBook] = useState<CategoryModel[]>([]);
+  const [numberOfReview, setNumberOfReview] = useState(0);
+  const navigate = useNavigate();
 
   const handleQuantity = (event: ChangeEvent<HTMLInputElement>) => {
     const quantityNow = parseInt(event.target.value);
@@ -65,10 +70,9 @@ const ProductDetail: React.FC = () => {
         setLoadingData(false);
         setNoticeError(error.message);
       });
-
   }, [bookId, bookIdNumber]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (book) {
       getCategoryByBook(book.bookId)
         .then(category => {
@@ -79,23 +83,37 @@ const ProductDetail: React.FC = () => {
           setLoadingData(false);
           setNoticeError(error.message);
         });
+
+      getNumberOfReviewByBookId(book.bookId) // Lấy số lượng đánh giá
+        .then(star => {
+          setNumberOfReview(star);
+        }).catch(error => {
+          console.error(error.message);
+        });
     }
-  },[book])
+  }, [book]);
 
   const handlePurchase = () => {
-    // Xử lý khi người dùng nhấn "Mua ngay"
-  }
+    if(book){
+      navigate("/order/createOrder", { state: { selectedItems:bookIdSelected, 
+        total: book?.price * quantity, 
+        bookVoucher:null, 
+        shipVoucher:null,
+        totalProduct:quantity,
+        isBuyNow:true,} });
+      }
+  };
 
   if (loadingData) {
     return (
       <div className="text-center mt-5">
-          <CircularProgress color="inherit" />
+        <CircularProgress color="inherit" />
       </div>
     );
   }
 
   if (noticeError) {
-       return <div className="alert alert-danger text-center" role="alert">{noticeError}</div>;
+    return <div className="alert alert-danger text-center" role="alert">{noticeError}</div>;
   }
 
   if (!book) {
@@ -103,86 +121,95 @@ const ProductDetail: React.FC = () => {
   }
 
   return (
-    <div className="container mt-5 p-4" style={{ backgroundColor: '#f8f9fa', borderRadius: '10px', border: '1px solid gray' }}>
-      <div className="row">
+    <Container maxWidth="lg" sx={{ py: 5 }}>
+      <Grid container spacing={4}>
         {/* Product Image Section */}
-        <div className="col-lg-4 mb-4">
+        <Grid item xs={12} md={6}>
           <ProductImage bookId={bookIdNumber} />
-        </div>
+        </Grid>
 
         {/* Product Info and Purchase Section */}
-        <div className="col-lg-8">
-          <div className="row">
-            <div className="col-12">
-              <h1 className="product-title">{book.bookName}</h1>
-              <div className="product-meta">
-                <div className="product-rating d-flex align-items-center">
-                  <span className="me-2">{book.averageRate}</span>
-                  {renderRating(book.averageRate || 0)}
-                </div>
-                <span className="product-sales ms-4">Đã bán: {SoldQuantityFormat(book.soldQuantity)}</span>
+        <Grid item xs={12} md={6}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h4" component="h1" gutterBottom>
+                {book.bookName}
+              </Typography>
+              <div className="d-flex align-items-center mb-3">
+                {renderRating(book.averageRate || 0)}
+                <Typography variant="body2" color="textSecondary" className="ms-2">
+                  {book.averageRate} | {SoldQuantityFormat(book.soldQuantity)} Đã bán | {SoldQuantityFormat(numberOfReview)} Đánh giá
+                </Typography>
               </div>
-              <div className="product-price mt-3">
+              <div className="d-flex align-items-center mb-3">
                 {book.discountPercent > 0 && (
                   <del className="me-3 text-secondary">
-                    {NumberFormat(book.listedPrice)} đ
+                    <Typography variant="body1">{NumberFormat(book.listedPrice)} đ</Typography>
                   </del>
                 )}
-                <h2 className="text-danger">
+                <Typography variant="h5" className="text-danger">
                   {NumberFormat(book.price)} đ
-                </h2>
+                </Typography>
               </div>
-              <p className="mt-2">Chính Sách Trả Hàng: Trả hàng 15 ngày - <span className="text-muted">Đổi ý miễn phí</span></p>
-            </div>
-  
-            <div className="col-12 mt-4">
-              <div className="d-flex align-items-center">
-                <button className="btn btn-outline-secondary me-2" onClick={reduceQuantity}>-</button>
+              <p className="mb-3">Chính Sách Trả Hàng: Trả hàng 15 ngày - <span className="text-muted">Đổi ý miễn phí</span></p>
+              <div className="d-flex align-items-center mb-3">
+                <IconButton color="secondary" onClick={reduceQuantity}>
+                  <RemoveShoppingCart />
+                </IconButton>
                 <input type="number" className="form-control text-center" value={quantity} onChange={handleQuantity} min={1} max={book.quantity} />
-                <button className="btn btn-outline-secondary ms-2" onClick={increaseQuantity}>+</button>
+                <IconButton color="secondary" onClick={increaseQuantity}>
+                  <AddShoppingCart />
+                </IconButton>
               </div>
-              <div className="mt-3 text-center">
-                Số tiền tạm tính: <br />
-                <h4>{NumberFormat(quantity * book.price)} đ</h4>
+              <div className="text-center mb-3">
+                <Typography variant="h6">Tạm Tính: {NumberFormat(quantity * book.price)} đ</Typography>
               </div>
-              <div className="d-grid gap-2 mt-3">
-                <button type="button" className="btn btn-danger" onClick={handlePurchase}>Mua ngay</button>
+              <div className="d-grid gap-2">
+                <Button variant="contained" color="error" onClick={handlePurchase}>
+                  Mua ngay
+                </Button>
                 <AddCartItem bookId={bookIdNumber} quantity={quantity} isIcon={false} />
               </div>
-            </div>
-          </div>
-  
-          {/* Product Details */}
-          <div className="mt-5">
-            <h3>Chi tiết sản phẩm</h3>
-            <table className="table table-bordered">
-              <tbody>
-                <tr><td>Thể loại:</td><td>{categoryOfBook.map(c => c.categoryName).join(', ')}</td></tr>
-                <tr><td>Ngôn ngữ:</td><td>{book.language}</td></tr>
-                <tr><td>Năm xuất bản:</td><td>{book.publishingYear}</td></tr>
-                <tr><td>Số trang:</td><td>{book.pageNumber}</td></tr>
-                <tr><td>Tình trạng kho:</td><td>{book.quantity}</td></tr>
-              </tbody>
-            </table>
-          </div>
-  
-          {/* Product Description */}
-          <div className="mt-5">
-            <h3>Mô tả sản phẩm</h3>
-            <div dangerouslySetInnerHTML={{ __html: book.description }} />
-          </div>
-        </div>
-      </div>
-  
-      {/* Reviews Section */}
-      <div className="row mt-5">
-        <div className="col-12">
-          <h3>Đánh giá của khách hàng</h3>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Product Details */}
+        <Grid item xs={12}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h5" gutterBottom>Chi tiết sản phẩm</Typography>
+              <table className="table table-bordered">
+                <tbody>
+                  <tr><td>Thể loại:</td><td>{categoryOfBook.map(c => c.categoryName).join(', ')}</td></tr>
+                  <tr><td>Ngôn ngữ:</td><td>{book.language}</td></tr>
+                  <tr><td>Năm xuất bản:</td><td>{book.publishingYear}</td></tr>
+                  <tr><td>Số trang:</td><td>{book.pageNumber}</td></tr>
+                  <tr><td>Tình trạng kho:</td><td>{book.quantity}</td></tr>
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Product Description */}
+        <Grid item xs={12}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h5" gutterBottom>Mô tả sản phẩm</Typography>
+              <div dangerouslySetInnerHTML={{ __html: book.description }} />
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Reviews Section */}
+        <Grid item xs={12}>
+          <Typography variant="h5" gutterBottom>Đánh giá của khách hàng</Typography>
           <ReviewProduct bookId={bookIdNumber} />
-        </div>
-      </div>
-    </div>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
-  
+
 export default ProductDetail;
