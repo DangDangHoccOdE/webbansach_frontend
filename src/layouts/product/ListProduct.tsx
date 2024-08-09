@@ -79,10 +79,13 @@ function ListProduct({bookNameFind, categoryId} : ListProductProps){
   return (
     <div className="container">
       <div className="row mt-4">
-          {bookList.map((book) => (
-            <BookProps key={book.bookId} book={book} />
-          ))}
+        {bookList.map((book) => (
+          <div key={book.bookId} className="col-md-3 mb-4">
+            <BookProps book={book} />
+          </div>
+        ))}
       </div>
+
       <div className="row mt-4">
         <Pagination currentPage={currentPage} totalPages={totalPages} pagination={pagination}/>
       </div>

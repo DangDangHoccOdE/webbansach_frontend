@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getBookByBookId } from "../../api/BookAPI";
+import { getBookByBookId, getBookListByCategory } from "../../api/BookAPI";
 import BookModel from "../../models/BookModel";
 import ProductImage from "./components/ProductImage";
-import renderRating from "../utils/StarRate";
+import renderRating, { formatStartRate} from "../utils/StarRate";
 import NumberFormat from "../utils/NumberFormat";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import ReviewProduct from "./components/ReviewProduct";
@@ -11,9 +11,10 @@ import AddCartItem from "../../user/cartItem/AddCartItem";
 import SoldQuantityFormat from "../utils/SoldQuantityFormat";
 import CategoryModel from "../../models/CategoryModel";
 import { getCategoryByBook } from "../../api/CategoryAPI";
-import { CircularProgress, Container, Grid, Card, CardContent, Typography, Button, IconButton } from "@mui/material";
+import { CircularProgress, Container, Grid ,Typography, Button, IconButton, Box, Paper, Table, TableBody, TableRow, TableCell, TextField, Divider } from "@mui/material";
 import { getNumberOfReviewByBookId } from "../../api/ReviewAPI";
 import { AddShoppingCart, RemoveShoppingCart } from "@mui/icons-material";
+import BookProps from "./components/BookProps";
 
 const ProductDetail: React.FC = () => {
   useScrollToTop();
@@ -38,7 +39,8 @@ const ProductDetail: React.FC = () => {
   const [categoryOfBook, setCategoryOfBook] = useState<CategoryModel[]>([]);
   const [numberOfReview, setNumberOfReview] = useState(0);
   const navigate = useNavigate();
-
+  const [bookRelate,setBookRelate] = useState<BookModel[]>([])
+ 
   const handleQuantity = (event: ChangeEvent<HTMLInputElement>) => {
     const quantityNow = parseInt(event.target.value);
     const inventoryNumber = book && book.quantity ? book.quantity : 0;
@@ -93,6 +95,20 @@ const ProductDetail: React.FC = () => {
     }
   }, [book]);
 
+  useEffect(()=>{  // Lấy đại diện các sách liên quan theo thể loại đầu tiên của cuốn sách
+    if(categoryOfBook.length>0){
+      const currentPage:number =0;
+      const categoryId:number=categoryOfBook[0].categoryId;
+        getBookListByCategory(categoryId,currentPage)
+            .then(bookList=>{
+                  const bookRelated:BookModel[] = bookList.resultBooks.filter(book=>book.bookId!==bookIdNumber) 
+                  setBookRelate(bookRelated);
+            }).catch(error=>{
+              console.error({error})
+            })
+    }
+  },[bookIdNumber, categoryOfBook])
+
   const handlePurchase = () => {
     if(book){
       navigate("/order/createOrder", { state: { selectedItems:bookIdSelected, 
@@ -122,94 +138,125 @@ const ProductDetail: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 5 }}>
+     <Paper elevation={3} >
       <Grid container spacing={4}>
-        {/* Product Image Section */}
         <Grid item xs={12} md={6}>
           <ProductImage bookId={bookIdNumber} />
         </Grid>
 
-        {/* Product Info and Purchase Section */}
         <Grid item xs={12} md={6}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="h4" component="h1" gutterBottom>
-                {book.bookName}
+          <Paper elevation={3} sx={{ p: 3 }}>
+            <Typography variant="h4" gutterBottom>{book.bookName}</Typography>
+            <Box display="flex" alignItems="center" mb={2}>
+              {renderRating(book.averageRate || 0)}
+              <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                {formatStartRate(book.averageRate)} | {SoldQuantityFormat(book.soldQuantity)} Đã bán | {SoldQuantityFormat(numberOfReview)} Đánh giá
               </Typography>
-              <div className="d-flex align-items-center mb-3">
-                {renderRating(book.averageRate || 0)}
-                <Typography variant="body2" color="textSecondary" className="ms-2">
-                  {book.averageRate} | {SoldQuantityFormat(book.soldQuantity)} Đã bán | {SoldQuantityFormat(numberOfReview)} Đánh giá
+            </Box>
+            <Box display="flex" alignItems="baseline" mb={2}>
+              {book.discountPercent > 0 && (
+                <Typography variant="body1" color="text.secondary" sx={{ textDecoration: 'line-through', mr: 2 }}>
+                  {NumberFormat(book.listedPrice)} đ
                 </Typography>
-              </div>
-              <div className="d-flex align-items-center mb-3">
-                {book.discountPercent > 0 && (
-                  <del className="me-3 text-secondary">
-                    <Typography variant="body1">{NumberFormat(book.listedPrice)} đ</Typography>
-                  </del>
-                )}
-                <Typography variant="h5" className="text-danger">
-                  {NumberFormat(book.price)} đ
-                </Typography>
-              </div>
-              <p className="mb-3">Chính Sách Trả Hàng: Trả hàng 15 ngày - <span className="text-muted">Đổi ý miễn phí</span></p>
-              <div className="d-flex align-items-center mb-3">
-                <IconButton color="secondary" onClick={reduceQuantity}>
-                  <RemoveShoppingCart />
-                </IconButton>
-                <input type="number" className="form-control text-center" value={quantity} onChange={handleQuantity} min={1} max={book.quantity} />
-                <IconButton color="secondary" onClick={increaseQuantity}>
-                  <AddShoppingCart />
-                </IconButton>
-              </div>
-              <div className="text-center mb-3">
-                <Typography variant="h6">Tạm Tính: {NumberFormat(quantity * book.price)} đ</Typography>
-              </div>
-              <div className="d-grid gap-2">
-                <Button variant="contained" color="error" onClick={handlePurchase}>
-                  Mua ngay
-                </Button>
-                <AddCartItem bookId={bookIdNumber} quantity={quantity} isIcon={false} />
-              </div>
-            </CardContent>
-          </Card>
+              )}
+              <Typography variant="h5" color="error">
+                {NumberFormat(book.price)} đ
+              </Typography>
+            </Box>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="body2" mb={2}>
+              Chính Sách Trả Hàng: Trả hàng 15 ngày - <span style={{ color: 'text.secondary' }}>Đổi ý miễn phí</span>
+            </Typography>
+            <Typography variant="body2" mb={2}>
+              Còn lại trong kho: {book.quantity - book.soldQuantity} sản phẩm
+            </Typography>
+            <Box display="flex" alignItems="center" mb={2}>
+              <IconButton color="primary" onClick={reduceQuantity}>
+                <RemoveShoppingCart />
+              </IconButton>
+              <TextField
+                type="number"
+                value={quantity}
+                onChange={handleQuantity}
+                inputProps={{ min: 1, max: book.quantity, style: { textAlign: 'center' } }}
+                sx={{ width: '60px', mx: 1 }}
+              />
+              <IconButton color="primary" onClick={increaseQuantity}>
+                <AddShoppingCart />
+              </IconButton>
+            </Box>
+            <Typography variant="h6" mb={2}>
+              Tạm Tính: {NumberFormat(quantity * book.price)} đ
+            </Typography>
+            <Box display="flex" gap={2}>
+              <Button variant="contained" color="error" onClick={handlePurchase} fullWidth>
+                Mua ngay
+              </Button>
+              <AddCartItem bookId={bookIdNumber} quantity={quantity} isIcon={false} />
+            </Box>
+          </Paper>
         </Grid>
 
-        {/* Product Details */}
         <Grid item xs={12}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="h5" gutterBottom>Chi tiết sản phẩm</Typography>
-              <table className="table table-bordered">
-                <tbody>
-                  <tr><td>Thể loại:</td><td>{categoryOfBook.map(c => c.categoryName).join(', ')}</td></tr>
-                  <tr><td>Ngôn ngữ:</td><td>{book.language}</td></tr>
-                  <tr><td>Năm xuất bản:</td><td>{book.publishingYear}</td></tr>
-                  <tr><td>Số trang:</td><td>{book.pageNumber}</td></tr>
-                  <tr><td>Tình trạng kho:</td><td>{book.quantity}</td></tr>
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
+          <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
+            <Typography variant="h5" gutterBottom>Chi tiết sản phẩm</Typography>
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell>Thể loại:</TableCell>
+                  <TableCell>{categoryOfBook.map(c => c.categoryName).join(', ')}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Ngôn ngữ:</TableCell>
+                  <TableCell>{book.language}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Năm xuất bản:</TableCell>
+                  <TableCell>{book.publishingYear}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Số trang:</TableCell>
+                  <TableCell>{book.pageNumber}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Tình trạng kho:</TableCell>
+                  <TableCell>{book.quantity - book.soldQuantity}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Paper>
         </Grid>
 
-        {/* Product Description */}
         <Grid item xs={12}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography variant="h5" gutterBottom>Mô tả sản phẩm</Typography>
-              <div dangerouslySetInnerHTML={{ __html: book.description }} />
-            </CardContent>
-          </Card>
+          <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
+            <Typography variant="h5" gutterBottom>Mô tả sản phẩm</Typography>
+            <div dangerouslySetInnerHTML={{ __html: book.description }} />
+          </Paper>
         </Grid>
 
-        {/* Reviews Section */}
         <Grid item xs={12}>
-          <Typography variant="h5" gutterBottom>Đánh giá của khách hàng</Typography>
-          <ReviewProduct bookId={bookIdNumber} />
+          <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
+            <Typography variant="h5" gutterBottom>Đánh giá của khách hàng</Typography>
+            <ReviewProduct bookId={bookIdNumber} />
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
+            <Typography variant="h5" gutterBottom>Sản phẩm liên quan</Typography>
+            <Grid container spacing={2}>
+              {bookRelate.slice(0, 8).map((book) => (
+                <Grid item xs={12} sm={6} md={3} key={book.bookId}>
+                  <BookProps book={book} />
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
         </Grid>
       </Grid>
-    </Container>
-  );
+      </Paper>
+  </Container>
+);
 }
 
 export default ProductDetail;

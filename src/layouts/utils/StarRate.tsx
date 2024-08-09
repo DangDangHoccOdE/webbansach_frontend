@@ -16,3 +16,12 @@ const renderRating = (score:number)=>{
 }
 
 export default renderRating;
+
+export const formatStartRate=(score:number)=>{
+    if(Number.isInteger(score)){
+        return score;
+    }else{
+        return score.toFixed(1);
+    }
+}
+

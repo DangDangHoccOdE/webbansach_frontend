@@ -4,16 +4,17 @@ import BookModel from "../../../models/BookModel";
 import ImageModel from "../../../models/ImageModel";
 import { getIconImageByBook } from "../../../api/ImageAPI";
 import { Link, useNavigate } from "react-router-dom";
-import renderRating from "../../utils/StarRate";
 import NumberFormat from "../../utils/NumberFormat";
 import isAdmin from "../../utils/CheckCurrentRole";
 import AddBookToWishList from "../../../user/wishList/AddBookToWishList";
-import { Button } from "react-bootstrap";
 import useScrollToTop from "../../../hooks/ScrollToTop";
 import AddCartItem from "../../../user/cartItem/AddCartItem";
 import { useAuth } from "../../../context/AuthContext";
-import DiscountBadge from "../../utils/DiscountBadge";
 import SoldQuantityFormat from "../../utils/SoldQuantityFormat";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faHeart, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Badge, Button, Card } from "react-bootstrap";
+import renderRating from "../../utils/StarRate";
 
 interface BookPropsInterface {
     book: BookModel;
@@ -89,67 +90,66 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
     }
 
     return (
-        <div className="col-md-3 mt-2">
-            <div className="card">
-                <Link to={`books/${props.book.bookId}`}>
-                    <img
-                        src={imageData}
-                        className="card-img-top"
-                        alt={props.book.description}
-                        style={{ height: '200px' }}
-                    />
-                    <DiscountBadge discount={props.book.discountPercent} />
-                </Link>
-                <div className="card-body">
-                    <Link to={`books/${props.book.bookId}`} style={{ textDecoration: 'none' }}>
-                        <h5 className="card-title">{props.book.bookName}</h5>
-                    </Link>
-                    <div className="price row">
-                        {
-                            props.book.discountPercent ?  
-                        <span className="listed-price col-6 text-end">
-                            <del>{NumberFormat(props.book.listedPrice)}</del>
-                            <sup>đ</sup>
-                        </span> : null
-                        }
-                       
-                        <span className="discounted-price col text-end">
-                            <strong style={{color:"red"}}>{NumberFormat(props.book.price)} <sup>đ</sup></strong>
+        <Card className="h-100 shadow-sm">
+        <Link to={`/books/${bookId}`}>
+            <Card.Img 
+                variant="top" 
+                src={imageData} 
+                alt={props.book.description} 
+                style={{ height: '200px', objectFit: 'cover' }} 
+            />
+            {props.book.discountPercent > 0 && (
+                <Badge bg="danger" className="position-absolute top-0 end-0 m-2">
+                    -{props.book.discountPercent}%
+                </Badge>
+            )}
+        </Link>
+        <Card.Body className="d-flex flex-column">
+            <Link to={`/books/${bookId}`} className="text-decoration-none">
+                <Card.Title className="text-truncate">{props.book.bookName}</Card.Title>
+            </Link>
+            <div className="mt-auto">
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        {props.book.discountPercent > 0 && (
+                            <span className="text-muted text-decoration-line-through me-2">
+                                {NumberFormat(props.book.listedPrice)}đ
+                            </span>
+                        )}
+                        <span className="text-danger fw-bold">
+                            {NumberFormat(props.book.price)}đ
                         </span>
                     </div>
-
-                    <div className="row mt-2 align-items-center" role="group">
-                        <div className="col-7">
-                            <span>{renderRating(props.book.averageRate ? props.book.averageRate : 0)}</span>
-                            <p style={{fontSize:"12px"}}> (Đã bán {SoldQuantityFormat(props.book.soldQuantity)})</p>
-                        </div>
-                        <div className="col-5 text-end">
-                            <Button onClick={handleHeartClick} className="btn btn-secondary btn-block me-2">
-                                <i className="fas fa-heart"></i>
-                            </Button>
-                            <AddCartItem bookId={bookId} quantity={1} isIcon={true} />  {/* Xử lý thêm sách */ }
-                        </div>
-                    </div>
-                    {isAdmin() &&
-                        (<div className="admin-button mt-2 text-end">
-                            <Link to={`/books/editBook/${bookId}`} className="btn btn-primary me-2">
-                                <i className="fa fa-edit"></i></Link>
-
-                            <button className="btn btn-danger" onClick={handleDelete}>
-                                <i className="fas fa-trash"></i></button>
-                        </div>
-                        )}
+                    <div>{renderRating(props.book.averageRate || 0)}</div>
+                </div>
+                <small className="text-muted">Đã bán {SoldQuantityFormat(props.book.soldQuantity)}</small>
+                <div className="d-flex justify-content-between mt-3">
+                    <Button variant="outline-secondary" size="sm" onClick={handleHeartClick}>
+                        <FontAwesomeIcon icon={faHeart} />
+                    </Button>
+                    <AddCartItem bookId={bookId} quantity={1} isIcon={true} />
                 </div>
             </div>
-            <AddBookToWishList // Xử lý thêm sách vào ds yêu thích
-                bookId={bookId}
-                handleClose={handleClose}
-                showModal={showModal}
-                setNoticeSubmit={setNoticeSubmit}
-                noticeSubmit={noticeSubmit}
-            ></AddBookToWishList>
-        </div>
-    );
+            {isAdmin() && (
+                <div className="d-flex justify-content-end mt-3">
+                    <Link to={`/books/editBook/${bookId}`} className="btn btn-outline-primary btn-sm me-2">
+                        <FontAwesomeIcon icon={faEdit} />
+                    </Link>
+                    <Button variant="outline-danger" size="sm" onClick={handleDelete}>
+                        <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                </div>
+            )}
+        </Card.Body>
+        <AddBookToWishList
+            bookId={bookId}
+            handleClose={handleClose}
+            showModal={showModal}
+            setNoticeSubmit={setNoticeSubmit}
+            noticeSubmit={noticeSubmit}
+        />
+    </Card>
+);
 }
 
 export default BookProps;
