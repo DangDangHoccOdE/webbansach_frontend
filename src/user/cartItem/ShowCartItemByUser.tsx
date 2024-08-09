@@ -238,7 +238,8 @@ const ShowCart=()=>{
                                             total: total, 
                                             bookVoucher:appliedBookVoucher, 
                                             shipVoucher:appliedShipVoucher,
-                                            totalProduct:totalProduct } });
+                                            totalProduct:totalProduct,
+                                            isBuyNow:false } });
         }else{
             toast.error("Vui lòng chọn ít nhất một sản phẩm để mua hàng.");
         }

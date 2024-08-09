@@ -84,8 +84,12 @@ const AddOrder:React.FC =()=>{
         }
         const handlePurchase = async()=>{ // xử lý chuyển từ id cartItem thành sách
             if(isBuyNow){
-                const book = getBookByBookId(selectedItems[0]);
-                setBookIsChoose(prev=>({...prev,books:[book]}));
+                const book = await getBookByBookId(selectedItems[0]);
+                if(book){
+                    const books:BookModel[] = [book];
+                    setBookIsChoose(books);
+                }
+               
             }else{
                     const handleBook = selectedItems.map(async(item:number)=>{
                         const book = await getBookByCartItem(item);
@@ -207,7 +211,7 @@ const AddOrder:React.FC =()=>{
                     deliveryMethod:formOfDelivery
                 }
 
-                navigate("/order/handleCreateOrder",{state:{ order}})
+                navigate("/order/handleCreateOrder",{state:{ order,isBuyNow}})
             }
         }
     }

@@ -16,7 +16,7 @@ const HandleCreateOrder: React.FC = () => {
   const {updateCartItemCount} = useContext(CartContext);
 
 
-  const { order } = (location.state as { order: OrderModel }) || { order: null };
+  const { order,isBuyNow } = (location.state as { order: OrderModel,isBuyNow:boolean }) || { order: null,isBuyNow:false };
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -26,7 +26,7 @@ const HandleCreateOrder: React.FC = () => {
 
     const handle = async () => {
       setIsLoading(true);
-      const url: string = `http://localhost:8080/order/addOrder`;
+      const url: string = `http://localhost:8080/order/addOrder?isBuyNow=${isBuyNow}`;
       try {
         const response = await fetchWithAuth(url, {
           method: "POST",
@@ -57,7 +57,7 @@ const HandleCreateOrder: React.FC = () => {
     };
 
     handle();
-  }, [order, navigate, isLoggedIn, updateCartItemCount]);
+  }, [order, navigate, isLoggedIn, updateCartItemCount, isBuyNow]);
 
   return (
     <div className="container mt-5">
