@@ -1,12 +1,11 @@
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
-import { Backdrop, CircularProgress, Container, Tabs } from '@mui/material';
+import {Container, Tabs } from '@mui/material';
 import { useState } from 'react';
 import OrderList from './OrderList';
 
 const ShowOrder = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const [value, setValue] = useState('1');
 
   const handleChange = (e: React.SyntheticEvent, newValue: string) => {
@@ -35,15 +34,10 @@ const ShowOrder = () => {
               <Tab label="Trả hàng/Hoàn tiền" value="7" />
               </Tabs>
           </Box>
-          <OrderList setIsLoading={setIsLoading} value={value} />
+          <OrderList value={value} />
         </TabContext>
       </Box>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+  
     </Container>
   );
 }

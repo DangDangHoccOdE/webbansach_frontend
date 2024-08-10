@@ -1,12 +1,13 @@
 import fetchWithAuth from "../layouts/utils/AuthService";
 import OrderModel from "../models/OrderModel";
 
-export async function showOrders(userId:number,orderStatus:string):Promise<OrderModel[]|null> {
+export async function showOrders(userId:number,orderStatus:string,page:number=0):Promise<{orders:OrderModel[],hasMore:boolean} | null> {
     let url:string=``;
+    const size:number  =5;
     if(orderStatus==="Tất cả"){
-        url=`http://localhost:8080/orders/search/findByUser_UserId?userId=${userId}&sort=date,desc`;
+        url=`http://localhost:8080/orders/search/findByUser_UserId?userId=${userId}&sort=date,desc&page=${page}&size=${size}`;
     }else{
-        url=`http://localhost:8080/orders/search/findByUser_UserIdAndOrderStatusContaining?userId=${userId}&orderStatus=${orderStatus}&sort=date,desc`;
+        url=`http://localhost:8080/orders/search/findByUser_UserIdAndOrderStatusContaining?userId=${userId}&orderStatus=${orderStatus}&sort=date,desc&page=${page}&size=${size}`;
     }
     const result:OrderModel[] = [];
 
@@ -40,7 +41,10 @@ export async function showOrders(userId:number,orderStatus:string):Promise<Order
                 deliveryMethod:responseData[key].deliveryMethod,
             })
         }
-        return result;
+
+        const hasMore = data.page.number < data.page.totalPages - 1;
+
+        return {orders:result, hasMore};
     }catch(error){
         console.log({error})
         return null;

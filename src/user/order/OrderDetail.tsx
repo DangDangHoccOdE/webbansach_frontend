@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState } from "react";
 import ImageModel from "../../models/ImageModel";
 import BookModel from "../../models/BookModel";
 import OrderDetailModel from "../../models/OrderDetailModel";
@@ -19,11 +19,10 @@ import ReviewOrder from "./ReviewOrder";
 
 interface OrderProps {
   orderId: number;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
   onOrderUpdate:(updateOder:OrderModel)=>void
 }
 
-const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading ,onOrderUpdate}) => {
+const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate}) => {
   const [order, setOrder] = useState<OrderModel | null>(null);
   const [books, setBooks] = useState<BookModel[]>([]);
   const [imageBooks, setImageBooks] = useState<ImageModel[]>([]);
@@ -39,7 +38,6 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading ,onOrderUpdat
         navigate("/login", { replace: true });
         return;
       }
-      setIsLoading(true);
       try {
         // Lấy thông tin đơn hàng, order details, books, và images cùng lúc
         const [fetchOrder, fetchOrderDetails, fetchBooks, fetchImageOfBook] = await Promise.all([
@@ -61,12 +59,10 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading ,onOrderUpdat
       } catch (error) {
         console.error({ error });
         navigate("/error-404", { replace: true });
-      } finally {
-        setIsLoading(false);
-      }
+      } 
     };
     fetchData()    
-  }, [isLoggedIn, navigate, orderId, setIsLoading]);
+  }, [isLoggedIn, navigate, orderId]);
 
   const handleCancelOrder = useCallback(async () => {
     const confirmUser = window.confirm("Bạn có chắc muốn hủy đơn");
@@ -162,7 +158,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId, setIsLoading ,onOrderUpdat
            </Box>
          </Box>
          {
-          books[index].discountPercent &&  
+          books[index].discountPercent>0 &&  
           <Typography variant="body1" mr={1} color="#6c757d"  fontSize={14} alignSelf="center">
             <del>{NumberFormat(books[index]?.listedPrice)} đ</del>
          </Typography>
