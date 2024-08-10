@@ -18,6 +18,7 @@ import SelectVoucherToPay from "./SelectVoucherToAddOrder";
 import { getCartItemById } from "../../api/CartItemAPI";
 import OrderModel from "../../models/OrderModel";
 import { format } from "date-fns";
+import generateOrderCode from "../../layouts/utils/generateOrderCode";
 
 const AddOrder:React.FC =()=>{
     const location = useLocation();
@@ -195,6 +196,7 @@ const AddOrder:React.FC =()=>{
                 const order:OrderModel={
                     orderId:0,
                     date:format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
+                    orderCode:generateOrderCode(), // Tạo mã đơn hàng
                     deliveryAddress:user.deliveryAddress,
                     deliveryStatus:"", // Sau này sẽ cập nhật
                     orderStatus:'Đang xử lý',

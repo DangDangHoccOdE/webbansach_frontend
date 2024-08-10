@@ -1,6 +1,7 @@
 
 class OrderModel{
     orderId:number;
+    orderCode:string;
     date:string;
     deliveryAddress:string;
     deliveryStatus?:string;
@@ -18,6 +19,7 @@ class OrderModel{
     deliveryMethod:string;
 
     constructor(    orderId:number,
+        orderCode:string,
         date:string,
         deliveryAddress:string,
         deliveryStatus:string,
@@ -34,6 +36,7 @@ class OrderModel{
         paymentMethod:string,
         deliveryMethod:string,){
             this.orderId = orderId;
+            this.orderCode = orderCode;
             this.date =date;
             this.deliveryAddress =deliveryAddress;
             this.deliveryStatus = deliveryStatus;

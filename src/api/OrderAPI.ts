@@ -22,6 +22,7 @@ export async function showOrders(userId:number,orderStatus:string):Promise<Order
         for(const key in responseData){
             result.push({
                 orderId:responseData[key].orderId,
+                orderCode:responseData[key].orderCode,
                 date:responseData[key].date,
                 deliveryAddress:responseData[key].deliveryAddress,
                 deliveryStatus:responseData[key].deliveryStatus,
@@ -59,6 +60,7 @@ export async function getOrderByOrderId(orderId:number):Promise<OrderModel|null>
 
         return({
             orderId:data.orderId,
+            orderCode:data.orderCode,
             date:data.date,
             deliveryAddress:data.deliveryAddress,
             deliveryStatus:data.deliveryStatus,
