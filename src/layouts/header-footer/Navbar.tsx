@@ -9,6 +9,7 @@ import { getUserByUsername } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
 import { useAuth } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
+import { Avatar } from "@mui/material";
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
   }
@@ -127,7 +128,7 @@ function Navbar({setBookNameFind} : NavbarProps){
           {/* Biểu tượng giỏ hàng */}
           <ul className="navbar-nav me-1">
             <li className="nav-item">
-                <Link to={`/user/showCart`} style={{textDecoration:"none",color:"green"}}>
+                <Link to={`/user/showCart`} style={{textDecoration:"none",color:"green",  marginLeft:"4px"}}>
                     <i className="fas fa-shopping-cart"></i> 
                     <span className="badge bg-danger rounded-pill">{itemCounter}</span>
                 </Link>
@@ -143,7 +144,7 @@ function Navbar({setBookNameFind} : NavbarProps){
                {  
                   user?.avatar===null?
                            <i className="fas fa-user"></i>
-                           : <img src={user?.avatar} alt={user?.firstName?.toUpperCase()} style={{width:"50px"}}></img>
+                           : <Avatar alt={user?.firstName?.toUpperCase()} src={user?.avatar}   sx={{ width: 30, height: 30 }} />
                   
               }</a>
                  <div className="dropdown-menu dropdown-menu-end">
