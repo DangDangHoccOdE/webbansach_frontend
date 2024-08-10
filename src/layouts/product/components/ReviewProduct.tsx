@@ -4,7 +4,7 @@ import renderRating from "../../utils/StarRate";
 import useScrollToTop from "../../../hooks/ScrollToTop";
 import BookModel from "../../../models/BookModel";
 import { getBookByBookId } from "../../../api/BookAPI";
-import { CircularProgress, Grid, Card, CardContent, Typography, Button, Box, Stack } from "@mui/material";
+import { CircularProgress, Grid, Card, CardContent, Typography, Button, Box, Stack, Avatar } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFaceSmileBeam, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import UserModel from "../../../models/UserModel";
@@ -148,7 +148,12 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
                   <Grid item>
                     {listUserReview[index] && (
                       <>
-                        <img src={listUserReview[index].avatar} alt="*" style={{ width: "50px" }} />
+                      {  
+                      listUserReview[index].avatar===null?
+                           <i className="fas fa-user"></i>
+                           : <Avatar alt={listUserReview[index]?.firstName?.toUpperCase()} src={listUserReview[index].avatar}   sx={{ width: 30, height: 30 }} />
+                  
+              }
                         <Typography>{listUserReview[index].firstName}</Typography>
                       </>
                     )}
