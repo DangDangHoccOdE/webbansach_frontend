@@ -16,7 +16,8 @@ const HandleCreateOrder: React.FC = () => {
   const {updateCartItemCount} = useContext(CartContext);
 
 
-  const { order,isBuyNow } = (location.state as { order: OrderModel,isBuyNow:boolean }) || { order: null,isBuyNow:false };
+  const { order,isBuyNow} = (location.state as { order: OrderModel,isBuyNow:boolean }) 
+                                        ||  { order: null,isBuyNow:false };
 
   useEffect(() => {
     if (!isLoggedIn) {

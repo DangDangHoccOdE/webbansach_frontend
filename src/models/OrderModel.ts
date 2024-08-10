@@ -17,6 +17,7 @@ class OrderModel{
     cartItems:number[];
     paymentMethod:string;
     deliveryMethod:string;
+    voucherIds?:number[];
 
     constructor(    orderId:number,
         orderCode:string,
@@ -34,7 +35,8 @@ class OrderModel{
         userId:number,
         cartItems:number[],
         paymentMethod:string,
-        deliveryMethod:string,){
+        deliveryMethod:string,
+        voucherIds?:number[],){
             this.orderId = orderId;
             this.orderCode = orderCode;
             this.date =date;
@@ -51,7 +53,8 @@ class OrderModel{
             this.userId = userId;
             this.cartItems = cartItems;
             this.paymentMethod = paymentMethod;
-            this.deliveryMethod = deliveryMethod
+            this.deliveryMethod = deliveryMethod;
+            this.voucherIds = voucherIds;
         }
 }
 

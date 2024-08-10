@@ -39,6 +39,7 @@ export async function showOrders(userId:number,orderStatus:string,page:number=0)
                 cartItems:responseData[key].cartItems,
                 paymentMethod:responseData[key].paymentMethod,
                 deliveryMethod:responseData[key].deliveryMethod,
+                voucherIds:responseData[key].voucherIds,
             })
         }
 

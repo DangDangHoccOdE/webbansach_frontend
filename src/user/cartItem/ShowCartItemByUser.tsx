@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useMemo, useState } from "react";
 import BookModel from "../../models/BookModel";
 import { getAllCartItemByUser } from "../../api/CartItemAPI";
 import ImageModel from "../../models/ImageModel";
@@ -36,7 +36,6 @@ const ShowCart=()=>{
     const [showModal,setShowModal] = useState(false);
     const [appliedBookVoucher, setAppliedBookVoucher] = useState<VoucherModel | null>(null);
     const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(null);
-    const [totalProduct,setTotalProduct] = useState(0)
     const {updateCartItemCount} = useContext(CartContext);
     const [cartUpdated, setCartUpdated] = useState(false);
     const userId = getUserIdByToken();
@@ -129,6 +128,13 @@ const ShowCart=()=>{
         total = totalPrice.reduce((sum,price)=>sum+price,0); // sum là giá trị tích lũy sau mỗi lần , price là giá hiện tại
         return total;
       }
+
+      const totalProduct = useMemo(()=>{  // Tính tổng sản phẩm
+        return selectedItems.reduce((total,cartItemId)=>{
+            const item = cartItem.find(item=>item.cartItemId === cartItemId);
+            return total + (item ? item.quantity : 0);
+        },0);
+      },[selectedItems,cartItem])
       
     const handleDelete=async(cartItemId:number)=>{ // Xóa sách trong giỏ hàng
         const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa khỏi giỏ hàng!")
@@ -192,6 +198,7 @@ const ShowCart=()=>{
              })
              const completedUpdate = await Promise.all(updateQuantityBooks);
              setCartItem(completedUpdate);
+             setCartUpdated(prev=>!prev)
         }
     }
 
@@ -206,6 +213,7 @@ const ShowCart=()=>{
              })
              const completedUpdate = await Promise.all(updateQuantityBooks);
              setCartItem(completedUpdate);
+             setCartUpdated(prev=>!prev)
         }
     }
 
@@ -223,10 +231,8 @@ const ShowCart=()=>{
         
         if(cartItemFilter){
             if(selectedItems.includes(cartItemId)){
-                setTotalProduct(totalProduct-cartItemFilter.quantity);
                 setSelectedItems(selectedItems.filter(item=>item!==cartItemId));
             }else{
-                setTotalProduct(totalProduct+cartItemFilter.quantity);
                 setSelectedItems([...selectedItems,cartItemId]);
             }
         }
@@ -239,7 +245,7 @@ const ShowCart=()=>{
                                             bookVoucher:appliedBookVoucher, 
                                             shipVoucher:appliedShipVoucher,
                                             totalProduct:totalProduct,
-                                            isBuyNow:false } });
+                                            isBuyNow:false }});
         }else{
             toast.error("Vui lòng chọn ít nhất một sản phẩm để mua hàng.");
         }

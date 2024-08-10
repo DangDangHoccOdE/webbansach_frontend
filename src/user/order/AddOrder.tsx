@@ -1,6 +1,6 @@
 import CartItemModel from "../../models/CartItemModel";
 import BookModel from "../../models/BookModel";
-import {  ChangeEvent, useEffect, useState } from "react";
+import {  ChangeEvent, useEffect, useRef, useState } from "react";
 import {  getBookByBookId, getBookByCartItem } from "../../api/BookAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import ImageModel from "../../models/ImageModel";
@@ -47,6 +47,8 @@ const AddOrder:React.FC =()=>{
     const [cart,setCart] = useState<CartItemModel[]>([])
     const [noteUser,setNoteUser] = useState('')
     const [selectMethodPayment,setSelectMethodPayment] = useState("Thanh toán khi nhận hàng")
+    const [voucherIds,setVoucherIds] = useState<number[]>([])
+    const voucherIdsRef = useRef(voucherIds);
 
     const renderDetail = ()=>{ // Xử lý chọn phương thức giao hàng
         switch (formOfDelivery){
@@ -146,7 +148,6 @@ const AddOrder:React.FC =()=>{
         const handleIcon = async()=>{  // Lấy ra những icon của sách
             if(bookIsChoose.length>0){
                 const iconImage = await getAllIconImage(bookIsChoose);
-                console.log(iconImage)
                 setIconImageList(iconImage);
     
             }
@@ -155,6 +156,9 @@ const AddOrder:React.FC =()=>{
         handleIcon();
     },[bookIsChoose])
 
+    useEffect(()=>{ // Cập nhật lại mỗi khi voucherIds thay đổi
+        voucherIdsRef.current = voucherIds;
+    },[voucherIds])
 
     const [priceByVoucher,setPriceByVoucher] = useState(total);
     
@@ -193,6 +197,18 @@ const AddOrder:React.FC =()=>{
             return;
         }else{  
             if(user){
+                let updatedVoucherIds  = [...voucherIdsRef.current]
+                if(appliedBookVoucher){
+                    updatedVoucherIds.push(appliedBookVoucher.voucherId)
+                 
+                }
+                
+                if(appliedShipVoucher){
+                    updatedVoucherIds.push(appliedShipVoucher.voucherId)
+
+                }
+
+                setVoucherIds(updatedVoucherIds)
                 const order:OrderModel={
                     orderId:0,
                     date:format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
@@ -210,10 +226,11 @@ const AddOrder:React.FC =()=>{
                     userId:user.userId,
                     cartItems:selectedItems,
                     paymentMethod:selectMethodPayment,
-                    deliveryMethod:formOfDelivery
+                    deliveryMethod:formOfDelivery,
+                    voucherIds:updatedVoucherIds,
                 }
 
-                navigate("/order/handleCreateOrder",{state:{ order,isBuyNow}})
+                navigate("/order/handleCreateOrder",{state:{ order,isBuyNow},replace:true})
             }
         }
     }
@@ -370,7 +387,7 @@ const AddOrder:React.FC =()=>{
                                     appliedBookVoucher &&
                                     <div className="d-flex justify-content-between mb-2">
                                     <span>Voucher giảm giá</span>
-                                    <span><b>- {NumberFormat((total+priceShip)*(appliedBookVoucher.discountValue/100))} đ</b></span>
+                                    <span><b>- {NumberFormat((total)*(appliedBookVoucher.discountValue/100))} đ</b></span>
                                 </div>
                                 }
                                 {
