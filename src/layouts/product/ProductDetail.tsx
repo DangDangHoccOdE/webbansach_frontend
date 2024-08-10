@@ -222,10 +222,10 @@ const ProductDetail: React.FC = () => {
               Tạm Tính: {NumberFormat(quantity * book.price)} đ
             </Typography>
             <Box display="flex" gap={2}>
-              <Button disabled={book.soldQuantity === book.quantity} variant="contained" color="error" onClick={handlePurchase} fullWidth>
+              <Button disabled={book.soldQuantity === book.quantity?true:false} variant="contained" color="error" onClick={handlePurchase} fullWidth>
                 Mua ngay
               </Button>
-              <AddCartItem isDisabled={book.soldQuantity === book.quantity}  bookId={bookIdNumber} quantity={quantity} isIcon={false} />
+              <AddCartItem isDisabled={book.soldQuantity === book.quantity?true:false}  bookId={bookIdNumber} quantity={quantity} isIcon={false} />
             </Box>
           </Paper>
         </Grid>

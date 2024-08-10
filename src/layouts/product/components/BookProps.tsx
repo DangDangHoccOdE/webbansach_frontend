@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faHeart, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Badge, Button, Card } from "react-bootstrap";
 import renderRating from "../../utils/StarRate";
+import { CircularProgress } from "@mui/material";
 
 interface BookPropsInterface {
     book: BookModel;
@@ -27,33 +28,33 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
 
     const { isLoggedIn } = useAuth();
     const [iconOfBook, setIconOfBook] = useState<ImageModel | null>(null);
-    const [loadingData, setLoadingData] = useState(true);
     const [noticeError, setNoticeError] = useState(null);
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [noticeSubmit, setNoticeSubmit] = useState("");
+    const [isLoading,setIsLoading] = useState(false)
 
     useEffect(() => {
         getIconImageByBook(bookId)
             .then(imageData => {
                 setIconOfBook(imageData);
-                setLoadingData(false);
+                setIsLoading(false)
             })
             .catch(error => {
-                setLoadingData(false);
+                setIsLoading(false)
                 setNoticeError(error.message);
                 console.log(error.message);
             });
-    }, [bookId]);
+    }, [bookId])
 
-    if (loadingData) {
+    if (isLoading) {
         return (
-            <div>
-                <h1>Đang tải dữ liệu</h1>
-            </div>
+          <div className="text-center mt-5">
+            <CircularProgress color="inherit" />
+          </div>
         );
-    }
-
+      }
+    
     if (noticeError) {
         return (
             <div>
@@ -109,7 +110,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
             <Card.Img 
                 variant="top" 
                 src={imageData} 
-                alt={props.book.description} 
+                alt={props.book.bookName} 
                 style={{ height: '200px', objectFit: 'cover' }} 
             />
             {props.book.discountPercent > 0 && (

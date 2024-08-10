@@ -3,6 +3,7 @@ import BookModel from "../../../models/BookModel";
 import { getThreeBooksLatest } from "../../../api/BookAPI";
 import CarouselItem from "./CarouselItem";
 import useScrollToTop from "../../../hooks/ScrollToTop";
+import { CircularProgress } from "@mui/material";
 
 const Carousel=()=> {
   useScrollToTop();
@@ -24,13 +25,17 @@ const Carousel=()=> {
   },[])
   
  
-  if (loadingData) {
-    return( <h1>Đang tải dữ liệu</h1>);
-  }
+    if (loadingData) {
+      return (
+        <div className="text-center mt-5">
+          <CircularProgress color="inherit" />
+        </div>
+      );
+    }
 
-  if (noticeError) {
-    return <h1>Error: {noticeError}</h1>;
-  }
+    if (noticeError) {
+      return <div className="alert alert-danger text-center" role="alert">{noticeError}</div>;
+    }
 
   return (
     <div id="carouselExampleDark" className="carousel carousel-dark slide">

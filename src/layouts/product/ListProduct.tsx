@@ -4,6 +4,9 @@ import BookProps from "./components/BookProps";
 import { findBook, getAllBook } from "../../api/BookAPI";
 import { Pagination } from "../utils/Pagination";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import { CircularProgress } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFaceSadCry } from "@fortawesome/free-solid-svg-icons";
 
 interface ListProductProps{
   bookNameFind : string;
@@ -52,25 +55,25 @@ function ListProduct({bookNameFind, categoryId} : ListProductProps){
 
   if (loadingData) {
     return (
-      <div>
-        <h1>Đang tải dữ liệu</h1>
+      <div className="text-center mt-5">
+        <CircularProgress color="inherit" />
       </div>
     );
   }
 
+
   if (noticeError) {
-    return (
-      <div>
-        <h1>Gặp lỗi: {noticeError}</h1>
-      </div>
-    );
+    return <div className="alert alert-danger text-center" role="alert">{noticeError}</div>;
   }
 
   if(bookList.length===0){
     return (
       <div className="container">
-        <div className="d-flex align-items-center justify-content-center ">
+        <div className="text-center">
             <h1>Hiện không tìm thấy sách theo yêu cầu!</h1>
+            <h2>
+                <FontAwesomeIcon icon={faFaceSadCry}></FontAwesomeIcon>
+            </h2>
         </div>
       </div>
     );

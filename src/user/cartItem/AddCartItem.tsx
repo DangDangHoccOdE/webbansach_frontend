@@ -52,11 +52,11 @@ const AddCartItem:React.FC<AddToCartProps> = (props)=>{
 
     return (
         !props.isIcon ?
-            <button disabled={props.isDisabled} type="button" className="btn btn-outline-secondary mt-2" onClick={addCartItem}>
+            <button disabled={props.isDisabled?true:false} type="button" className="btn btn-outline-secondary mt-2" onClick={addCartItem}>
                 Thêm vào giỏ hàng
             </button>
 
-        :  <button disabled={props.isDisabled} className="btn btn-danger btn-block" onClick={addCartItem}>
+        :  <button disabled={props.isDisabled?true:false} className="btn btn-danger btn-block" onClick={addCartItem}>
              <i className="fas fa-shopping-cart"></i>
          </button>
     )

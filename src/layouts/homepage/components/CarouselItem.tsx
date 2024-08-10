@@ -3,6 +3,7 @@ import BookModel from "../../../models/BookModel";
 import ImageModel from "../../../models/ImageModel";
 import { getIconImageByBook } from "../../../api/ImageAPI";
 import useScrollToTop from "../../../hooks/ScrollToTop";
+import { CircularProgress } from "@mui/material";
 
 interface BookProps{
     book:BookModel;
@@ -29,11 +30,15 @@ const CarouselItem:React.FC<BookProps>=(props)=>{
     },[bookId])
 
     if (loadingData) {
-        return( <h1>Đang tải dữ liệu</h1>);
-      }
+      return (
+        <div className="text-center mt-5">
+          <CircularProgress color="inherit" />
+        </div>
+      );
+    }
     
       if (noticeError) {
-        return <h1>Error: {noticeError}</h1>;
+        return <div className="alert alert-danger text-center" role="alert">{noticeError}</div>;
       }
 
       let dataLink:string="";
