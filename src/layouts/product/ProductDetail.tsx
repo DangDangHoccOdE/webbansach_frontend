@@ -11,7 +11,7 @@ import AddCartItem from "../../user/cartItem/AddCartItem";
 import SoldQuantityFormat from "../utils/SoldQuantityFormat";
 import CategoryModel from "../../models/CategoryModel";
 import { getCategoryByBook } from "../../api/CategoryAPI";
-import { CircularProgress, Container, Grid ,Typography, Button, IconButton, Box, Paper, Table, TableBody, TableRow, TableCell, TextField, Divider } from "@mui/material";
+import { CircularProgress, Container, Grid ,Typography, Button, IconButton, Box, Paper, Table, TableBody, TableRow, TableCell, TextField, Divider} from "@mui/material";
 import { getNumberOfReviewByBookId } from "../../api/ReviewAPI";
 import { AddShoppingCart, RemoveShoppingCart } from "@mui/icons-material";
 import BookProps from "./components/BookProps";
@@ -50,7 +50,7 @@ const ProductDetail: React.FC = () => {
   };
 
   const increaseQuantity = () => {
-    const quantityNow = book && book.quantity ? book.quantity : 0;
+    const quantityNow = book && book.quantity ? (book.quantity-book.soldQuantity) : 0;
     if (quantity < quantityNow) {
       setQuantity(quantity + 1);
     }
@@ -145,7 +145,23 @@ const ProductDetail: React.FC = () => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ p: 3 }}>
+          <Paper elevation={3} sx={{ p: 3 ,position:"relative"}}>
+            {
+              book.quantity === book.soldQuantity && 
+              <Box sx={{ position: 'absolute', 
+                top: 8, 
+                right: 8, 
+                backgroundColor: 'red', 
+                color: 'white', 
+                padding: '4px 8px', 
+                borderRadius: '4px',
+                fontSize: '0.75rem'}}>
+                <Typography >
+                    Hết hàng
+                </Typography>
+              </Box>
+              
+            }
             <Typography variant="h4" gutterBottom>{book.bookName}</Typography>
             <Box display="flex" alignItems="center" mb={2}>
               {renderRating(book.averageRate || 0)}
@@ -159,9 +175,26 @@ const ProductDetail: React.FC = () => {
                   {NumberFormat(book.listedPrice)} đ
                 </Typography>
               )}
-              <Typography variant="h5" color="error">
-                {NumberFormat(book.price)} đ
+              <Typography variant="h5" color="error"> 
+                {NumberFormat(book.price)} đ 
               </Typography>
+              {
+                book.discountPercent>0 &&  
+                <Box 
+                sx={{ 
+                  backgroundColor: '#d32f2f', 
+                  color: '#fff', 
+                  padding: '1px 4px', 
+                  borderRadius: '2px',
+                  fontWeight: 'bold',
+                  fontSize:"0.75rem",
+                  ml:2
+                }}
+              >
+                - {book.discountPercent}% GIẢM
+              </Box>
+              }
+           
             </Box>
             <Divider sx={{ my: 2 }} />
             <Typography variant="body2" mb={2}>
@@ -189,10 +222,10 @@ const ProductDetail: React.FC = () => {
               Tạm Tính: {NumberFormat(quantity * book.price)} đ
             </Typography>
             <Box display="flex" gap={2}>
-              <Button variant="contained" color="error" onClick={handlePurchase} fullWidth>
+              <Button disabled={book.soldQuantity === book.quantity} variant="contained" color="error" onClick={handlePurchase} fullWidth>
                 Mua ngay
               </Button>
-              <AddCartItem bookId={bookIdNumber} quantity={quantity} isIcon={false} />
+              <AddCartItem isDisabled={book.soldQuantity === book.quantity}  bookId={bookIdNumber} quantity={quantity} isIcon={false} />
             </Box>
           </Paper>
         </Grid>

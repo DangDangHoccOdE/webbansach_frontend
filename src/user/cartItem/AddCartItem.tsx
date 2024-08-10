@@ -9,7 +9,8 @@ import { CartContext } from "../../context/CartContext";
 interface AddToCartProps{
     bookId:number,
     quantity:number,
-    isIcon:boolean
+    isIcon:boolean,
+    isDisabled:boolean
 }
 const AddCartItem:React.FC<AddToCartProps> = (props)=>{
     const {isLoggedIn} = useAuth();
@@ -51,11 +52,11 @@ const AddCartItem:React.FC<AddToCartProps> = (props)=>{
 
     return (
         !props.isIcon ?
-            <button type="button" className="btn btn-outline-secondary mt-2" onClick={addCartItem}>
+            <button disabled={props.isDisabled} type="button" className="btn btn-outline-secondary mt-2" onClick={addCartItem}>
                 Thêm vào giỏ hàng
             </button>
 
-        :  <button className="btn btn-danger btn-block" onClick={addCartItem}>
+        :  <button disabled={props.isDisabled} className="btn btn-danger btn-block" onClick={addCartItem}>
              <i className="fas fa-shopping-cart"></i>
          </button>
     )

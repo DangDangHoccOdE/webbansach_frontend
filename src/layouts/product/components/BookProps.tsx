@@ -91,6 +91,20 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
 
     return (
         <Card className="h-100 shadow-sm">
+            {
+              props.book.quantity === props.book.soldQuantity && 
+              <Badge style={{ position: 'absolute', 
+                top: 8, 
+                left: 8, 
+                backgroundColor: 'red', 
+                color: 'white', 
+                padding: '4px 8px', 
+                borderRadius: '4px',
+                fontSize: '0.75rem'}}>
+                    Hết hàng
+              </Badge>
+              
+            }
         <Link to={`/books/${bookId}`}>
             <Card.Img 
                 variant="top" 
@@ -127,7 +141,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                     <Button variant="outline-secondary" size="sm" onClick={handleHeartClick}>
                         <FontAwesomeIcon icon={faHeart} />
                     </Button>
-                    <AddCartItem bookId={bookId} quantity={1} isIcon={true} />
+                    <AddCartItem bookId={bookId} quantity={1} isIcon={true} isDisabled={props.book.soldQuantity === props.book.quantity}/>
                 </div>
             </div>
             {isAdmin() && (
