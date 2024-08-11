@@ -49,6 +49,7 @@ import { AuthProvider } from "./context/AuthContext";
 import AddOrder from "./user/order/AddOrder";
 import HandleCreateOrder from "./user/order/HandleCreateOrder";
 import ShowOrder from "./user/order/ShowOrder";
+import OrderManagement_Admin from "./admin/order/OrderManagement";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   
@@ -103,6 +104,7 @@ function App() {
               <Route path="/vouchers" element={<ListVoucher/>}></Route>
 
               <Route path="/user/showVoucherUser" element={<ShowVoucherUser/>}></Route>
+              <Route path="/admin/orderManagement" element={<OrderManagement_Admin/>}></Route>
 
             </Routes>
           <Footer/>

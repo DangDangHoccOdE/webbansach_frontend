@@ -218,7 +218,7 @@ const AddOrder:React.FC =()=>{
                     orderStatus:'Đang xử lý',
                     paymentCost:priceByVoucher,
                     purchaseAddress:"BookStore Hà Nội",
-                    shippingFee:priceShip,
+                    shippingFee:priceShip, // giá ship khi chưa chọn voucher giảm giá ship
                     shippingFeeVoucher:appliedShipVoucher?priceShip-priceShip*(appliedShipVoucher.discountValue/100):priceShip,
                     totalPrice:priceByVoucher,
                     totalProduct:totalProduct,

@@ -1,6 +1,13 @@
 import fetchWithAuth from "../layouts/utils/AuthService";
 import OrderModel from "../models/OrderModel";
 
+interface ResultInterface{
+    resultOrders:OrderModel[];
+    totalPages :number;
+    totalOrders: number;
+}
+
+
 export async function showOrders(userId:number,orderStatus:string,page:number=0):Promise<{orders:OrderModel[],hasMore:boolean} | null> {
     let url:string=``;
     const size:number  =5;
@@ -87,3 +94,49 @@ export async function getOrderByOrderId(orderId:number):Promise<OrderModel|null>
         return null;
     }
 } 
+
+export async function fetchAllOrders(currentPage:number):Promise<ResultInterface|null> {
+    const url:string=`http://localhost:8080/orders?sort=date,desc&size=10&page=${currentPage}`
+    const result:OrderModel[] = [];
+
+    try{
+        const response = await fetchWithAuth(url);
+        if(!response){
+            throw new Error(`Lỗi khi gọi api danh sách đặt hàng`)
+        }
+
+        const data = await response.json();
+        const responseData = data._embedded.orders;
+
+        const totalPages:number = data.page.totalPages;
+        const totalOrders:number = data.page.totalElements;
+
+        for(const key in responseData){
+            result.push({
+                orderId:responseData[key].orderId,
+                orderCode:responseData[key].orderCode,
+                date:responseData[key].date,
+                deliveryAddress:responseData[key].deliveryAddress,
+                deliveryStatus:responseData[key].deliveryStatus,
+                orderStatus:responseData[key].orderStatus,
+                paymentCost:responseData[key].paymentCost,
+                purchaseAddress:responseData[key].purchaseAddress,
+                shippingFee:responseData[key].shippingFee,
+                shippingFeeVoucher:responseData[key].shippingFeeVoucher,
+                totalPrice:responseData[key].totalPrice,
+                totalProduct:responseData[key].totalProduct,
+                noteFromUser:responseData[key].noteFromUser,
+                userId:responseData[key].userId,
+                cartItems:responseData[key].cartItems,
+                paymentMethod:responseData[key].paymentMethod,
+                deliveryMethod:responseData[key].deliveryMethod,
+                voucherIds:responseData[key].voucherIds,
+            })
+        }
+
+        return {resultOrders:result, totalOrders:totalOrders , totalPages:totalPages};
+    }catch(error){
+        console.error(error)
+        return null;
+    }
+}
