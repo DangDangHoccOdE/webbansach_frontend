@@ -162,3 +162,9 @@ export async function getVoucher(url:string):Promise<VoucherModel|null>{
         return null;
     }
 }
+
+export async function getVoucherFromOrder(orderId:number):Promise<VoucherModel[]>{
+    const url:string=`http://localhost:8080/orders/${orderId}/vouchers`;
+
+    return showAllVouchers(url);
+}

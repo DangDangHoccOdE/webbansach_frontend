@@ -95,6 +95,7 @@ const OrderList: React.FC<OrderProps> = (props) => {
           key={index}
           orderId={order.orderId}
           onOrderUpdate={handleOrderUpdate}
+          showFunctionRelateOrder={true}
         />
       ))}
           {isLoading && (

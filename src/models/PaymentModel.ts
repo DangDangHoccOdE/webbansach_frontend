@@ -1,14 +1,11 @@
 class PaymentModel{
     paymentId:number;
     paymentName:string;
-    price:number;
 
     constructor(    paymentId:number,
-        paymentName:string,
-        price:number){
+        paymentName:string){
         this.paymentId = paymentId;
         this.paymentName = paymentName;
-        this.price = price;
     }
 }
 

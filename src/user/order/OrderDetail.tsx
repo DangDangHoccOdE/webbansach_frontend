@@ -19,10 +19,11 @@ import ReviewOrder from "./ReviewOrder";
 
 interface OrderProps {
   orderId: number;
-  onOrderUpdate:(updateOder:OrderModel)=>void
+  onOrderUpdate:((updateOder:OrderModel)=>void) | null // Hàm này có chức năng cập nhật lại giao diện mà không cần load lại
+  showFunctionRelateOrder:boolean // Có chức năng giúp xác nhận có hiển thị thêm phần Đánh giá, mua lại, hủy đơn ,...
 }
 
-const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate}) => {
+const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunctionRelateOrder}) => {
   const [order, setOrder] = useState<OrderModel | null>(null);
   const [books, setBooks] = useState<BookModel[]>([]);
   const [imageBooks, setImageBooks] = useState<ImageModel[]>([]);
@@ -70,7 +71,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate}) => {
       return;
     }else{
         const isUpdate = await cancelOrder(order.orderId);
-        if(isUpdate){
+        if(isUpdate && onOrderUpdate){
           const updateOrder = {...order,orderStatus:"Đã hủy"};
           onOrderUpdate(updateOrder);
           setOrder(updateOrder)
@@ -95,7 +96,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate}) => {
       return;
     }else{
         const isUpdate = await confirmReceivedOrder(order.orderId);
-        if(isUpdate){
+        if(isUpdate&& onOrderUpdate){
           const updateOrder = {...order,orderStatus:"Hoàn thành"};
           onOrderUpdate(updateOrder);
           setOrder(updateOrder);
@@ -117,7 +118,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate}) => {
   }
 
   const handleReviewSubmit=useCallback(()=>{
-    if(order){
+    if(order && onOrderUpdate){
       const updateOrder = {...order,orderStatus:"Đánh giá"};
       onOrderUpdate(updateOrder);
       setOrder(updateOrder);
@@ -128,17 +129,18 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate}) => {
     <Card sx={{ mb: 3 }}>
       <CardContent>
         <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
-          {
-            order?.deliveryStatus==="Đã giao hàng thành công" &&
-            <>
-                <Typography color={"green"}>
-                  {order?.deliveryStatus}
-              </Typography>
-              <Typography mx={2}>|</Typography>
-            </>
+          {  showFunctionRelateOrder &&
+              (  order?.deliveryStatus==="Đã giao hàng thành công" ?
+              <>
+                  <Typography color={"green"}>
+                    {order?.deliveryStatus}
+                </Typography>
+                <Typography mx={2}>|</Typography>
+              </>  :  
+               <Typography color="orange">{order?.orderStatus}</Typography> )
           }
-          <Typography color="orange">{order?.orderStatus}</Typography>
-        </Box>
+         </Box>
+
 
         {orderDetails.map((orderDetail, index) => (
          <Box key={index} display="flex" alignItems="flex-start" mb={2} borderBottom={1} pb={2}>
@@ -170,51 +172,55 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate}) => {
        </Box>
         ))}
 
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          {
-           <Box>
-           {
-             order?.orderStatus !== 'Đã hủy' && order?.orderStatus !== 'Đánh giá' ? (
-               order?.orderStatus === 'Hoàn thành' ? (
-                 <>
-                   <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleReviewClick}>Đánh Giá</Button>
-                   <ReviewOrder 
-                     onReviewSubmit={handleReviewSubmit} 
-                     books={books} 
-                     handleClose={handleClose} 
-                     imageOfBooks={imageBooks} 
-                     showModal={showModal} 
-                     orderId={orderId} 
-                   />
-                   <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
-                 </>
-               ) : (
-                 <>
-                   <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleConfirmReceivedOrder}>Đã nhận được hàng</Button>
-                   <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button>
-                 </>
-               )
-             ) : (
-               <>
-                 <Button variant="contained" type="button" onClick={handleRepurchase} color="error" sx={{ mr: 1 }}>Mua lại</Button>
-                 {
-                   order?.orderStatus === 'Đánh giá' ? (
-                     <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
-                   ) : (
-                     <Button variant="outlined" color="secondary" type="button">Xem chi tiết hủy đơn</Button>
-                   )
-                 }
-               </>
-             )
-           }
+      {
+        showFunctionRelateOrder && 
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+            {
+            <Box>
+            {
+              order?.orderStatus !== 'Đã hủy' && order?.orderStatus !== 'Đánh giá' ? (
+                order?.orderStatus === 'Hoàn thành' ? (
+                  <>
+                    <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleReviewClick}>Đánh Giá</Button>
+                    <ReviewOrder 
+                      onReviewSubmit={handleReviewSubmit} 
+                      books={books} 
+                      handleClose={handleClose} 
+                      imageOfBooks={imageBooks} 
+                      showModal={showModal} 
+                      orderId={orderId} 
+                    />
+                    <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleConfirmReceivedOrder}>Đã nhận được hàng</Button>
+                    <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button>
+                  </>
+                )
+              ) : (
+                <>
+                  <Button variant="contained" type="button" onClick={handleRepurchase} color="error" sx={{ mr: 1 }}>Mua lại</Button>
+                  {
+                    order?.orderStatus === 'Đánh giá' ? (
+                      <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
+                    ) : (
+                      <Button variant="outlined" color="secondary" type="button">Xem chi tiết hủy đơn</Button>
+                    )
+                  }
+                </>
+              )
+            }
+          </Box>
+          
+            }
+          
+            <Typography variant="h5" color="error">
+              Thành tiền: {NumberFormat(order?.totalPrice)} đ
+            </Typography>
          </Box>
-         
-          }
-         
-          <Typography variant="h5" color="error">
-            Thành tiền: {NumberFormat(order?.totalPrice)} đ
-          </Typography>
-        </Box>
+      }
+      
       </CardContent>
     </Card>
   );

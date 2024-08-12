@@ -50,6 +50,7 @@ import AddOrder from "./user/order/AddOrder";
 import HandleCreateOrder from "./user/order/HandleCreateOrder";
 import ShowOrder from "./user/order/ShowOrder";
 import OrderManagement_Admin from "./admin/order/OrderManagement";
+import ViewPurchasedOrder from "./user/order/ViewPurchasedOrder";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   
@@ -105,6 +106,9 @@ function App() {
 
               <Route path="/user/showVoucherUser" element={<ShowVoucherUser/>}></Route>
               <Route path="/admin/orderManagement" element={<OrderManagement_Admin/>}></Route>
+              <Route path="/order/purchase/:orderId" element={<ViewPurchasedOrder/>}></Route>
+              
+
 
             </Routes>
           <Footer/>
