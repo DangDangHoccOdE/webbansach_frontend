@@ -67,6 +67,10 @@ const OrderManagement:React.FC=()=>{
         setCurrentPage(pageCurrent);
     }
 
+    const handleShowOrderDetail=(orderId:number)=>{
+        navigate(`/order/purchase/${orderId}`)
+    }
+
     return(
         <Box sx={{ minWidth: 120 }}>
             <Typography display="flex" justifyContent="center" alignItems="center" my={4} variant="h2" >Quản lý đơn hàng</Typography>
@@ -132,7 +136,7 @@ const OrderManagement:React.FC=()=>{
                                     </TableCell>
                                     <TableCell>
                                         <Stack direction="row" spacing={2}>
-                                            <Button variant="contained" startIcon={<EditIcon />}>Xem chi tiết</Button>
+                                            <Button onClick={()=>handleShowOrderDetail(order.orderId)} variant="contained" startIcon={<EditIcon />}>Xem chi tiết</Button>
                                             <Button variant="outlined" color="error" endIcon={<DeleteIcon />}>Xóa</Button>
                                         </Stack>
                                     </TableCell>

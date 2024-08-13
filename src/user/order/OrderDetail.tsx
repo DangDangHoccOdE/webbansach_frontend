@@ -15,7 +15,7 @@ import cancelOrder from "./CancelOrder";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import repurchase from "./handleRepurchase";
 import confirmReceivedOrder from "./handleConfirmReceivedOrder";
-import ReviewOrder from "./ReviewOrder";
+import ReviewOrder from "../review/ReviewOrder";
 
 interface OrderProps {
   orderId: number;
@@ -117,7 +117,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
     }
   }
 
-  const handleReviewSubmit=useCallback(()=>{
+  const handleReviewSubmit=useCallback(()=>{ // Khi người dùng đánh giá thành công thì cập nhật lại trạng thái đơn hàng
     if(order && onOrderUpdate){
       const updateOrder = {...order,orderStatus:"Đánh giá"};
       onOrderUpdate(updateOrder);
@@ -189,6 +189,8 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
                       imageOfBooks={imageBooks} 
                       showModal={showModal} 
                       orderId={orderId} 
+                      reviews={null}
+                      orderReview={null}
                     />
                     <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
                   </>

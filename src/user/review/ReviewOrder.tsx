@@ -1,6 +1,6 @@
 import { Button, Card, Form, Image, Modal } from "react-bootstrap";
 import useScrollToTop from "../../hooks/ScrollToTop";
-import React, { ChangeEvent, FormEvent, useRef, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import BookModel from "../../models/BookModel";
@@ -11,17 +11,21 @@ import getBase64 from "../../layouts/utils/GetBase64";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
+import ReviewModel from "../../models/ReviewModel";
+import OrderReviewModal from "../../models/OrderReviewModel";
 
 interface ReviewOrderProps{
     handleClose:()=>void;
     showModal:boolean;
     books:BookModel[],
     imageOfBooks:ImageModel[],
+    reviews:ReviewModel[]|null
     orderId:number,
     onReviewSubmit:()=>void
+    orderReview:OrderReviewModal|null
 }
 
-const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,showModal,books,imageOfBooks,orderId,onReviewSubmit})=>{
+const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,books,imageOfBooks,orderId,onReviewSubmit,orderReview})=>{
     useScrollToTop();
     const navigate = useNavigate();
     const isLoggedIn = useAuth();
@@ -31,14 +35,63 @@ const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,showModal,books,image
     const imageInputRef = useRef<HTMLInputElement>(null);
     const videoInputRef = useRef<HTMLInputElement>(null);
     const [notice,setNotice] = useState('')
-    const [mapImagesOfBook,setImagesOfBook] = useState<Map<number,string[]>>(new Map());
+    const [mapImagesOfBook,setMapImagesOfBook] = useState<Map<number,string[]>>(new Map());
     const [mapVideoOfBook,setMapVideoOfBook] = useState<Map<number,string>>(new Map());
     const [mapContentsOfBook,setMapContentsOfBook] = useState<Map<number,string>>(new Map());
     const [mapStarsOfBook,setMapStarsOfBook] = useState<Map<number,number>>(()=>{
+
         const initialMap = new Map<number,number>();
         books.forEach(book=>initialMap.set(book.bookId,5));
         return initialMap;
     })
+
+    // Kiểm tra xem có dữ liệu reviews từ trang khác gửi về k => Phần sửa đánh giá
+    useEffect(() => {
+        if(reviews){
+            setMapImagesOfBook((prev)=>{
+                const newMap = new Map(prev);
+                reviews.forEach((review, index) => {
+                    const images = [];
+                    
+                    if(review.imageOne)  images.push(review.imageOne)
+                    if(review.imageTwo)  images.push(review.imageTwo)
+                    if(review.imageThree)  images.push(review.imageThree)
+                    if(review.imageFour) images.push(review.imageFour)
+                    if(review.imageFive)  images.push(review.imageFive)
+                    if(images.length>0)
+                        newMap.set(books[index].bookId, images)
+                    }
+                );
+                return newMap;
+            });
+    
+            setMapContentsOfBook((prev)=>{
+                const newMap = new Map(prev);
+                reviews.forEach((review, index) => {
+                    if(review.content)
+                        newMap.set(books[index].bookId, review.content)
+            });
+                return newMap;
+            });
+            
+            setMapVideoOfBook((prev)=>{
+                const newMap = new Map(prev);
+                reviews.forEach((review, index) => {
+                    if(review.video)
+                        newMap.set(books[index].bookId, review.video)  
+                }
+                    
+                );
+                return newMap;
+            });
+
+        }
+
+        if(orderReview){
+            setShopRating(orderReview.shopRate)
+            setDeliveryRating(orderReview.deliveryRate)
+        }
+    }, [books, orderReview, reviews]);
 
 
      if (!isLoggedIn ) {
@@ -64,7 +117,7 @@ const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,showModal,books,image
         setShopRating(newRating)
     }
 
-    const mapToObject = (map:Map<number,any>)=>{
+    const mapToObject = (map:Map<number,any>)=>{ // chuyển map thành object
         return Array.from(map).reduce((obj, [key,value])=>{
             obj[key] = value;
             return obj;
@@ -74,11 +127,13 @@ const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,showModal,books,image
     const handleSubmit=async(e:FormEvent)=>{
         e.preventDefault();
 
-        const url:string=`http://localhost:8080/review/addReviewOrder/${orderId}`
-
+        let url:string=`http://localhost:8080/review/addReviewOrder/${orderId}`
+        if(reviews && orderReview){
+            url=`http://localhost:8080/review/editReviewOrder/${orderId}`
+        }
             try{
                 const response = await fetchWithAuth(url,{
-                    method:"POST",
+                    method:reviews && orderReview ? "PUT":"POST",
                     headers:{
                         "Content-Type":"application/json",
                         "Authorization":`Bearer ${localStorage.getItem("accessToken")}`
@@ -131,7 +186,7 @@ const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,showModal,books,image
             
             )       
         
-            setImagesOfBook((prev)=>{
+            setMapImagesOfBook((prev)=>{
                 const newMap = new Map(prev); // Tạo map mới từ map cũ
                 newMap.set(bookId,base64Images.filter(img=>img!=null) as string[]) // set thêm giá trị
                 return newMap;
@@ -212,13 +267,14 @@ const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,showModal,books,image
                                     <Form.Group className="mb-3">
                                     <div className="d-flex justify-content-start">
                                         <Form.Label className="me-3">Chất lượng sản phẩm</Form.Label>
-                                        <ReviewOrderStar initialRating={productRating} onRatingChange={(newRating)=>handleProductRatingChange(newRating,book.bookId)}></ReviewOrderStar>
+                                        <ReviewOrderStar initialRating={reviews ? reviews[index].rate : productRating} onRatingChange={(newRating)=>handleProductRatingChange(newRating,book.bookId)}></ReviewOrderStar>
                                     </div>
                                     </Form.Group>
 
                                     <Form.Group className="mb-3">
                                         <Form.Label>Đánh giá của bạn</Form.Label>
                                         <Form.Control
+                                            value={mapContentsOfBook.get(book.bookId)}
                                             as="textarea"
                                             rows={3}
                                             placeholder="Hãy chia sẻ đánh giá của bạn về sản phẩm"

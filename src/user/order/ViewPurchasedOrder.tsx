@@ -11,6 +11,7 @@ import NumberFormat from "../../layouts/utils/NumberFormat";
 import { getPaymentByOrderId } from "../../api/PaymentAPI";
 import PaymentModel from "../../models/PaymentModel";
 import { RateReview } from "@mui/icons-material";
+import ShowReviewOrderByUser from "../review/ShowReviewOrderByUser";
 
 const ViewPurchasedOrder = () =>{
     const {isLoggedIn} = useAuth();
@@ -22,6 +23,7 @@ const ViewPurchasedOrder = () =>{
     const [voucherBook,setVoucherBook] = useState<VoucherModel|null>(null)
     const [voucherShip,setVoucherShip] = useState<VoucherModel|null>(null)
     const [payment,setPayment] = useState<PaymentModel|null>(null)
+    const [showModal, setShowModal] = useState(false);
 
     const orderIdNumber = parseInt(orderId+'');
 
@@ -107,6 +109,18 @@ const ViewPurchasedOrder = () =>{
         }
     },[order, voucherBook])
 
+
+    const handleClose = () => { // Đóng modal
+        setShowModal(false);
+    }
+
+    const handleShowViewOrder=()=>{
+        if (!isLoggedIn) {
+            navigate("/login", { replace: true });
+          }else{
+            setShowModal(true);
+          }    }
+
     if(isLoading){
         return(
             <Box sx={{ textAlign: "center", mt: 5 }}>
@@ -121,11 +135,26 @@ const ViewPurchasedOrder = () =>{
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Paper elevation={3} sx={{ p: 2 }}>
-                        <Typography variant="h5" gutterBottom>Thông tin đơn hàng</Typography>
-                        <Typography variant="subtitle1">Mã đơn hàng: {order.orderCode}</Typography>
-                        <Typography variant="body1">Địa chỉ nhận hàng: {order.deliveryAddress}</Typography>
-                    </Paper>
-                </Grid>
+                    <Typography variant="h5" gutterBottom>Thông tin đơn hàng</Typography>
+    
+                    <Grid container>
+                        <Grid item xs={8}>
+                            <Typography variant="subtitle1">Mã đơn hàng: {order.orderCode}</Typography>
+                            <Typography variant="body1">Địa chỉ nhận hàng: {order.deliveryAddress}</Typography>
+                        </Grid>
+                        
+                        <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <Typography 
+                                color="error" 
+                                variant="h6" 
+                                sx={{ fontSize: '1.5rem' }}
+                            >
+                                {order.orderStatus}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                </Paper>
+            </Grid>
 
                 <Grid item xs={12}>
                     <Paper elevation={3} sx={{ p: 2 }}>
@@ -179,11 +208,17 @@ const ViewPurchasedOrder = () =>{
                             variant="contained" 
                             color="primary" 
                             startIcon={<RateReview />}
-                            onClick={() => {
-                            }}
+                            onClick={
+                                handleShowViewOrder
+                            }
                         >
                             Xem đánh giá
                         </Button>
+                        <ShowReviewOrderByUser 
+                      handleClose={handleClose} 
+                      showModal={showModal} 
+                      orderId={orderIdNumber} 
+                    />
                     </Box>
                 </Grid>
             </Grid>

@@ -1,3 +1,4 @@
+import fetchWithAuth from "../layouts/utils/AuthService";
 import ReviewModel from "../models/ReviewModel";
 
 interface ResultInterface{
@@ -79,4 +80,43 @@ export async function getNumberOfStar(bookId:number) {
     const data =await response.json();
 
     return data;
+}
+
+
+export async function getReviewByOrderReview(orderReviewId:number): Promise<ReviewModel[]> {
+    const result:ReviewModel[] = [];
+
+    const url:string=`http://localhost:8080/order-review/${orderReviewId}/reviews`;
+    try{
+        const response = await fetchWithAuth(url);
+
+        if(!response.ok){
+            throw new Error(`Không thể truy cập api lấy đánh giá!`);
+        }
+    
+        const data =await response.json();
+        // get json reviews
+        const responseData = data._embedded.reviews;
+    
+        for(const key in responseData){
+                result.push({
+                    reviewId: responseData[key].reviewId,
+                    rate:responseData[key].rate,
+                    content: responseData[key].content,
+                    date:responseData[key].date,
+                    imageOne: responseData[key].imageOne,
+                    imageTwo:  responseData[key].imageTwo,
+                    imageThree:  responseData[key].imageThree,
+                    imageFour:  responseData[key].imageFour,
+                    imageFive:  responseData[key].imageFive,
+                    video:responseData[key].video
+                });
+        }
+    }catch(error){
+        console.error(error);
+        throw error;
+    }
+   
+
+    return result;
 }
