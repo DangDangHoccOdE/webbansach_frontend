@@ -190,7 +190,7 @@ const ViewPurchasedOrder = () =>{
                         <Divider sx={{ my: 2 }} />
                         <Box display="flex" justifyContent="space-between" my={1}>
                             <Typography variant="h6">Tổng thanh toán</Typography>
-                            <Typography variant="h6" color="error">{NumberFormat(order.totalPrice)} đ</Typography>
+                            <Typography variant="h6" color="error">{NumberFormat(order.paymentCost)} đ</Typography>
                         </Box>
                     </Paper>
                 </Grid>
