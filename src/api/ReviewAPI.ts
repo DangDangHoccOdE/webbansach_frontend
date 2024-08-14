@@ -35,7 +35,8 @@ export async function getReviewByBook(link:string): Promise<ResultInterface> {
                 imageThree:  responseData[key].imageThree,
                 imageFour:  responseData[key].imageFour,
                 imageFive:  responseData[key].imageFive,
-                video:responseData[key].video
+                video:responseData[key].video,
+                isHide:responseData[key].hide
             });
     }
 
@@ -109,7 +110,8 @@ export async function getReviewByOrderReview(orderReviewId:number): Promise<Revi
                     imageThree:  responseData[key].imageThree,
                     imageFour:  responseData[key].imageFour,
                     imageFive:  responseData[key].imageFive,
-                    video:responseData[key].video
+                    video:responseData[key].video,
+                    isHide:responseData[key].hide
                 });
         }
     }catch(error){

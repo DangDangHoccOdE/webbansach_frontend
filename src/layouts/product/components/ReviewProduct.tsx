@@ -12,10 +12,10 @@ import SoldQuantityFormat from "../../utils/SoldQuantityFormat";
 import { toast } from "react-toastify";
 import { Pagination } from "../../utils/Pagination";
 import { checkRoleAdmin } from "../../utils/JwtService";
-import DeleteIcon from '@mui/icons-material/Delete';
+import HideSourceIcon from '@mui/icons-material/HideSource';
 import { faFaceSmileBeam, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
-import handleDeleteReview from "../../../admin/review/handleDeleteReview";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import handleHideReview from "../../../admin/review/handleHideReview";
 interface ReviewProductProps {
   bookId: number;
   setIsRefresh:Dispatch<SetStateAction<boolean>>
@@ -45,7 +45,8 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
     const fetchAllReview = async () => { // lấy ra danh sách các review
       try {
         const allReview = await getAllReviewsByRateAndBookId(numberOfStar, bookId,currentPage-1);
-        setReviewList(allReview.resultReviews);
+        const filterReviewShow = (allReview.resultReviews).filter(review=>!review.isHide) as ReviewModel[]
+        setReviewList(filterReviewShow);
         setTotalPages(allReview.totalPages)
         const getAllUser = allReview.resultReviews.map(async (review) => {
           const dataUser = await getUserByReviewId(review.reviewId);
@@ -101,11 +102,11 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
   }
 
   const deleteReview=async(reviewId:number)=>{
-    const adminConfirm = window.confirm("Bạn có chắc muốn xóa đánh giá này!")
+    const adminConfirm = window.confirm("Bạn có chắc muốn ẩn đánh giá này!")
     if(!adminConfirm){
       return
     }else{
-      const isComplete = await handleDeleteReview(reviewId);
+      const isComplete = await handleHideReview(reviewId);
       if(isComplete){
           setIsUpdate(prev=>!prev);
           props.setIsRefresh(prev=>!prev)
@@ -201,9 +202,9 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
                                 onClick={() => deleteReview(review.reviewId)} 
                                 variant="outlined" 
                                 color="error" 
-                                endIcon={<DeleteIcon />}
+                                endIcon={<HideSourceIcon />}
                             >
-                                Xóa
+                                Ẩn
                             </Button>
                         )}
                     </Box>

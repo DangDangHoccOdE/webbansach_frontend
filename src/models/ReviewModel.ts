@@ -9,6 +9,7 @@ class ReviewModel{
     imageFour?:string;
     imageFive?:string;
     video?:string;
+    isHide:boolean
 
     constructor( reviewId:number,
         rate:number,
@@ -19,7 +20,8 @@ class ReviewModel{
         imageThree:string,
         imageFour:string,
         imageFive:string,
-        video:string
+        video:string,
+        isHide:boolean
 ){
             this.reviewId = reviewId;
             this.rate = rate;
@@ -31,6 +33,7 @@ class ReviewModel{
             this.imageFour = imageFour;
             this.imageFive = imageFive;
             this.video = video;
+            this.isHide = isHide
     }
 }
 export default ReviewModel;

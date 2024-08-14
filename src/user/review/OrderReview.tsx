@@ -139,6 +139,7 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
                         "Authorization":`Bearer ${localStorage.getItem("accessToken")}`
                     },
                     body:JSON.stringify({
+                        isHide:false,
                         productRating,
                         shopRating,
                         deliveryRating,

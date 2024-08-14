@@ -166,9 +166,9 @@ export async function getBookByCartItem(cartItemId:number):Promise<BookModel|nul
 }
 
 
-export async function getBooksOfOrders(userId:number):Promise<BookModel[]> {
+export async function getBooksOfOrders(orderId:number):Promise<BookModel[]> {
     const result:BookModel[] = [];
-    const url:string=`http://localhost:8080/order/getBooksOfOrder/${userId}`
+    const url:string=`http://localhost:8080/order/getBooksOfOrder/${orderId}`
     const response = await fetchWithAuth(url);
 
     if(!response.ok){
