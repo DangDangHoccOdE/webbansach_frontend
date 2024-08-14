@@ -1,6 +1,6 @@
-import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from "react";
 import VoucherModel from "../../models/VoucherModel";
-import { showAllVouchers_User } from "../../api/VoucherAPI";
+import { getVoucherQuantityFromVoucherUser, showAllVouchers_User } from "../../api/VoucherAPI";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { Link, useNavigate } from "react-router-dom";
 import VouchersProps from "../../layouts/voucher/VouchersProps";
@@ -16,49 +16,76 @@ const ShowVoucherUser =()=>{
     const navigate = useNavigate();
     const [findVoucherName,setFindVoucherName] = useState("")
     const [temporaryVoucherName,setTemporaryVoucherName] = useState("")
+    const [voucherQuantityFromUserVoucher,setVoucherQuantityFromUserVoucher] = useState<Map<number,number>>(new Map())
     
-    useEffect(()=>{
-        if(!isLoggedIn || userId===undefined){
-            navigate("/login",{replace:true})   
-            return;         
+    useEffect(() => {
+        if (!isLoggedIn || userId === undefined) {
+            navigate("/login", { replace: true });
+            return;
         }
-        const getVouchers = async()=>{
-            setIsLoading(true);
-            try{
-                const fetchVouchers=await showAllVouchers_User(findVoucherName,userId)
-                if(fetchVouchers.length===0){
-                    setNotice("Bạn hiện chưa có voucher nào.");
-                    setAllVouchers([])
-                    return;
+
+        const fetchVoucherQuantities = async () => {
+            try {
+                const data = await getVoucherQuantityFromVoucherUser(userId);
+                if (!data) {
+                    navigate("/error-404", { replace: true });
+                } else {
+                    setVoucherQuantityFromUserVoucher(data);
                 }
-                else if(fetchVouchers.length>0){
-                    setNotice("")
-                    const update = await updateVoucher(fetchVouchers);
-                    setAllVouchers(update)
-                }
-            }catch(error){
-                console.log({error});
-            }finally{
-                setIsLoading(false);
+            } catch (error) {
+                console.error({ error });
+                navigate("/error-404", { replace: true });
             }
+        };
 
+        fetchVoucherQuantities();
+    }, [userId, isLoggedIn, navigate]);
+
+    useEffect(() => {
+        if (userId) {
+            const getVouchers = async () => {
+                setIsLoading(true);
+                try {
+                    const fetchVouchers = await showAllVouchers_User(findVoucherName, userId);
+               
+                    const update = await updateVoucher(fetchVouchers);
+                    const filterVoucher = update.filter(voucher =>
+                        voucherQuantityFromUserVoucher.has(voucher.voucherId) &&
+                        voucherQuantityFromUserVoucher.get(voucher.voucherId)! > 0
+                    );
+                    if (filterVoucher.length === 0) {
+                        setNotice("Bạn hiện chưa có voucher nào.");
+                        setAllVouchers([]);
+                        return;
+                    }
+                    setAllVouchers(filterVoucher);
+                    setNotice(""); 
+                } catch (error) {
+                    console.error({ error });
+                    navigate("/error-404", { replace: true });
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            getVouchers();
         }
-        getVouchers();
-    },[findVoucherName, isLoggedIn, navigate, userId])
+        
+    }, [findVoucherName, userId, voucherQuantityFromUserVoucher, navigate]);
 
-    const handleFindVoucher=(e:ChangeEvent<HTMLInputElement>)=>{
+    const handleFindVoucher = (e: ChangeEvent<HTMLInputElement>) => {
         setTemporaryVoucherName(e.target.value);
-    }
+    };
 
-    const handleFindVoucherName=()=>{
-        setFindVoucherName(temporaryVoucherName)
-    }
+    const handleFindVoucherName = useCallback(() => {
+        setFindVoucherName(temporaryVoucherName);
+    }, [temporaryVoucherName]);
 
-    const handleEnterFindVoucherName=(e:KeyboardEvent<HTMLInputElement>)=>{
-        if(e.key==="Enter"){
+    const handleEnterFindVoucherName = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
             handleFindVoucherName();
         }
-    }
+    };
 
     return(
             <div className="container">
@@ -76,7 +103,7 @@ const ShowVoucherUser =()=>{
             <br/>
             {isLoading && <div className="text-center"><div className="spinner-border" role="status"></div></div>} 
 
-            <VouchersProps notice={notice} showQuantity={false} vouchers={allVouchers} showSaveVoucher={false}/>            
+            <VouchersProps notice={notice} showQuantity={voucherQuantityFromUserVoucher} vouchers={allVouchers} showSaveVoucher={false} />            
 
         </div>
 )      

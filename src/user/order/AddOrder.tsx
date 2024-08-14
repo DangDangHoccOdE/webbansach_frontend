@@ -1,6 +1,6 @@
 import CartItemModel from "../../models/CartItemModel";
 import BookModel from "../../models/BookModel";
-import {  ChangeEvent, useEffect, useRef, useState } from "react";
+import {  ChangeEvent, useEffect, useState } from "react";
 import {  getBookByBookId, getBookByCartItem } from "../../api/BookAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import ImageModel from "../../models/ImageModel";
@@ -48,7 +48,6 @@ const AddOrder:React.FC =()=>{
     const [noteUser,setNoteUser] = useState('')
     const [selectMethodPayment,setSelectMethodPayment] = useState("Thanh toán khi nhận hàng")
     const [voucherIds,setVoucherIds] = useState<number[]>([])
-    const voucherIdsRef = useRef(voucherIds);
 
     const renderDetail = ()=>{ // Xử lý chọn phương thức giao hàng
         switch (formOfDelivery){
@@ -156,10 +155,6 @@ const AddOrder:React.FC =()=>{
         handleIcon();
     },[bookIsChoose])
 
-    useEffect(()=>{ // Cập nhật lại mỗi khi voucherIds thay đổi
-        voucherIdsRef.current = voucherIds;
-    },[voucherIds])
-
     const [priceByVoucher,setPriceByVoucher] = useState(total);
     
     useEffect(()=>{         // Cập nhật giá tiền
@@ -197,7 +192,7 @@ const AddOrder:React.FC =()=>{
             return;
         }else{  
             if(user){
-                let updatedVoucherIds  = [...voucherIdsRef.current]
+                let updatedVoucherIds  = [...voucherIds]
                 if(appliedBookVoucher){
                     updatedVoucherIds.push(appliedBookVoucher.voucherId)
                  
@@ -220,7 +215,7 @@ const AddOrder:React.FC =()=>{
                     purchaseAddress:"BookStore Hà Nội",
                     shippingFee:priceShip, // giá ship khi chưa chọn voucher giảm giá ship
                     shippingFeeVoucher:appliedShipVoucher?priceShip-priceShip*(appliedShipVoucher.discountValue/100):priceShip,
-                    totalPrice:priceByVoucher,
+                    totalPrice:total,
                     totalProduct:totalProduct,
                     noteFromUser:noteUser,
                     userId:user.userId,

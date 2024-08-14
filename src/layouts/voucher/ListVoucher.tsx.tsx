@@ -60,14 +60,14 @@ const ListVoucher=()=>{
               <FontAwesomeIcon icon={faTag} className="me-2" />
               Voucher giảm giá sách
             </h2>
-            <VouchersProps notice={noticeBook} vouchers={vouchersForBook} showQuantity={true} showSaveVoucher={true}/>
+            <VouchersProps notice={noticeBook} vouchers={vouchersForBook} showQuantity={null} showSaveVoucher={true}/>
           </div>
           <div>
             <h2 className="mb-4 text-secondary">
               <FontAwesomeIcon icon={faTruck} className="me-2" />
               Voucher vận chuyển
             </h2>
-            <VouchersProps notice={noticeShip} vouchers={vouchersForShip} showQuantity={true}  showSaveVoucher={true}/>
+            <VouchersProps notice={noticeShip} vouchers={vouchersForShip} showQuantity={null}  showSaveVoucher={true}/>
           </div>
         </div>
       );

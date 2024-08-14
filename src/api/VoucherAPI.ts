@@ -124,6 +124,33 @@ export async function showAllVouchers_User(code:string,userId:number) :Promise<V
     }
 }
 
+export async function getVoucherQuantityFromVoucherUser(userId:number) :Promise<Map<number,number>|null>{
+    let url:string=`http://localhost:8080/user-voucher/search/findByUser_UserId?userId=${userId}`;
+
+    const userVoucher:Map<number,number> = new Map();
+
+    try{
+        const response = await fetchWithAuth(url)
+        if(!response){
+            throw new Error("Gặp lỗi trong quá trình tải voucher!")
+        }
+        const data = await response.json();
+
+        const responseData = data._embedded.userVouchers
+        if(response.ok){
+            for(const key in responseData){
+                userVoucher.set(
+                    responseData[key].id.voucherId,responseData[key].quantity
+                )
+            }
+        }
+        return userVoucher;
+    }catch(error){
+        console.error(error)
+        return null;
+    }
+}
+
 export async function findVoucherByCodeContaining(code:string) {
     const url:string=`http://localhost:8080/vouchers/search/findByCodeContaining?code=${code}`;
 

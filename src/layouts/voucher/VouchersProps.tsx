@@ -4,10 +4,10 @@ import VoucherModel from "../../models/VoucherModel";
 import SaveVoucher from "../../user/userVoucher/SaveVoucher";
 
 interface VoucherProps{
-    showQuantity:boolean
+    showSaveVoucher:boolean
     vouchers:VoucherModel[];
     notice:string,
-    showSaveVoucher:boolean
+    showQuantity:Map<number,number> | null
 }
 const VouchersProps:React.FC<VoucherProps>=(props)=>{
     return (
@@ -57,7 +57,8 @@ const VouchersProps:React.FC<VoucherProps>=(props)=>{
                            <div className="card-footer bg-transparent">
                              <div className="d-flex justify-content-between align-items-center">
                                <div>
-                                { props.showQuantity && <span className="badge bg-info me-2">Số lượng: {voucher.quantity}</span> }
+                                { props.showQuantity ? <span className="badge bg-info me-2">Số lượng: {props.showQuantity.get(voucher.voucherId)}</span> 
+                                                    : <span className="badge bg-info me-2">Số lượng: {voucher.quantity}</span> }
                                  <span className={`badge ${voucher.isActive ? 'bg-success' : 'bg-danger'}`}>
                                    {voucher.isActive ? 'Còn hạn' : 'Hết hạn'}
                                  </span>

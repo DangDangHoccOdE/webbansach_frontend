@@ -4,7 +4,7 @@ import {  ChangeEvent, useEffect, useState } from "react";
 import VoucherModel from "../../models/VoucherModel";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { useNavigate } from "react-router-dom";
-import { getVoucherById, showAllVouchers_User } from "../../api/VoucherAPI";
+import { getVoucherById, getVoucherQuantityFromVoucherUser, showAllVouchers_User } from "../../api/VoucherAPI";
 import { updateVoucher } from "../../layouts/voucher/UpdateIsActiveFromVoucher";
 import { useAuth } from "../../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,40 +31,63 @@ const SelectVoucherToAddCreate: React.FC<SelectVoucherProps> = (props) => {
   const [noticeVouchersShip,setNoticeVouchersShip] = useState("")
   const [findVoucherName,setFindVoucherName] = useState("")
   const [temporaryVoucherName,setTemporaryVoucherName] = useState("")
+  const [voucherQuantityFromUserVoucher,setVoucherQuantityFromUserVoucher] = useState<Map<number,number>>(new Map())
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/login", { replace: true });
-      return;
+    if (!isLoggedIn || userId === undefined) {
+        navigate("/login", { replace: true });
+        return;
     }
 
+    const fetchVoucherQuantities = async () => { // Lấy ra số lượng của từng voucher người  dùng có
+        try {
+            const data = await getVoucherQuantityFromVoucherUser(userId);
+            if (!data) {
+                navigate("/error-404", { replace: true });
+            } else {
+                setVoucherQuantityFromUserVoucher(data);
+            }
+        } catch (error) {
+            console.error({ error });
+            navigate("/error-404", { replace: true });
+        }
+    };
+
+    fetchVoucherQuantities();
+}, [userId, isLoggedIn, navigate]);
+
+  useEffect(() => {
     const showAllVoucherUser = async () => {
       try {
         if (userId) {
           const fetchData = await showAllVouchers_User(findVoucherName,userId);
           const updateData = await updateVoucher(fetchData);
-          const filterVoucherBook = updateData.filter(voucher => voucher.typeVoucher === "Voucher sách");
-          if(filterVoucherBook.length===0){
-            setNoticeVouchersBook("Bạn hiện chưa có voucher")
-          }else{
-            setNoticeVouchersBook("");
-          }
+   
+          const filterVoucherBook = updateData.filter(voucher =>( voucher.typeVoucher === "Voucher sách"
+                                                        && voucherQuantityFromUserVoucher.has(voucher.voucherId) &&
+                                                        voucherQuantityFromUserVoucher.get(voucher.voucherId)! > 0)
+          );
+     
+          setNoticeVouchersBook(filterVoucherBook.length===0?"Bạn hiện chưa có voucher":"");
           
-          const filterVoucherShip = updateData.filter(voucher => voucher.typeVoucher === "Voucher vận chuyển");
-          if(filterVoucherShip.length===0){
-            setNoticeVouchersShip("Bạn hiện chưa có voucher")
-          }else{
-            setNoticeVouchersShip("");
-          }
+          
+          const filterVoucherShip = updateData.filter(voucher => voucher.typeVoucher === "Voucher vận chuyển"
+                                                        &&  voucherQuantityFromUserVoucher.has(voucher.voucherId) &&
+                                                        voucherQuantityFromUserVoucher.get(voucher.voucherId)! > 0
+          );
+          setNoticeVouchersShip(filterVoucherShip.length===0?"Bạn hiện chưa có voucher":"");
+
           setVouchersBook(filterVoucherBook);
           setVouchersShip(filterVoucherShip);
+
+        
         }
       } catch (error) {
         console.error({error});
       }
     };
     showAllVoucherUser();
-  }, [findVoucherName, isLoggedIn, navigate, userId]);
+  }, [findVoucherName, isLoggedIn, navigate, userId, voucherQuantityFromUserVoucher]);
 
   const handleSubmit = async () => {
     try {
@@ -97,18 +120,25 @@ const handleFindVoucherName=()=>{
           id={`voucher-${voucher.voucherId}`}
           name={`voucher-${voucher.typeVoucher}`}
           label={
-            <div className="voucher-item d-flex align-items-center">
-                
-              <img src={voucher.voucherImage} alt="Voucher" className="voucher-image me-2" style={{ width: '40px', height: '40px', objectFit: 'cover' }} />
-              <div>
-                <strong>{voucher.code}</strong> - Giảm {voucher.discountValue}%
-                <br />
-                <small>
-                  <FontAwesomeIcon icon={faClock} className="me-1" />
-                  Hết hạn: {new Date(voucher.expiredDate).toLocaleDateString()}
-                </small>
-              </div>
+            <div className="voucher-item d-flex align-items-center justify-content-between">
+            <div className="d-flex align-items-center">
+                <img 
+                    src={voucher.voucherImage} 
+                    alt="Voucher" 
+                    className="voucher-image me-2" 
+                    style={{ width: '40px', height: '40px', objectFit: 'cover' }} 
+                />
+                <div>
+                    <strong>{voucher.code}</strong> - Giảm {voucher.discountValue}%
+                    <br />
+                    <small>
+                        <FontAwesomeIcon icon={faClock} className="me-1" />
+                        Hết hạn: {new Date(voucher.expiredDate).toLocaleDateString()}
+                    </small>
+                </div>
             </div>
+            <h6 className="mb-0 ms-5">x {voucherQuantityFromUserVoucher.get(voucher.voucherId)}</h6>
+        </div>
           }
           value={voucher.voucherId}
           checked={selectedVoucher === voucher.voucherId}
