@@ -10,16 +10,16 @@ import BookModel from "../../models/BookModel";
 import ImageModel from "../../models/ImageModel";
 import { Button, Card, Col, Form, Image, Modal, Row } from "react-bootstrap";
 import renderRating from "../../layouts/utils/StarRate";
-import ReviewOrder from "./ReviewOrder";
 import OrderReviewModal from "../../models/OrderReviewModel";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import OrderReview from "./OrderReview";
 
 interface ReviewUserProps{
     orderId:number
     handleClose:()=>void
     showModal:boolean,
 }
-const ShowReviewOrderByUser:React.FC<ReviewUserProps>=({orderId,handleClose,showModal})=>{
+const ShowOrderReviewByUser:React.FC<ReviewUserProps>=({orderId,handleClose,showModal})=>{
     useScrollToTop();
     const navigate=useNavigate()
     const {isLoggedIn} = useAuth();
@@ -207,7 +207,7 @@ const ShowReviewOrderByUser:React.FC<ReviewUserProps>=({orderId,handleClose,show
             <Button variant="primary" onClick={handleEditReview}>
                 Sửa đánh giá
         </Button>
-            <ReviewOrder books={books} 
+            <OrderReview books={books} 
                         handleClose={handleCloseModalEditReview} 
                         imageOfBooks={imageBooks}
                         orderId={orderId} 
@@ -220,4 +220,4 @@ const ShowReviewOrderByUser:React.FC<ReviewUserProps>=({orderId,handleClose,show
     )
 }
 
-export default ShowReviewOrderByUser;
+export default ShowOrderReviewByUser;

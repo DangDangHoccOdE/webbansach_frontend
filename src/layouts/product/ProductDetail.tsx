@@ -40,6 +40,7 @@ const ProductDetail: React.FC = () => {
   const [numberOfReview, setNumberOfReview] = useState(0);
   const navigate = useNavigate();
   const [bookRelate,setBookRelate] = useState<BookModel[]>([])
+  const [isRefresh,setIsRefresh] = useState(false);
  
   const handleQuantity = (event: ChangeEvent<HTMLInputElement>) => {
     const quantityNow = parseInt(event.target.value);
@@ -72,7 +73,7 @@ const ProductDetail: React.FC = () => {
         setLoadingData(false);
         setNoticeError(error.message);
       });
-  }, [bookId, bookIdNumber]);
+  }, [isRefresh, bookIdNumber]);
 
   useEffect(() => {
     if (book) {
@@ -270,7 +271,7 @@ const ProductDetail: React.FC = () => {
         <Grid item xs={12}>
           <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
             <Typography variant="h5" gutterBottom>Đánh giá của khách hàng</Typography>
-            <ReviewProduct bookId={bookIdNumber} />
+            <ReviewProduct bookId={bookIdNumber} setIsRefresh={setIsRefresh}/>   {/* Đánh giá của khách hàng */}
           </Paper>
         </Grid>
 

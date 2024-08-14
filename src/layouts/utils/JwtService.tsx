@@ -30,13 +30,14 @@ export function getUserIdByToken(){
     }
 }
 
-// export function getFirstNameByToken(){
-//     const dataToken = localStorage.getItem('accessToken')
-//     if(dataToken){
-//         const decode = jwtDecode(dataToken) as JwtPayload
-//         return decode.firstName;
-//     }
-// }
+export const checkRoleAdmin=()=>{
+    const accessToken = localStorage.getItem("accessToken");
+    if(accessToken){
+        const decode = jwtDecode(accessToken) as JwtPayload;
+        return decode.isAdmin;
+    }
+    return null;
+}
 
 export function isToken(){
     const token = localStorage.getItem('accessToken');

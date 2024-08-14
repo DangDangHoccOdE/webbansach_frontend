@@ -5,7 +5,6 @@ import ImageModel from "../../../models/ImageModel";
 import { getIconImageByBook } from "../../../api/ImageAPI";
 import { Link, useNavigate } from "react-router-dom";
 import NumberFormat from "../../utils/NumberFormat";
-import isAdmin from "../../utils/CheckCurrentRole";
 import AddBookToWishList from "../../../user/wishList/AddBookToWishList";
 import useScrollToTop from "../../../hooks/ScrollToTop";
 import AddCartItem from "../../../user/cartItem/AddCartItem";
@@ -16,6 +15,7 @@ import { faEdit, faHeart, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Badge, Button, Card } from "react-bootstrap";
 import renderRating from "../../utils/StarRate";
 import { CircularProgress } from "@mui/material";
+import { checkRoleAdmin } from "../../utils/JwtService";
 
 interface BookPropsInterface {
     book: BookModel;
@@ -33,6 +33,8 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [noticeSubmit, setNoticeSubmit] = useState("");
     const [isLoading,setIsLoading] = useState(false)
+
+    const isAdmin = checkRoleAdmin(); // Kiểm tra role Admin
 
     useEffect(() => {
         getIconImageByBook(bookId)
@@ -145,7 +147,7 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                     <AddCartItem bookId={bookId} quantity={1} isIcon={true} isDisabled={props.book.soldQuantity === props.book.quantity}/>
                 </div>
             </div>
-            {isAdmin() && (
+            {isAdmin && (
                 <div className="d-flex justify-content-end mt-3">
                     <Link to={`/books/editBook/${bookId}`} className="btn btn-outline-primary btn-sm me-2">
                         <FontAwesomeIcon icon={faEdit} />

@@ -25,7 +25,7 @@ interface ReviewOrderProps{
     orderReview:OrderReviewModal|null
 }
 
-const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,books,imageOfBooks,orderId,onReviewSubmit,orderReview})=>{
+const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,books,imageOfBooks,orderId,onReviewSubmit,orderReview})=>{
     useScrollToTop();
     const navigate = useNavigate();
     const isLoggedIn = useAuth();
@@ -369,4 +369,4 @@ const ReviewOrder:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
     )
 }
 
-export default ReviewOrder;
+export default OrderReview;

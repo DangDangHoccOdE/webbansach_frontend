@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { getAllReviewsByRateAndBookId, getNumberOfStar } from "../../../api/ReviewAPI";
-import renderRating from "../../utils/StarRate";
+import renderRating, { formatStartRate } from "../../utils/StarRate";
 import useScrollToTop from "../../../hooks/ScrollToTop";
 import BookModel from "../../../models/BookModel";
 import { getBookByBookId } from "../../../api/BookAPI";
 import { CircularProgress, Grid, Card, CardContent, Typography, Button, Box, Stack, Avatar } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFaceSmileBeam, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import UserModel from "../../../models/UserModel";
 import { getUserByReviewId } from "../../../api/UserAPI";
 import ReviewModel from "../../../models/ReviewModel";
 import SoldQuantityFormat from "../../utils/SoldQuantityFormat";
 import { toast } from "react-toastify";
 import { Pagination } from "../../utils/Pagination";
-
+import { checkRoleAdmin } from "../../utils/JwtService";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { faFaceSmileBeam, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import handleDeleteReview from "../../../admin/review/handleDeleteReview";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 interface ReviewProductProps {
   bookId: number;
+  setIsRefresh:Dispatch<SetStateAction<boolean>>
 }
 
 const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
@@ -33,6 +36,8 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
   const [numberOfFiveStar, setNumberOfFiveStar] = useState(0);
   const [currentPage,setCurrentPage] = useState(1);
   const [totalPages,setTotalPages] = useState(0);
+  const isAdmin = checkRoleAdmin();
+  const [isUpdate,setIsUpdate] = useState(false);
 
   useScrollToTop();
 
@@ -77,7 +82,7 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
         console.error(error.message);
       });
 
-  }, [bookId, currentPage, numberOfStar]);
+  }, [bookId, currentPage, numberOfStar,isUpdate]);
 
   if (loadingData) {
     return (
@@ -95,6 +100,19 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
     setCurrentPage(pageCurrent);
   }
 
+  const deleteReview=async(reviewId:number)=>{
+    const adminConfirm = window.confirm("Bạn có chắc muốn xóa đánh giá này!")
+    if(!adminConfirm){
+      return
+    }else{
+      const isComplete = await handleDeleteReview(reviewId);
+      if(isComplete){
+          setIsUpdate(prev=>!prev);
+          props.setIsRefresh(prev=>!prev)
+      }
+    }
+  }
+
 
   return (
     book && (
@@ -103,7 +121,7 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
           <CardContent>
             <Grid container alignItems="center" spacing={2}>
               <Grid item>
-                <Typography variant="h6">{book?.averageRate} trên 5</Typography>
+                <Typography variant="h6">{formatStartRate(book?.averageRate)} trên 5</Typography>
                 {renderRating(book?.averageRate)}
               </Grid>
               <Grid item>
@@ -172,8 +190,26 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
                  
                 </Grid>
                 <Grid item sx={{mt:2}}>
-                    <FontAwesomeIcon icon={faThumbsUp} />
+                    <>
+                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                        <Box display="flex" alignItems="center">
+                            <FontAwesomeIcon icon={faThumbsUp} style={{ marginRight: '8px' }} />
+                            {/* Thêm các nội dung khác ở đây nếu có */}
+                        </Box>
+                        {isAdmin && (
+                            <Button 
+                                onClick={() => deleteReview(review.reviewId)} 
+                                variant="outlined" 
+                                color="error" 
+                                endIcon={<DeleteIcon />}
+                            >
+                                Xóa
+                            </Button>
+                        )}
+                    </Box>
+                    </>
                   </Grid>
+                 
               </CardContent>
             </Card>
           ))

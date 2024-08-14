@@ -15,7 +15,7 @@ import cancelOrder from "./CancelOrder";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import repurchase from "./handleRepurchase";
 import confirmReceivedOrder from "./handleConfirmReceivedOrder";
-import ReviewOrder from "../review/ReviewOrder";
+import OrderReview from "../review/OrderReview";
 
 interface OrderProps {
   orderId: number;
@@ -182,7 +182,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
                 order?.orderStatus === 'Hoàn thành' ? (
                   <>
                     <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleReviewClick}>Đánh Giá</Button>
-                    <ReviewOrder 
+                    <OrderReview 
                       onReviewSubmit={handleReviewSubmit} 
                       books={books} 
                       handleClose={handleClose} 

@@ -11,7 +11,7 @@ import NumberFormat from "../../layouts/utils/NumberFormat";
 import { getPaymentByOrderId } from "../../api/PaymentAPI";
 import PaymentModel from "../../models/PaymentModel";
 import { RateReview } from "@mui/icons-material";
-import ShowReviewOrderByUser from "../review/ShowReviewOrderByUser";
+import ShowOrderReviewByUser from "../review/ShowOrderReviewByUser";
 
 const ViewPurchasedOrder = () =>{
     const {isLoggedIn} = useAuth();
@@ -214,7 +214,7 @@ const ViewPurchasedOrder = () =>{
                         >
                             Xem đánh giá
                         </Button>
-                        <ShowReviewOrderByUser 
+                        <ShowOrderReviewByUser 
                       handleClose={handleClose} 
                       showModal={showModal} 
                       orderId={orderIdNumber} 
