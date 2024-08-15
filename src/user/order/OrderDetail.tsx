@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState } from "react";
+import React, {useCallback, useContext, useEffect, useState } from "react";
 import ImageModel from "../../models/ImageModel";
 import BookModel from "../../models/BookModel";
 import OrderDetailModel from "../../models/OrderDetailModel";
@@ -16,6 +16,7 @@ import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import repurchase from "./handleRepurchase";
 import confirmReceivedOrder from "./handleConfirmReceivedOrder";
 import OrderReview from "../review/OrderReview";
+import { CartContext } from "../../context/CartContext";
 
 interface OrderProps {
   orderId: number;
@@ -32,6 +33,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
   const navigate = useNavigate();
   const userId = getUserIdByToken();
   const [showModal, setShowModal] = useState(false);
+  const {updateCartItemCount} = useContext(CartContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,7 +87,8 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
       if(order && userId){
         const cartItemIds = await repurchase(order.orderId);
         if(cartItemIds){
-           navigate(`/user/showCart/${userId}`,{state:{cartItemIds}})  // function repurchase
+          updateCartItemCount();
+           navigate(`/user/showCart`,{state:{cartItemIds}})  // function repurchase
         }
       }
   }
