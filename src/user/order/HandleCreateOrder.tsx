@@ -1,101 +1,27 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import OrderModel from "../../models/OrderModel";
-import { useAuth } from "../../context/AuthContext";
-import Loading from "../../layouts/utils/Loading";
-import { CartContext } from "../../context/CartContext";
 
-const HandleCreateOrder: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { isLoggedIn } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [notice, setNotice] = useState("");
-  const [isError, setIsError] = useState(true);
-  const {updateCartItemCount} = useContext(CartContext);
+const handleCreateOrder = async (order:OrderModel,isBuyNow:boolean):Promise<boolean> => {
+    const url: string = `http://localhost:8080/order/addOrder?isBuyNow=${isBuyNow}`;
+    try {
+      const response = await fetchWithAuth(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify(order),
+      });
 
-
-  const { order,isBuyNow} = (location.state as { order: OrderModel,isBuyNow:boolean }) 
-                                        ||  { order: null,isBuyNow:false };
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate("/", { replace: true });
-      return;
-    }
-
-    const handle = async () => {
-      setIsLoading(true);
-      const url: string = `http://localhost:8080/order/addOrder?isBuyNow=${isBuyNow}`;
-      try {
-        const response = await fetchWithAuth(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-          body: JSON.stringify(order),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          setNotice(data.content);
-          setIsError(false); 
-          updateCartItemCount();
-
-        } else {
-          setNotice(data.content || "Đặt hàng không thành công!");
-          setIsError(true);
-        }
-      } catch (error) {
-        console.log({ error });
-        setNotice("Đã xảy ra lỗi khi xử lý đơn hàng.");
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
+      if (response.ok) {
+        return true;
+      } else {
+        return false;
       }
-    };
+    } catch (error) {
+      console.log({ error });
+      return false;
+    } 
+  };
 
-    handle();
-  }, [order, navigate, isLoggedIn, updateCartItemCount, isBuyNow]);
-
-  return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card">
-            <div className="card-body text-center">
-              {isLoading ? (
-                <>
-                  <Loading />
-                  <p className="mt-3">Đang xử lý đơn hàng của bạn</p>
-                </>
-              ) : (
-                <>
-                  {notice && (
-                    <div className={`alert ${isError ? 'alert-danger' : 'alert-success'}`} role="alert">
-                      <h4 className="alert-heading">{isError ? 'Lỗi!' : 'Thành công!'}</h4>
-                      <p>{notice}</p>
-                    </div>
-                  )}
-                  {!isLoading && !notice && (
-                    <p>Đang chờ xử lý đơn hàng...</p>
-                  )}
-                  <button 
-                    className="btn btn-primary mt-3" 
-                    onClick={() => navigate('/')}
-                  >
-                    Trở về trang chủ
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default HandleCreateOrder;
+  export default handleCreateOrder;

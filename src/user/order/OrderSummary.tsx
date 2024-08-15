@@ -19,8 +19,10 @@ import { getCartItemById } from "../../api/CartItemAPI";
 import OrderModel from "../../models/OrderModel";
 import { format } from "date-fns";
 import generateOrderCode from "../../layouts/utils/generateOrderCode";
+import { handleBankPayment } from "../payment/handleBankPayment";
+import handleCreateOrder from "./handleCreateOrder";
 
-const AddOrder:React.FC =()=>{
+const OrderSummary:React.FC =()=>{
     const location = useLocation();
     const { selectedItems, total,bookVoucher,shipVoucher,totalProduct,isBuyNow} = location.state as { 
         selectedItems: number[], 
@@ -186,13 +188,13 @@ const AddOrder:React.FC =()=>{
         setSelectMethodPayment(e.target.value);
     }
 
-    const handleClickBuy=()=>{  // Xử lý đặt hàng
+    const handleClickBuy=async()=>{  // Xử lý đặt hàng
         const confirmUser = window.confirm("Bạn đã chắc chắn muốn đặt hàng");
         if(!confirmUser){
             return;
         }else{  
             if(user){
-                let updatedVoucherIds  = [...voucherIds]
+                let updatedVoucherIds  = [...voucherIds] // Lọc những voucher đã chọn 
                 if(appliedBookVoucher){
                     updatedVoucherIds.push(appliedBookVoucher.voucherId)
                  
@@ -224,8 +226,20 @@ const AddOrder:React.FC =()=>{
                     deliveryMethod:formOfDelivery,
                     voucherIds:updatedVoucherIds,
                 }
-
-                navigate("/order/handleCreateOrder",{state:{ order,isBuyNow},replace:true})
+                if(selectMethodPayment==="Thanh toán khi nhận hàng"){
+                    navigate("/order/handleCreateOrder",{state:{ order,isBuyNow},replace:true})
+                }else{ // Thanh toán qua ngân hàng
+                    const paymentUrl = await handleBankPayment(order)
+                    if(paymentUrl){
+                        order.orderStatus = 'Chờ thanh toán'; // Sét trạng thái thành chờ thanh toán
+                        // Tạo đơn hàng trạng thái chờ thanh toán (false là không phải là ấn vào mua ngay)
+                        await handleCreateOrder(order,false);
+                        window.location.replace(paymentUrl);;  // Chuyển hướng đến trang thanh toán
+                    } else {
+                        alert("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
+                      }
+                }
+             
             }
         }
     }
@@ -406,4 +420,4 @@ const AddOrder:React.FC =()=>{
     );
 };
 
-export default AddOrder;
+export default OrderSummary;

@@ -46,11 +46,12 @@ import AddVouchersToVoucherAvailable_Admin from "./admin/voucher/AddVouchersToVo
 import ListVoucher from "./layouts/voucher/ListVoucher.tsx";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
-import AddOrder from "./user/order/AddOrder";
-import HandleCreateOrder from "./user/order/HandleCreateOrder";
+import HandleCreateOrder from "./user/order/CreateOrder";
 import ShowOrder from "./user/order/ShowOrder";
 import OrderManagement_Admin from "./admin/order/OrderManagement";
 import ViewPurchasedOrder from "./user/order/ViewPurchasedOrder";
+import CheckoutStatus from "./layouts/page/CheckoutStatus";
+import OrderSummary from "./user/order/OrderSummary";
 function App() {
   const [bookNameFind, setBookNameFind] = useState('');
   
@@ -90,7 +91,7 @@ function App() {
               <Route path="/category/deleteCategory/:categoryId" element={<DeleteCategory_Admin/>}/>
               <Route path="/category/deleteBookOfCategory/:categoryId/:bookId" element={<DeleteBookOfCategory_Admin/>}/>
               <Route path="/user/showCart" element={<ShowCart/>}></Route>
-              <Route path="/order/createOrder" element={<AddOrder/>}></Route>
+              <Route path="/order/createOrder" element={<OrderSummary/>}></Route>
               <Route path="/order/handleCreateOrder" element={<HandleCreateOrder/>}></Route>
               <Route path="/user/showOrder" element={<ShowOrder/>}></Route>
 
@@ -108,6 +109,10 @@ function App() {
               <Route path="/admin/orderManagement" element={<OrderManagement_Admin/>}></Route>
               <Route path="/order/purchase/:orderId" element={<ViewPurchasedOrder/>}></Route>
               
+              <Route
+							path='/check-out/status'
+							element={<CheckoutStatus />}
+						/>
 
 
             </Routes>
