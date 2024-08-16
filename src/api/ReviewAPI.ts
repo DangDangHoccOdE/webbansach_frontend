@@ -122,3 +122,18 @@ export async function getReviewByOrderReview(orderReviewId:number): Promise<Revi
 
     return result;
 }
+
+
+export async function getNumberOfReview(): Promise<number> {
+    const url: string = `http://localhost:8080/reviews/search/countBy`;
+     try {
+        const response = await fetchWithAuth(url);
+        const data = await response.json();
+        if (data) {
+           return data;
+        }
+     } catch (error) {
+        throw new Error("Lỗi không gọi được endpoint lấy tổng review\n" + error);
+     }
+     return 0;
+  }

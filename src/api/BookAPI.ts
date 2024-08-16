@@ -197,3 +197,18 @@ export async function getBooksOfOrders(orderId:number):Promise<BookModel[]> {
     }
     return result;
 }
+
+
+export async function getNumberOfBook(): Promise<number> {
+    const url: string = `http://localhost:8080/books/search/countBy`;
+     try {
+        const response = await fetchWithAuth(url);
+        const data = await response.json();
+        if (data) {
+           return data;
+        }
+     } catch (error) {
+        throw new Error("Lỗi không gọi được endpoint lấy tổng sách\n" + error);
+     }
+     return 0;
+  }

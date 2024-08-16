@@ -86,3 +86,19 @@ export async function getAllUserByAdmin(): Promise<UserModel[] | null> {
 
   return result;
 }
+
+export async function getNumberOfAccount(): Promise<number> {
+  const url: string = `http://localhost:8080/users/search/countBy`;
+   try {
+      const response = await fetchWithAuth(url);
+      const data = await response.json();
+      if (data) {
+         return data;
+      }
+   } catch (error) {
+      throw new Error("Lỗi không gọi được endpoint lấy tổng user\n" + error);
+   }
+   return 0;
+}
+
+
