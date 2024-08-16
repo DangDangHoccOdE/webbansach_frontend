@@ -243,238 +243,300 @@ const BookForm: React.FC = (props) => {
                 }
     
     }
-    return( 
-<div className="container">
-    <div className="row justify-content-center">
-        <div className="col-md-8">
-            <h1 className="text-center mb-4">Thêm sách</h1>
-            <form onSubmit={handleSubmit} className="form">
-                <input type="number" id="bookId" value={book.bookId} hidden readOnly />
-
-                <div className="form-group">
-                    <label htmlFor="bookName">Tên sách<span style={{color:"red"}}> *</span></label>
-                    <input 
+    return (
+        <div className="container my-5">
+        <div className="row justify-content-center">
+          <div className="col-lg-10">
+            <div className="card shadow">
+              <div className="card-body">
+                <h2 className="card-title text-center mb-4">Thêm sách mới</h2>
+                <form onSubmit={handleSubmit}>
+                  <input type="number" id="bookId" value={book.bookId} hidden readOnly />
+      
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label htmlFor="bookName" className="form-label">
+                        <i className="fas fa-book me-2"></i>Tên sách<span className="text-danger"> *</span>
+                      </label>
+                      <input 
                         className="form-control"
                         type="text"
+                        id="bookName"
                         value={book.bookName}
                         onChange={e => setBook({ ...book, bookName: e.target.value })}
                         required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="isbn">Isbn<span style={{color:"red"}}> *</span></label>
-                    <input 
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="isbn" className="form-label">
+                        <i className="fas fa-barcode me-2"></i>ISBN<span className="text-danger"> *</span>
+                      </label>
+                      <input 
                         className="form-control"
                         type="text"
+                        id="isbn"
                         value={book.isbn}
                         onChange={e => setBook({ ...book, isbn: e.target.value })}
                         required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="listedPrice">Giá niêm yết <span style={{color:"red"}}> *</span></label>
-                    <div className="input-group">
+                      />
+                    </div>
+                  </div>
+      
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label htmlFor="listedPrice" className="form-label">
+                        <i className="fas fa-tag me-2"></i>Giá niêm yết <span className="text-danger"> *</span>
+                      </label>
+                      <div className="input-group">
                         <input 
-                            className="form-control"
-                            type="number" value={book.listedPrice}
-                            onChange={e => setBook({ ...book, listedPrice: parseFloat(e.target.value) })}
-                            min={0} onBlur={handleListPrice}
-                            required
+                          className="form-control"
+                          type="number"
+                          id="listedPrice"
+                          value={book.listedPrice}
+                          onChange={e => setBook({ ...book, listedPrice: parseFloat(e.target.value) })}
+                          min={0}
+                          onBlur={handleListPrice}
+                          required
                         />
-                        <div className="input-group-append">
-                            <span className="input-group-text">VND</span>
-                        </div>
+                        <span className="input-group-text">VND</span>
+                      </div>
+                      <small className="text-danger">{noticeListedPrice}</small>
                     </div>
-                    <span style={{color:"red"}}>{noticeListedPrice}</span>
-
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="discountPercent">Phần trăm giảm giá</label>
-                    <div className="input-group">
+                    <div className="col-md-6">
+                      <label htmlFor="discountPercent" className="form-label">
+                        <i className="fas fa-percent me-2"></i>Phần trăm giảm giá
+                      </label>
+                      <div className="input-group">
                         <input 
-                            className="form-control"
-                            min={0}
-                            max={100}
-                            type="number"
-                            value={book.discountPercent}
-                            onChange={e => setBook({ ...book, discountPercent: parseFloat(e.target.value) })}
-                            onBlur={handleDiscountPercent}
-                            required
+                          className="form-control"
+                          type="number"
+                          id="discountPercent"
+                          min={0}
+                          max={100}
+                          value={book.discountPercent}
+                          onChange={e => setBook({ ...book, discountPercent: parseFloat(e.target.value) })}
+                          onBlur={handleDiscountPercent}
+                          required
                         />
-                        <div className="input-group-append">
-                            <span className="input-group-text">%</span>
-                        </div>
+                        <span className="input-group-text">%</span>
+                      </div>
+                      <small className="text-danger">{noticeDiscountPercent}</small>
                     </div>
-                    <span style={{color:"red"}}>{noticeDiscountPercent}</span>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="price">Giá bán (Giá niêm yết * Phần trăm giảm giá)<span style={{color:"red"}}> *</span></label>
+                  </div>
+      
+                  <div className="mb-3">
+                    <label htmlFor="price" className="form-label">
+                      <i className="fas fa-money-bill-wave me-2"></i>Giá bán (Giá niêm yết * Phần trăm giảm giá)<span className="text-danger"> *</span>
+                    </label>
                     <div className="input-group">
-                         <span className="form-control">{NumberFormat(book.listedPrice*(1-book.discountPercent/100))}</span>
-                        <div className="input-group-append">
-                            <span className="input-group-text">VND</span>
-                        </div>
+                      <span className="form-control">{NumberFormat(book.listedPrice*(1-book.discountPercent/100))}</span>
+                      <span className="input-group-text">VND</span>
                     </div>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="quantity">Số lượng<span style={{color:"red"}}> *</span></label>
-                    <input 
+                  </div>
+      
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label htmlFor="quantity" className="form-label">
+                        <i className="fas fa-cubes me-2"></i>Số lượng<span className="text-danger"> *</span>
+                      </label>
+                      <input 
                         className="form-control"
                         type="number"
+                        id="quantity"
                         value={book.quantity}
                         onChange={e => setBook({ ...book, quantity: parseInt(e.target.value) })}
-                        required onBlur={handleQuantity}
-                    />
-                    <span style={{color:"red"}}>{noticeQuantity}</span>
-
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="quantity">Đã Bán<span style={{color:"red"}}> *</span></label>
-                    <input 
+                        required
+                        onBlur={handleQuantity}
+                      />
+                      <small className="text-danger">{noticeQuantity}</small>
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="soldQuantity" className="form-label">
+                        <i className="fas fa-shopping-cart me-2"></i>Đã Bán<span className="text-danger"> *</span>
+                      </label>
+                      <input 
                         className="form-control"
                         type="number"
+                        id="soldQuantity"
                         value={book.soldQuantity}
                         onChange={e => setBook({ ...book, soldQuantity: parseInt(e.target.value) })}
                         required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="description">Mô tả<span style={{color:"red"}}> *</span></label>
+                      />
+                    </div>
+                  </div>
+      
+                  <div className="mb-3">
+                    <label htmlFor="description" className="form-label">
+                      <i className="fas fa-align-left me-2"></i>Mô tả<span className="text-danger"> *</span>
+                    </label>
                     <textarea 
-                        className="form-control"
-                        value={book.description}
-                        onChange={e => setBook({ ...book, description: e.target.value })}
-                        required
+                      className="form-control"
+                      id="description"
+                      value={book.description}
+                      onChange={e => setBook({ ...book, description: e.target.value })}
+                      required
+                      rows={4}
                     />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="author">Tác giả<span style={{color:"red"}}> *</span></label>
-                    <input 
+                  </div>
+      
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label htmlFor="author" className="form-label">
+                        <i className="fas fa-user-edit me-2"></i>Tác giả<span className="text-danger"> *</span>
+                      </label>
+                      <input 
                         className="form-control"
                         type="text"
+                        id="author"
                         value={book.author}
                         onChange={e => setBook({ ...book, author: e.target.value })}
                         required
-                    />
-                </div>  
-                
-                <div className="form-group">
-                    <label htmlFor="pageNumber">Số trang<span style={{color:"red"}}> *</span></label>
-                    <input 
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="pageNumber" className="form-label">
+                        <i className="fas fa-file-alt me-2"></i>Số trang<span className="text-danger"> *</span>
+                      </label>
+                      <input 
                         className="form-control"
-                        type="number" min={0} step={1}
+                        type="number"
+                        id="pageNumber"
+                        min={0}
+                        step={1}
                         value={book.pageNumber}
                         onChange={e => setBook({ ...book, pageNumber:parseInt(e.target.value) })}
-                        required onBlur={handlePageNumber}
-                    />  <span style={{color:"red"}}>{noticePageNumber}</span>
-                </div>     
-                
-                 <div className="form-group">
-                    <label htmlFor="language">Ngôn ngữ<span style={{color:"red"}}> *</span></label>
-                    <input 
+                        required
+                        onBlur={handlePageNumber}
+                      />
+                      <small className="text-danger">{noticePageNumber}</small>
+                    </div>
+                  </div>
+      
+                  <div className="row mb-3">
+                    <div className="col-md-6">
+                      <label htmlFor="language" className="form-label">
+                        <i className="fas fa-language me-2"></i>Ngôn ngữ<span className="text-danger"> *</span>
+                      </label>
+                      <input 
                         className="form-control"
                         type="text"
+                        id="language"
                         value={book.language}
                         onChange={e => setBook({ ...book, language: e.target.value })}
                         required
-                    />
-                </div> 
-                
-                <div className="form-group">
-                    <label htmlFor="publishingYear">Năm xuất bản<span style={{color:"red"}}> *</span></label>
-                    <input 
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="publishingYear" className="form-label">
+                        <i className="fas fa-calendar-alt me-2"></i>Năm xuất bản<span className="text-danger"> *</span>
+                      </label>
+                      <input 
                         className="form-control"
-                        type="number" min={0}
+                        type="number"
+                        id="publishingYear"
+                        min={0}
                         value={book.publishingYear}
                         onChange={e => setBook({ ...book, publishingYear: parseInt(e.target.value) })}
-                        required onBlur={handlePublishingYear}
-                    />
-                      <span style={{color:"red"}}>{noticePublishingYear}</span>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="averageRate">Tỉ lệ đánh giá<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        min={0}
-                        max={5}
-                        type="number"
-                        value={book.averageRate}
-                        onChange={e => setBook({...book,averageRate:parseFloat(e.target.value)})}
-                        onBlur={handleAverageRate}
-                        step={0.1}
                         required
-                    />
-                    <span style={{color:"red"}}>{noticeAverageRate}</span>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="thumbnail">Ảnh chính:<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        type="file"
-                        id="thumbnail"
-                        className="form-control"
-                        accept="image/**"
-                        onChange={handleThumbnailChange}
-                        required ref={inputFile}
-                    /><br/>
-                    {thumbnail && <img src={thumbnail} alt="Ảnh chính" style={{width:"100px" , height:"100px"}}></img>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="relatedImages">Ảnh liên quan<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        type="file"
-                        id="relatedImages"
-                        className="form-control"
-                        accept="image/**"
-                        onChange={handleRelatedImagesChange}
-                        multiple
-                        required ref={inputMultipleFile}
-                    /><br/>
-                    <div className="related-images-preview">
-                        {relatedImage?.map((image,index)=>(
-                            <img key={index} src={image} alt={`Ảnh liên quan ${index+1}`} style={{width:"100px",height:"100px"}}></img>
-                        ))}
-
+                        onBlur={handlePublishingYear}
+                      />
+                      <small className="text-danger">{noticePublishingYear}</small>
                     </div>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="categoryList">Chọn thể loại<span style={{color:"red"}}> *</span></label>
+                  </div>
+      
+                  <div className="mb-3">
+                    <label htmlFor="averageRate" className="form-label">
+                      <i className="fas fa-star me-2"></i>Tỉ lệ đánh giá<span className="text-danger"> *</span>
+                    </label>
+                    <input 
+                      className="form-control"
+                      type="number"
+                      id="averageRate"
+                      min={0}
+                      max={5}
+                      step={0.1}
+                      value={book.averageRate}
+                      onChange={e => setBook({...book, averageRate:parseFloat(e.target.value)})}
+                      onBlur={handleAverageRate}
+                      required
+                    />
+                    <small className="text-danger">{noticeAverageRate}</small>
+                  </div>
+      
+                  <div className="mb-3">
+                    <label htmlFor="thumbnail" className="form-label">
+                      <i className="fas fa-image me-2"></i>Ảnh chính<span className="text-danger"> *</span>
+                    </label>
+                    <input 
+                      type="file"
+                      id="thumbnail"
+                      className="form-control"
+                      accept="image/*"
+                      onChange={handleThumbnailChange}
+                      required
+                      ref={inputFile}
+                    />
+                    {thumbnail && (
+                      <img src={thumbnail} alt="Ảnh chính" className="mt-2 img-thumbnail" style={{width: "100px", height: "100px", objectFit: "cover"}} />
+                    )}
+                  </div>
+      
+                  <div className="mb-3">
+                    <label htmlFor="relatedImages" className="form-label">
+                      <i className="fas fa-images me-2"></i>Ảnh liên quan<span className="text-danger"> *</span>
+                    </label>
+                    <input 
+                      type="file"
+                      id="relatedImages"
+                      className="form-control"
+                      accept="image/*"
+                      onChange={handleRelatedImagesChange}
+                      multiple
+                      required
+                      ref={inputMultipleFile}
+                    />
+                    <div className="related-images-preview mt-2 d-flex flex-wrap">
+                      {relatedImage?.map((image, index) => (
+                        <img key={index} src={image} alt={`Ảnh liên quan ${index+1}`} className="img-thumbnail me-2 mb-2" style={{width: "100px", height: "100px", objectFit: "cover"}} />
+                      ))}
+                    </div>
+                  </div>
+      
+                  <div className="mb-3">
+                    <label htmlFor="categoryList" className="form-label">
+                      <i className="fas fa-list me-2"></i>Chọn thể loại<span className="text-danger"> *</span>
+                    </label>
                     <select 
-                        id="categoryList"
-                        multiple
-                        className="form-control"
-                        value={categoryIsChoose}
-                        onChange={handleCategoryChange}
-                        required
+                      id="categoryList"
+                      multiple
+                      className="form-select"
+                      value={categoryIsChoose}
+                      onChange={handleCategoryChange}
+                      required
+                      style={{height: "150px"}}
                     >
-                        {categoryList.map(temp => 
-                            <option key={temp.categoryId} value={temp.categoryId}>
-                                {temp.categoryName}
-                            </option>
-                        )}
+                      {categoryList.map(temp => (
+                        <option key={temp.categoryId} value={temp.categoryId}>
+                          {temp.categoryName}
+                        </option>
+                      ))}
                     </select>
-                </div>
-
-                <p style={{ color: "red" }}>{notice}</p>
-                <button type="submit" className="btn btn-success mt-2">Lưu</button>
-                    
-            </form>
+                  </div>
+      
+                  {notice && <div className="alert alert-danger mb-3" role="alert">{notice}</div>}
+                  
+                  <div className="text-center">
+                    <button type="submit" className="btn btn-primary btn-lg">
+                      <i className="fas fa-save me-2"></i>Lưu sách
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
-</div>
-
-    )
+      </div>
+      );
 }
 
 const BookForm_Admin=RequireAdmin(BookForm)

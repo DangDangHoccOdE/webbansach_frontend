@@ -321,236 +321,291 @@ const EditBook: React.FC = () => {
         }
     }
     return( 
-<div className="container">
+<div className="container mt-5">
     <div className="row justify-content-center">
-        <div className="col-md-8">
+        <div className="col-lg-10">
             <h1 className="text-center mb-4">Chỉnh sửa sách</h1>
-            {isLoading && <div className="text-center">Đang tải...</div>}
-            <form onSubmit={handleSubmit} className="form">
+            {isLoading && (
+                <div className="text-center">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Đang tải...</span>
+                    </div>
+                </div>
+            )}
+            <form onSubmit={handleSubmit}>
                 <input type="number" id="bookId" value={bookId} hidden readOnly />
 
-                <div className="form-group">
-                    <label htmlFor="bookName">Tên sách<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        type="text"
-                        value={bookName}
-                        onChange={e=>setBookName((e.target.value))}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="isbn">Isbn<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        type="text"
-                        value={isbn}
-                        onChange={e => setIsbn(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="listedPrice">Giá niêm yết <span style={{color:"red"}}> *</span></label>
-                    <div className="input-group">
-                        <input 
-                            className="form-control"
-                            type="number" value={listedPrice}
-                            onChange={e => setListedPrice(parseFloat(e.target.value))}
-                            min={0} onBlur={handleListPrice}
-                            required
-                        />
-                        <div className="input-group-append">
-                            <span className="input-group-text">VND</span>
-                        </div>
+                <div className="card mb-4">
+                    <div className="card-header bg-primary text-white">
+                        <h5 className="mb-0"><i className="fas fa-info-circle me-2"></i>Thông tin cơ bản</h5>
                     </div>
-                    <span style={{color:"red"}}>{noticeListedPrice}</span>
-
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="discountPercent">Phần trăm giảm giá</label>
-                    <div className="input-group">
-                        <input 
-                            className="form-control"
-                            min={0}
-                            max={100}
-                            type="number"
-                            value={discountPercent}
-                            onChange={e => setDiscountPercent(parseFloat(e.target.value))}
-                            onBlur={handleDiscountPercent}
-                            required
-                        />
-                        <div className="input-group-append">
-                            <span className="input-group-text">%</span>
-                        </div>
-                    </div>
-                    <span style={{color:"red"}}>{noticeDiscountPercent}</span>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="price">Giá bán (Giá niêm yết * Phần trăm giảm giá)<span style={{color:"red"}}> *</span></label>
-                    <div className="input-group">
-                         <span className="form-control">{NumberFormat(listedPrice*(1-discountPercent/100))}</span>
-                        <div className="input-group-append">
-                            <span className="input-group-text">VND</span>
+                    <div className="card-body">
+                        <div className="row g-3">
+                            <div className="col-md-6">
+                                <label htmlFor="bookName" className="form-label">
+                                    <i className="fas fa-book me-2"></i>Tên sách<span className="text-danger">*</span>
+                                </label>
+                                <input 
+                                    className="form-control"
+                                    type="text"
+                                    id="bookName"
+                                    value={bookName}
+                                    onChange={e => setBookName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="col-md-6">
+                                <label htmlFor="isbn" className="form-label">
+                                    <i className="fas fa-barcode me-2"></i>ISBN<span className="text-danger">*</span>
+                                </label>
+                                <input 
+                                    className="form-control"
+                                    type="text"
+                                    id="isbn"
+                                    value={isbn}
+                                    onChange={e => setIsbn(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="col-md-6">
+                                <label htmlFor="author" className="form-label">
+                                    <i className="fas fa-user-edit me-2"></i>Tác giả<span className="text-danger">*</span>
+                                </label>
+                                <input 
+                                    className="form-control"
+                                    type="text"
+                                    id="author"
+                                    value={author}
+                                    onChange={e => setAuthor(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="col-md-6">
+                                <label htmlFor="language" className="form-label">
+                                    <i className="fas fa-language me-2"></i>Ngôn ngữ<span className="text-danger">*</span>
+                                </label>
+                                <input 
+                                    className="form-control"
+                                    type="text"
+                                    id="language"
+                                    value={language}
+                                    onChange={e => setLanguage(e.target.value)}
+                                    required
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="quantity">Số lượng<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        type="number"
-                        value={quantity} onBlur={handleQuantity}
-                        onChange={e => setQuantity(parseInt(e.target.value))}
-                        required
-                    />
-                    <span style={{color:"red"}}>{noticeQuantity}</span>
-
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="quantity">Đã Bán<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        type="number"
-                        value={soldQuantity}
-                        onChange={e => setSoldQuantity(parseInt(e.target.value))}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="description">Mô tả<span style={{color:"red"}}> *</span></label>
-                    <textarea 
-                        className="form-control"
-                        value={description}
-                        onChange={e => setDescription(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="author">Tác giả<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        type="text"
-                        value={author}
-                        onChange={e => setAuthor(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="pageNumber">Số trang<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        type="number" min={0} step={1}
-                        value={pageNumber}
-                        onChange={e => setPageNumber(parseInt(e.target.value))}
-                        required onBlur={handlePageNumber}
-                    />  <span style={{color:"red"}}>{noticePageNumber}</span>
-                </div>     
-                
-                 <div className="form-group">
-                    <label htmlFor="language">Ngôn ngữ<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        type="text"
-                        value={language}
-                        onChange={e => setLanguage(e.target.value)}
-                        required
-                    />
-                </div> 
-                
-                <div className="form-group">
-                    <label htmlFor="publishingYear">Năm xuất bản<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        type="number" min={0}
-                        value={publishingYear}
-                        onChange={e => setPublishingYear(parseInt(e.target.value))}
-                        required onBlur={handlePublishingYear}
-                    />
-                      <span style={{color:"red"}}>{noticePublishingYear}</span>
-                </div>
-
-
-                <div className="form-group">
-                    <label htmlFor="averageRate">Tỉ lệ đánh giá<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        className="form-control"
-                        min={0}
-                        max={5}
-                        type="number"
-                        value={averageRate}
-                        onChange={e => setAverageRate(parseFloat(e.target.value))}
-                        onBlur={handleAverageRate}
-                        step={0.1}
-                        required
-                    />
-                    <span style={{color:"red"}}>{noticeAverageRate}</span>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="thumbnail">Ảnh chính:<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        type="file"
-                        id="thumbnail"
-                        className="form-control"
-                        accept="image/**"
-                        onChange={handleThumbnailChange}
-                    /><br/>
-                    {thumbnail && <img src={thumbnail} alt="Ảnh chính" style={{width:"100px" , height:"100px"}}></img>}
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="relatedImages">Ảnh liên quan<span style={{color:"red"}}> *</span></label>
-                    <input 
-                        type="file"
-                        id="relatedImages"
-                        className="form-control"
-                        accept="image/**"
-                        onChange={handleRelatedImagesChange}
-                        multiple
-                    /><br/>
-                    <div className="related-images-preview">
-                        {relatedImage?.map((image,index)=>(
-                            <img key={index} src={image} alt={`Ảnh liên quan ${index+1}`} style={{width:"100px",height:"100px"}}></img>
-                        ))}
-
+                <div className="card mb-4">
+                    <div className="card-header bg-success text-white">
+                        <h5 className="mb-0"><i className="fas fa-dollar-sign me-2"></i>Giá cả</h5>
+                    </div>
+                    <div className="card-body">
+                        <div className="row g-3">
+                            <div className="col-md-4">
+                                <label htmlFor="listedPrice" className="form-label">Giá niêm yết<span className="text-danger">*</span></label>
+                                <div className="input-group">
+                                    <input 
+                                        className="form-control"
+                                        type="number"
+                                        id="listedPrice"
+                                        value={listedPrice}
+                                        onChange={e => setListedPrice(parseFloat(e.target.value))}
+                                        min={0}
+                                        onBlur={handleListPrice}
+                                        required
+                                    />
+                                    <span className="input-group-text">VND</span>
+                                </div>
+                                <small className="text-danger">{noticeListedPrice}</small>
+                            </div>
+                            <div className="col-md-4">
+                                <label htmlFor="discountPercent" className="form-label">Phần trăm giảm giá</label>
+                                <div className="input-group">
+                                    <input 
+                                        className="form-control"
+                                        type="number"
+                                        id="discountPercent"
+                                        value={discountPercent}
+                                        onChange={e => setDiscountPercent(parseFloat(e.target.value))}
+                                        min={0}
+                                        max={100}
+                                        onBlur={handleDiscountPercent}
+                                        required
+                                    />
+                                    <span className="input-group-text">%</span>
+                                </div>
+                                <small className="text-danger">{noticeDiscountPercent}</small>
+                            </div>
+                            <div className="col-md-4">
+                                <label htmlFor="price" className="form-label">Giá bán</label>
+                                <div className="input-group">
+                                    <span className="form-control">{NumberFormat(listedPrice*(1-discountPercent/100))}</span>
+                                    <span className="input-group-text">VND</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="categoryList">Chọn thể loại<span style={{color:"red"}}> *</span></label>
-                    <select 
-                        id="categoryList"
-                        multiple
-                        className="form-control"
-                        value={categoryList}
-                        onChange={handleCategoryChange}
-                        required
-                    >
-                        {categoryListAPI.map(temp => 
-                            <option key={temp.categoryId} value={temp.categoryId} selected={categoryList?.includes(temp.categoryId.toString())}>
-                                {temp.categoryName} 
-                            </option>
-                        )}
-                    </select>
+                <div className="card mb-4">
+                    <div className="card-header bg-info text-white">
+                        <h5 className="mb-0"><i className="fas fa-book-open me-2"></i>Chi tiết sách</h5>
+                    </div>
+                    <div className="card-body">
+                        <div className="row g-3">
+                            <div className="col-md-6">
+                                <label htmlFor="quantity" className="form-label">Số lượng<span className="text-danger">*</span></label>
+                                <input 
+                                    className="form-control"
+                                    type="number"
+                                    id="quantity"
+                                    value={quantity}
+                                    onChange={e => setQuantity(parseInt(e.target.value))}
+                                    onBlur={handleQuantity}
+                                    required
+                                />
+                                <small className="text-danger">{noticeQuantity}</small>
+                            </div>
+                            <div className="col-md-6">
+                                <label htmlFor="soldQuantity" className="form-label">Đã bán<span className="text-danger">*</span></label>
+                                <input 
+                                    className="form-control"
+                                    type="number"
+                                    id="soldQuantity"
+                                    value={soldQuantity}
+                                    onChange={e => setSoldQuantity(parseInt(e.target.value))}
+                                    required
+                                />
+                            </div>
+                            <div className="col-md-6">
+                                <label htmlFor="pageNumber" className="form-label">Số trang<span className="text-danger">*</span></label>
+                                <input 
+                                    className="form-control"
+                                    type="number"
+                                    id="pageNumber"
+                                    min={0}
+                                    step={1}
+                                    value={pageNumber}
+                                    onChange={e => setPageNumber(parseInt(e.target.value))}
+                                    onBlur={handlePageNumber}
+                                    required
+                                />
+                                <small className="text-danger">{noticePageNumber}</small>
+                            </div>
+                            <div className="col-md-6">
+                                <label htmlFor="publishingYear" className="form-label">Năm xuất bản<span className="text-danger">*</span></label>
+                                <input 
+                                    className="form-control"
+                                    type="number"
+                                    id="publishingYear"
+                                    min={0}
+                                    value={publishingYear}
+                                    onChange={e => setPublishingYear(parseInt(e.target.value))}
+                                    onBlur={handlePublishingYear}
+                                    required
+                                />
+                                <small className="text-danger">{noticePublishingYear}</small>
+                            </div>
+                            <div className="col-12">
+                                <label htmlFor="description" className="form-label">Mô tả<span className="text-danger">*</span></label>
+                                <textarea 
+                                    className="form-control"
+                                    id="description"
+                                    value={description}
+                                    onChange={e => setDescription(e.target.value)}
+                                    rows={3}
+                                    required
+                                ></textarea>
+                            </div>
+                            <div className="col-md-6">
+                                <label htmlFor="averageRate" className="form-label">Tỉ lệ đánh giá<span className="text-danger">*</span></label>
+                                <input 
+                                    className="form-control"
+                                    type="number"
+                                    id="averageRate"
+                                    min={0}
+                                    max={5}
+                                    step={0.1}
+                                    value={averageRate}
+                                    onChange={e => setAverageRate(parseFloat(e.target.value))}
+                                    onBlur={handleAverageRate}
+                                    required
+                                />
+                                <small className="text-danger">{noticeAverageRate}</small>
+                            </div>
+                            <div className="col-md-6">
+                                <label htmlFor="categoryList" className="form-label">Thể loại<span className="text-danger">*</span></label>
+                                <select 
+                                    id="categoryList"
+                                    multiple
+                                    className="form-select"
+                                    value={categoryList}
+                                    onChange={handleCategoryChange}
+                                    required
+                                >
+                                    {categoryListAPI.map(temp => (
+                                        <option key={temp.categoryId} value={temp.categoryId}>
+                                            {temp.categoryName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <p style={{ color: "red" }}>{notice}</p>
-                <button type="submit" className="btn btn-success mt-2">Lưu</button>
-                    
+                <div className="card mb-4">
+                    <div className="card-header bg-warning text-dark">
+                        <h5 className="mb-0"><i className="fas fa-images me-2"></i>Hình ảnh</h5>
+                    </div>
+                    <div className="card-body">
+                        <div className="mb-3">
+                            <label htmlFor="thumbnail" className="form-label">Ảnh chính<span className="text-danger">*</span></label>
+                            <input 
+                                type="file"
+                                id="thumbnail"
+                                className="form-control"
+                                accept="image/*"
+                                onChange={handleThumbnailChange}
+                            />
+                            {thumbnail && (
+                                <div className="mt-2">
+                                    <img src={thumbnail} alt="Ảnh chính" className="img-thumbnail" style={{width: "100px", height: "100px"}} />
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            <label htmlFor="relatedImages" className="form-label">Ảnh liên quan<span className="text-danger">*</span></label>
+                            <input 
+                                type="file"
+                                id="relatedImages"
+                                className="form-control"
+                                accept="image/*"
+                                onChange={handleRelatedImagesChange}
+                                multiple
+                            />
+                            <div className="mt-2 d-flex flex-wrap gap-2">
+                                {relatedImage?.map((image, index) => (
+                                    <img key={index} src={image} alt={`Ảnh liên quan ${index+1}`} className="img-thumbnail" style={{width: "100px", height: "100px"}} />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {notice && <div className="alert alert-danger" role="alert">{notice}</div>}
+
+                <div className="text-center mt-4">
+                    <button type="submit" className="btn btn-primary btn-lg">
+                        <i className="fas fa-save me-2"></i>Lưu thay đổi
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 </div>
-
     )
 }
 
