@@ -121,32 +121,31 @@ const MyRoutes = () =>{
                         element={<DashboardPage_Admin />}
                       />
                       <Route path="/user/test" element={<Test/>} />
-                      <Route path="/books/addBook" element={<BookForm_Admin/>} />
-                  
-                      <Route path="/books/editBook/:bookId" element={<EditBook_Admin/>}/>
-                      <Route path="/books/deleteBook/:bookId" element={<DeleteBook_Admin/>}/>
-                      <Route path="/admin/getAllUsers/" element={<GetAllUser_Admin/>}/>
-                      <Route path="/user/deleteUser/:username" element={<DeleteUser_Admin/>}/>
+                      <Route path="/admin/book/addBook" element={<BookForm_Admin/>} />
+                      <Route path="/admin/book/editBook/:bookId" element={<EditBook_Admin/>}/>
+                      {/* <Route path="/books/deleteBook/:bookId" element={<DeleteBook_Admin/>}/> */}
+                      <Route path="/admin/user/" element={<GetAllUser_Admin/>}/>
+                      {/* <Route path="/user/deleteUser/:username" element={<DeleteUser_Admin/>}/> */}
 
-                      <Route path="/category/showAllCategory" element={<ShowAllCategory_Admin/>}/>
-                      <Route path="/category/editCategory/:categoryId" element={<EditCategory_Admin/>}/>
-                      <Route path="/category/deleteCategory/:categoryId" element={<DeleteCategory_Admin/>}/>
-                      <Route path="/category/deleteBookOfCategory/:categoryId/:bookId" element={<DeleteBookOfCategory_Admin/>}/>
+                      <Route path="/admin/category" element={<ShowAllCategory_Admin/>}/>
+                      <Route path="/admin/category/editCategory/:categoryId" element={<EditCategory_Admin/>}/>
+                      {/* <Route path="/category/deleteCategory/:categoryId" element={<DeleteCategory_Admin/>}/> */}
+                      {/* <Route path="/category/deleteBookOfCategory/:categoryId/:bookId" element={<DeleteBookOfCategory_Admin/>}/> */}
 
 
-                      <Route path="/voucher/addVoucher" element={<AddVoucher_Admin/>}></Route>
+                      <Route path="/admin/voucher/addVoucher" element={<AddVoucher_Admin/>}></Route>
                       <Route path="/voucher/showAllVoucherAdmin" element={<ShowAllVoucher_Admin/>}></Route>
-                      <Route path="/voucher/deleteVoucher/:voucherId" element={<DeleteVoucher_Admin/>}></Route>
+                      {/* <Route path="/voucher/deleteVoucher/:voucherId" element={<DeleteVoucher_Admin/>}></Route> */}
                       <Route path="/voucher/editVoucher/:voucherId" element={<EditVoucherAdmin/>}></Route>
                       <Route path="/vouchers/GiftVouchersToUsers" element={<GiftVouchersToUsers_Admin/>}></Route>
-                      <Route path="/vouchers/deleteAllVouchersSelected" element={<DeleteAllVouchersSelected_Admin/>}></Route>
+                      {/* <Route path="/vouchers/deleteAllVouchersSelected" element={<DeleteAllVouchersSelected_Admin/>}></Route> */}
                       <Route path="/vouchers/addVouchersToVoucherAvailable" element={<AddVouchersToVoucherAvailable_Admin/>}></Route>
 
 
-                      <Route path="/admin/orderManagement" element={<OrderManagement_Admin/>}></Route>
+                      <Route path="/admin/order" element={<OrderManagement_Admin/>}></Route>
 
                     
-                      <Route path="/admin" element={<ViewPurchasedOrder/>}></Route>
+                      <Route path="/admin/order/purchase" element={<ViewPurchasedOrder/>}></Route>
                       
                       <Route
                       path='/check-out/status'

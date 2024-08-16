@@ -22,12 +22,13 @@ export const SlideBar: React.FC = () => {
 			<div className='px-3'>
 				<a
 					className='text-decoration-none d-flex align-items-center text-white d-none d-sm-flex align-items-sm-center justify-content-center'
-					href='#'
+					href='#' style={{marginTop:"2px"}}
 				>
 					<img
-						src='./../../../images/public/logo.svg'
+						src='./../../../logo.jpg'
 						alt=''
-						width={100}
+						width={150}
+					
 					/>
 				</a>
 				<hr className='text- white d-none d-sm-block d-md-block' />
@@ -56,7 +57,7 @@ export const SlideBar: React.FC = () => {
 					</li>
 					<li className='nav-item '>
 						<NavLink
-							to={"/admin/genre"}
+							to={"/admin/category"}
 							className={`nav-link d-flex align-items-center justify-content-center`}
 						>
 							<CategoryRoundedIcon fontSize='small' />
