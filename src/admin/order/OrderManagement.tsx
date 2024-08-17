@@ -6,10 +6,13 @@ import OrderModel from "../../models/OrderModel";
 import { fetchAllOrders } from "../../api/OrderAPI";
 import { getUserByOrderId } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
-import { Box, Button, CircularProgress, FormControl, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import { Box,  CircularProgress, Container, FormControl, IconButton, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
 import { Pagination } from "../../layouts/utils/Pagination";
+import SaveIcon from '@mui/icons-material/Save';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { confirm } from "material-ui-confirm";
+import { toast } from "react-toastify";
+import fetchWithAuth from "../../layouts/utils/AuthService";
 
 const OrderManagement:React.FC=()=>{
     useScrollToTop();
@@ -20,6 +23,7 @@ const OrderManagement:React.FC=()=>{
     const [isLoading,setIsLoading] = useState(false);
     const [allOrders,setAllOrders] = useState<OrderModel[]>([]);
     const [orderUsers,setOrderUsers] = useState<UserModel[]>([]);
+    const [isUpdate,setIsUpdate] = useState(false);
 
     useEffect(()=>{
         const getAllOrderAdmin = async()=>{ // Lấy ra dữ liệu tất cả đơn hàng
@@ -49,13 +53,7 @@ const OrderManagement:React.FC=()=>{
         }
 
         getAllOrderAdmin();
-    },[navigate,currentPage])
-
-    const handleOrderStatusChange= (orderId:number,newStatus:string)=>{
-        setAllOrders(allOrders.map(order=>
-            order.orderId === orderId ? {...order,orderStatus:newStatus}:order
-        ));
-    } 
+    },[navigate,currentPage,isUpdate])
     
     const handleDeliveryStatusChange= (orderId:number,newStatus:string)=>{
         setAllOrders(allOrders.map(order=>
@@ -70,100 +68,129 @@ const OrderManagement:React.FC=()=>{
     const handleShowOrderDetail=(orderId:number)=>{ // Xem chi tiết đơn hàng
         navigate(`/order/purchase/${orderId}`)
     }
-    
-    const handleDeleteOrder=(orderId:number)=>{ // Xóa đơn hàng
-        handleDeleteOrder(orderId);
+
+    const handleSaveStatusOrder = (order:OrderModel)=>{
+        confirm({
+            title:'Chỉnh sửa trạng thái đơn hàng',
+            description:`Bạn xác nhận lưu thay đổi trạng thái đơn hàng mã: ${order.orderCode}`,
+            confirmationText:['Lưu'],
+            cancellationText:['Hủy'],
+        }).then(()=>{
+            toast.promise(
+                fetchWithAuth(`http://localhost:8080/order/saveOrderStatusChange/${order.orderId}`,{
+                    method:"PUT",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${localStorage.getItem("accessToken")}`
+                    },
+                    body:JSON.stringify(order)
+            }).then((response)=>{
+                if(response.ok){
+                    toast.success("Đã lưu trạng thái đơn hàng thành công");
+                    setIsUpdate(prev=>!prev); // Biến này để cập nhật lại giao diện khi xóa
+                }else{
+                    toast.error("Lỗi lưu trạng thái đơn hàng!");
+                }
+            }).catch(error=>{
+                toast.error("Lỗi lưu trạng thái đơn hàng!");
+                console.error(error);
+            }),
+            {pending:"Đang trong quá trình xử lý..."}
+        )})
+        .catch(()=>{});
     }
 
-    return(
-        <Box sx={{ minWidth: 120 }}>
-            <Typography display="flex" justifyContent="center" alignItems="center" my={4} variant="h2" >Quản lý đơn hàng</Typography>
-            {
-    isLoading ? 
-    (
-        <Box sx={{ textAlign: "center", mt: 5 }}>
-            <CircularProgress color="inherit" />
-        </Box>
-    ) : 
-    (
-        <>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 2 }}>
-                <Button variant="contained" color="success">
-                    Lưu
-                </Button>
-            </Box>
-            <TableContainer component={Paper}>
-                <Table>
+    
+
+    return (
+        <Container maxWidth="lg">
+          <Box sx={{ minWidth: 120, py: 4 }}>
+            <Typography variant="h3" align="center" gutterBottom>
+              Quản lý đơn hàng
+            </Typography>
+            {isLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <>
+                <TableContainer component={Paper} elevation={3}>
+                  <Table sx={{ minWidth: 650 }} aria-label="order table">
                     <TableHead>
-                        <TableRow>
-                            <TableCell>#</TableCell>
-                            <TableCell>Mã đơn hàng</TableCell>
-                            <TableCell>Người đặt</TableCell>
-                            <TableCell>Trạng thái đơn hàng</TableCell>
-                            <TableCell>Trạng thái giao hàng</TableCell>
-                            <TableCell>Tiện ích</TableCell>
-                        </TableRow>
+                      <TableRow>
+                        <TableCell align="center">#</TableCell>
+                        <TableCell align="center">Mã đơn hàng</TableCell>
+                        <TableCell align="center">Người đặt</TableCell>
+                        <TableCell align="center">Trạng thái đơn hàng</TableCell>
+                        <TableCell align="center">Trạng thái giao hàng</TableCell>
+                        <TableCell align="center">Tiện ích</TableCell>
+                      </TableRow>
                     </TableHead>
                     <TableBody>
-                        {allOrders && allOrders.length > 0 ? (
-                            allOrders.map((order, index) => (
-                                <TableRow key={order.orderId}>
-                                    <TableCell>{(currentPage - 1) * 10 + index + 1}</TableCell>
-                                    <TableCell>{order.orderCode}</TableCell>
-                                    <TableCell>{orderUsers[index].userName}</TableCell>
-                                    <TableCell>
-                                        <FormControl fullWidth>
-                                            <Select
-                                                value={order.orderStatus}
-                                                onChange={(e) => handleOrderStatusChange(order.orderId, e.target.value)}
-                                            >
-                                                <MenuItem value="Đang xử lý">Đang xử lý</MenuItem>
-                                                <MenuItem value="Đang vận chuyển">Đang vận chuyển</MenuItem>
-                                                <MenuItem value="Đã giao">Đã giao</MenuItem>
-                                                <MenuItem value="Đã hủy">Đã hủy</MenuItem>
-                                                <MenuItem value="Đánh giá">Đánh giá</MenuItem>
-                                                <MenuItem value="Trả hàng">Trả hàng</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </TableCell>
-                                    <TableCell>
-                                        <FormControl fullWidth>
-                                            <Select
-                                                value={order.deliveryStatus}
-                                                onChange={e => handleDeliveryStatusChange(order.orderId, e.target.value)}>
-                                                <MenuItem value="Chưa giao">Chưa giao</MenuItem>
-                                                <MenuItem value="Đang giao">Đang giao</MenuItem>
-                                                <MenuItem value="Đã giao">Đã giao</MenuItem>
-                                                <MenuItem value="Trả hàng">Trả hàng</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Stack direction="row" spacing={2}>
-                                            <Button onClick={()=>handleShowOrderDetail(order.orderId)} variant="contained" startIcon={<EditIcon />}>Xem chi tiết</Button>
-                                            <Button onClick={()=>handleDeleteOrder(order.orderId)} variant="outlined" color="error" endIcon={<DeleteIcon />}>Xóa</Button>
-                                        </Stack>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        ) : (
-                            <Box sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                <Typography color="error">Hiện tại chưa có đơn hàng</Typography>
-                            </Box>
-                        )}
+                      {allOrders && allOrders.length > 0 ? (
+                        allOrders.map((order, index) => (
+                          <TableRow key={order.orderId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                            <TableCell align="center">{(currentPage - 1) * 10 + index + 1}</TableCell>
+                            <TableCell align="center">{order.orderCode}</TableCell>
+                            <TableCell align="center">{orderUsers[index].userName}</TableCell>
+                            <TableCell align="center">{order.orderStatus}</TableCell>
+                            <TableCell align="center">
+                              <FormControl fullWidth size="small">
+                                <Select
+                                  value={order.deliveryStatus}
+                                  onChange={(e) => handleDeliveryStatusChange(order.orderId, e.target.value)}
+                                >
+                                  <MenuItem value="Chưa giao">CHƯA GIAO</MenuItem>
+                                  <MenuItem value="Đang giao">ĐANG GIAO</MenuItem>
+                                  <MenuItem value="Đã giao">ĐÃ GIAO</MenuItem>
+                                </Select>
+                              </FormControl>
+                            </TableCell>
+                            <TableCell align="center">
+                              <Stack direction="row" spacing={1} justifyContent="center">
+                                <Tooltip title="Xem chi tiết">
+                                  <IconButton
+                                    color="primary"
+                                    onClick={() => handleShowOrderDetail(order.orderId)}
+                                  >
+                                    <VisibilityIcon />
+                                  </IconButton>
+                                </Tooltip>
+                                
+                                <Tooltip title="Lưu">
+                                  <IconButton
+                                    color="success"
+                                    onClick={() => handleSaveStatusOrder(order)}
+                                  >
+                                    <SaveIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </Stack>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={6} align="center">
+                            <Typography color="error">Hiện tại chưa có đơn hàng</Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
-                </Table>
-            </TableContainer>
-            <Box sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <Pagination currentPage={currentPage} totalPages={totalPages} pagination={pagination} />
-            </Box>
-        </>
-    )
-}
-
-        </Box>
-    )
-}
+                  </Table>
+                </TableContainer>
+                <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+                  <Pagination
+                    currentPage={currentPage} pagination={pagination} totalPages={totalPages}
+                  />
+                </Box>
+              </>
+            )}
+          </Box>
+        </Container>
+      );
+    };
+    
 
 const OrderManagement_Admin = RequireAdmin(OrderManagement);
 export default OrderManagement_Admin;
