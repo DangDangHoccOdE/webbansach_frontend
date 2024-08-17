@@ -7,7 +7,6 @@ import ImageModel from "../../models/ImageModel";
 import { getAllIconImage } from "../../layouts/utils/ImageService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import UserModel from "../../models/UserModel";
-import { getUserByUsername } from "../../api/UserAPI";
 import {getUsernameByToken } from "../../layouts/utils/JwtService";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,6 +20,7 @@ import { format } from "date-fns";
 import generateOrderCode from "../../layouts/utils/generateOrderCode";
 import { handleBankPayment } from "../payment/handleBankPayment";
 import handleCreateOrder from "./handleCreateOrder";
+import { getUserByCondition } from "../../api/UserAPI";
 
 const OrderSummary:React.FC =()=>{
     const location = useLocation();
@@ -122,7 +122,7 @@ const OrderSummary:React.FC =()=>{
             const username = getUsernameByToken();
             if(username){
                 try{
-                    const getUser = await getUserByUsername(username);
+                    const getUser = await getUserByCondition(username);
                     if(getUser===null){
                         navigate("/error-404",{replace:true});
                     }

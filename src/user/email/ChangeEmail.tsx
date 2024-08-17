@@ -2,7 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import UserModel from "../../models/UserModel";
 import { useNavigate } from "react-router-dom";
 import { getUsernameByToken } from "../../layouts/utils/JwtService";
-import { getUserByUsername } from "../../api/UserAPI";
+import { getUserByCondition } from "../../api/UserAPI";
 import { checkEmail } from "../../api/AccountAPI";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import useScrollToTop from "../../hooks/ScrollToTop";
@@ -30,7 +30,7 @@ const ChangeEmail: React.FC = () => {
             console.log(usernameByToken);
             if (usernameByToken !== undefined) {
                 setIsLoading(true); // Bắt đầu hiển thị biểu tượng loading
-                getUserByUsername(usernameByToken)
+                getUserByCondition(usernameByToken)
                     .then((user) => {
                         setUser(user);
                         setEmailValue(user?.email || ""); // Cập nhật giá trị email từ user

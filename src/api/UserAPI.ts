@@ -1,5 +1,10 @@
 import fetchWithAuth from "../layouts/utils/AuthService";
 import UserModel from "../models/UserModel";
+interface UserProps{
+    totalPages:number,
+    totalUsers:number,
+    resultUsers:UserModel[]
+}
 
 export async function getUser(link: string): Promise<UserModel | null> {
   try {
@@ -46,13 +51,17 @@ export async function getUserByOrderId(orderId: number): Promise<UserModel | nul
     return getUser(url);
 }
 
-export async function getUserByUsername(username: string): Promise<UserModel | null> {
-  const url: string = `http://localhost:8080/user/findUserByUsername?username=${username}`;
+export async function getUserByCondition(condition: string): Promise<UserModel | null> {
+  const url: string = `http://localhost:8080/user/findUserByCondition?condition=${condition}`;
     return getUser(url);
 }
 
-export async function getAllUserByAdmin(): Promise<UserModel[] | null> {
-  const url: string = `http://localhost:8080/users`;
+export async function getAllUserByAdmin(currentPage:number): Promise<UserProps> {
+  const size:number=8
+  let url:string=''
+
+    url = `http://localhost:8080/users?sort=userId,asc&size=${size}&page=${currentPage}`;
+
   const result:UserModel[] = [];
 
   const response = await fetchWithAuth(url);
@@ -65,6 +74,10 @@ export async function getAllUserByAdmin(): Promise<UserModel[] | null> {
 
   // get all users
   const responseData = data._embedded.users;
+
+     // total pages
+     const totalPages:number = data.page.totalPages;
+     const totalUsers:number = data.page.totalElements;
 
   for(const key in responseData){
     result.push({
@@ -84,7 +97,7 @@ export async function getAllUserByAdmin(): Promise<UserModel[] | null> {
     });
   }
 
-  return result;
+  return {resultUsers:result, totalPages:totalPages, totalUsers:totalUsers};
 }
 
 export async function getNumberOfAccount(): Promise<number> {

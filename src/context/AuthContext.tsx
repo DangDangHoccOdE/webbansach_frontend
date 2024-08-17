@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import UserModel from "../models/UserModel";
-import { getUserByUsername } from "../api/UserAPI";
 import { getUsernameByToken, isToken, isTokenExpired, logout } from "../layouts/utils/JwtService";
+import { getUserByCondition } from "../api/UserAPI";
 
 interface AuthContextType{
     isLoggedIn:boolean;
@@ -39,7 +39,7 @@ export const AuthProvider:React.FC<AuthContextProps>=(props)=>{
         const getUser = async()=>{
             const username = getUsernameByToken();
             if(username){
-                const getUser = await getUserByUsername(username);
+                const getUser = await getUserByCondition(username);
                 setUser(getUser);
             }        
         }

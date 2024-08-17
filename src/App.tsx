@@ -17,7 +17,7 @@ import ChangeEmail from "./user/email/ChangeEmail";
 import ConfirmChangeEmail from "./user/email/ConfirmChangeEmail";
 import ForgotPassword from "./user/password/ForgotPassword";
 import ConfirmForgotPassword from "./user/password/ConfirmForgotPassword";
-import GetAllUser_Admin from "./admin/user/GetAllUser";
+import GetAllUser_Admin from "./admin/user/UserManagement";
 import BookForm_Admin from "./admin/book/AddBook";
 import EditBook_Admin from "./admin/book/EditBook";
 import ShowWishListByUser from "./user/wishList/ShowWishListByUser";
@@ -51,6 +51,7 @@ import DashboardPage_Admin from "./admin/components/Dashboard";
 import { ConfirmProvider } from "material-ui-confirm";
 import CategoryCategoryManagementPage from "./admin/category/CategoryManagement";
 import CategoryManagementPage from "./admin/category/CategoryManagement";
+import UserManagementPage from "./admin/user/UserManagement";
 
 const MyRoutes = () =>{
   const [bookNameFind, setBookNameFind] = useState('');
@@ -120,13 +121,11 @@ const MyRoutes = () =>{
                         <Route path="/admin/book/addBook" element={<BookForm_Admin/>} />
                         <Route path="/admin/book/editBook/:bookId" element={<EditBook_Admin/>}/>
                         {/* <Route path="/books/deleteBook/:bookId" element={<DeleteBook_Admin/>}/> */}
-                        <Route path="/admin/user/" element={<GetAllUser_Admin/>}/>
+                        <Route path="/admin/userManagement/" element={<UserManagementPage/>}/>
                         {/* <Route path="/user/deleteUser/:username" element={<DeleteUser_Admin/>}/> */}
 
                         <Route path="/admin/categoryManagement" element={<CategoryManagementPage/>}/>
                         <Route path="/admin/category/editCategory/:categoryId" element={<EditCategory_Admin/>}/>
-                        {/* <Route path="/category/deleteCategory/:categoryId" element={<DeleteCategory_Admin/>}/> */}
-                        {/* <Route path="/category/deleteBookOfCategory/:categoryId/:bookId" element={<DeleteBookOfCategory_Admin/>}/> */}
 
 
                         <Route path="/admin/voucher/addVoucher" element={<AddVoucher_Admin/>}></Route>

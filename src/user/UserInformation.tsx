@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import getBase64 from "../layouts/utils/GetBase64";
-import { getUserByUsername } from "../api/UserAPI";
+import { getUserByCondition } from "../api/UserAPI";
 import UserModel from "../models/UserModel";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import fetchWithAuth from "../layouts/utils/AuthService";
@@ -40,7 +40,7 @@ const UserInformation: React.FC = () => {
     
         if (username !== undefined) {
             setIsLoading(true);
-            getUserByUsername(username)
+            getUserByCondition(username)
                 .then(data => {
                     if(data === null){
                         navigate("/error-404");

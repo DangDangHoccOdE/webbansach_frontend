@@ -5,7 +5,7 @@ import { getAllCategory } from "../../api/CategoryAPI";
 import CategoryModel from "../../models/CategoryModel";
 import { Search } from "react-bootstrap-icons";
 import { getUsernameByToken, isToken, logout } from "../utils/JwtService";
-import { getUserByUsername } from "../../api/UserAPI";
+import { getUserByCondition } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
 import { useAuth } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
@@ -38,7 +38,7 @@ function Navbar({setBookNameFind} : NavbarProps){
         const username = getUsernameByToken();
         if(username!==undefined){
           try{
-              const result = await getUserByUsername(username);
+              const result = await getUserByCondition(username);
               setUser(result);
           }catch(error){
             setError("Lỗi khi gọi api user!");

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { getUserByUsername } from "../../api/UserAPI";
+import { getUserByCondition } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
 import MaskEmail from "../../layouts/utils/MaskEmail";
 import useScrollToTop from "../../hooks/ScrollToTop";
@@ -14,7 +14,7 @@ const ForgotPassword:React.FC=()=>{
     useScrollToTop();
         useEffect(()=>{
             console.log(username)
-                getUserByUsername(username).then(
+                getUserByCondition(username).then(
                     result=>{
                         if(result!==null){
                             setUser(result);
