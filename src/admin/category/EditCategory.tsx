@@ -244,7 +244,9 @@ const EditCategory:React.FC=()=>{
                         </table>
                     </div>
                     <p>{notice}</p>
-                    <Pagination currentPage={currentPage} totalPages={totalPages} pagination={pagination}></Pagination>
+                    <div className="d-flex align-item-center justify-content-center">
+                         <Pagination currentPage={currentPage} totalPages={totalPages} pagination={pagination}></Pagination>
+                    </div>
             </div>
     )
 }
