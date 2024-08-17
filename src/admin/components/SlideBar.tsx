@@ -10,6 +10,7 @@ import FeedbackIcon from "@mui/icons-material/Feedback";
 import { logout } from "../../layouts/utils/JwtService";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { LocalOffer } from "@mui/icons-material";
 
 
 export const SlideBar: React.FC = () => {
@@ -46,7 +47,7 @@ export const SlideBar: React.FC = () => {
 					</li>
 					<li className='nav-item'>
 						<NavLink
-							to={"/admin/book"}
+							to={"/admin/bookManagement"}
 							className={`nav-link d-flex align-items-center justify-content-center`}
 						>
 							<MenuBookRoundedIcon fontSize='small' />
@@ -57,7 +58,7 @@ export const SlideBar: React.FC = () => {
 					</li>
 					<li className='nav-item '>
 						<NavLink
-							to={"/admin/category"}
+							to={"/admin/categoryManagement"}
 							className={`nav-link d-flex align-items-center justify-content-center`}
 						>
 							<CategoryRoundedIcon fontSize='small' />
@@ -68,7 +69,7 @@ export const SlideBar: React.FC = () => {
 					</li>
 					<li className='nav-item '>
 						<NavLink
-							to={"/admin/user"}
+							to={"/admin/userManagement"}
 							className={`nav-link d-flex align-items-center justify-content-center`}
 						>
 							<ManageAccountsIcon fontSize='small' />
@@ -79,7 +80,7 @@ export const SlideBar: React.FC = () => {
 					</li>
 					<li className='nav-item '>
 						<NavLink
-							to={"/admin/order"}
+							to={"/admin/orderManagement"}
 							className={`nav-link d-flex align-items-center justify-content-center `}
 						>
 							<LocalMallRoundedIcon fontSize='small' />
@@ -90,12 +91,23 @@ export const SlideBar: React.FC = () => {
 					</li>
 					<li className='nav-item '>
 						<NavLink
-							to={"/admin/feedback"}
+							to={"/admin/feedbackManagement"}
 							className={`nav-link d-flex align-items-center justify-content-center `}
 						>
 							<FeedbackIcon fontSize='small' />
 							<span className='ms-2 d-none d-sm-inline d-md-inline'>
-								Feedback
+								Quản lý Feedback
+							</span>
+						</NavLink>
+					</li>
+					<li className='nav-item '>
+						<NavLink
+							to={"/admin/voucherManagement"}
+							className={`nav-link d-flex align-items-center justify-content-center `}
+						>
+							<LocalOffer fontSize='small' />
+							<span className='ms-2 d-none d-sm-inline d-md-inline'>
+								Quản lý Voucher
 							</span>
 						</NavLink>
 					</li>

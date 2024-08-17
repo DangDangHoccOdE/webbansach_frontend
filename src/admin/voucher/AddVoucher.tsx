@@ -3,7 +3,21 @@ import RequireAdmin from "../RequireAdmin"
 import getBase64 from "../../layouts/utils/GetBase64";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import useScrollToTop from "../../hooks/ScrollToTop";
-
+import {
+    Container,
+    Typography,
+    TextField,
+    Button,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Box,
+    Alert,
+    Grid,
+    Paper,
+    SelectChangeEvent
+  } from '@mui/material';
 const AddVoucher :React.FC=()=>{
     const [errorDiscountValue,setErrorDiscountValue] = useState("")
     const [errorExpiredDate,setErrorExpiredDate] = useState("")
@@ -125,99 +139,142 @@ const AddVoucher :React.FC=()=>{
             }
         }
     }
+    const handleChangeTypeVoucher = (event: SelectChangeEvent) => {
+        setVoucher({ ...voucher, typeVoucher: event.target.value as string });
+      };
 
-    const handleChangeTypeVoucher=(e:ChangeEvent<HTMLSelectElement>)=>{ // Xử lý thay đổi loại voucher
-        setVoucher({...voucher,typeVoucher:e.target.value})
-    }
-
-    return(
-        <div className="container">
-            <h1 className="mt-5 text-center">Thêm voucher</h1>
-            <div className="mb-3 col-md-6 col-12 mx-auto">
-                <form onSubmit={handleSubmit} className="form">
-                    <div className="mb-3">
-                        <label htmlFor="voucherCode" className="form-label">Mã voucher</label> <span style={{color:"red"}}> *</span>
-                        <input 
-                            type="text"
-                            id="voucherCode"
-                            className="form-control"
-                            value={voucher.code} 
-                            onChange={(e) => setVoucher({...voucher,code:e.target.value})}
-                            required
-                        />
-                    </div> 
-                <div className="mb-3">
-                <label htmlFor="firstName" className="form-label">Mô tả</label> <span style={{color:"red"}}> *</span>
-                    <input  
-                        type="text"
-                        id="describe"
-                        className="form-control"
-                        value={voucher.describe} 
-                        onChange={(e) => setVoucher({...voucher,describe:e.target.value})}
-                        required
+    
+  return (
+    <Container maxWidth="sm">
+      <Paper elevation={3} sx={{ p: 4, mt: 5 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Thêm voucher
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="voucherCode"
+                label="Mã voucher"
+                value={voucher.code}
+                onChange={(e) => setVoucher({...voucher, code: e.target.value})}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="describe"
+                label="Mô tả"
+                value={voucher.describe}
+                onChange={(e) => setVoucher({...voucher, describe: e.target.value})}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="discountValue"
+                label="Phần trăm giảm giá"
+                type="number"
+                value={voucher.discountValue}
+                onChange={(e) => setVoucher({...voucher, discountValue: parseInt(e.target.value)})}
+                onBlur={handleDiscountPercent}
+                error={!!errorDiscountValue}
+                helperText={errorDiscountValue}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="quantity"
+                label="Số lượng"
+                type="number"
+                value={voucher.quantity}
+                onChange={(e) => setVoucher({...voucher, quantity: parseInt(e.target.value)})}
+              />
+            </Grid>
+            <Grid item xs={12}>
+                <TextField
+                    required
+                    fullWidth   
+                    id="expiredDate"
+                    label="Ngày hết hạn"
+                    type="date"
+                    value={voucher.expiredDate}
+                    onChange={(e) => setVoucher({...voucher, expiredDate: e.target.value})}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    inputProps={{
+                        min: new Date().toISOString().split('T')[0] // Đặt ngày tối thiểu là ngày hiện tại
+                    }}
                     />
-                </div>  
-                <div className="mb-3">
-                <label htmlFor="dateOfBirth" className="form-label">Phần trăm giảm giá</label> <span style={{color:"red"}}> *</span>
-                    <input  
-                        type="number"
-                        id="discountValue"
-                        value={voucher.discountValue}
-                        className="form-control"
-                        onChange={e=>setVoucher({...voucher,discountValue:parseInt(e.target.value)})}
-                        onBlur={handleDiscountPercent}
-                        required
-                    />
-                <div style={{color:"red"}}>{errorDiscountValue}</div>
-
-                </div> 
-                <div className="mb-3">
-                    <label htmlFor="quantity" className="form-label">Số lượng</label> <span style={{color:"red"}}> *</span>
-                    <input 
-                        type="number"
-                        id="quantity"
-                        className="form-control"
-                        value={voucher.quantity} 
-                        onChange={e=>setVoucher({...voucher,quantity:parseInt(e.target.value)})}
-                        required
-                    />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="expiredDate" className="form-label">Ngày hết hạn</label> <span style={{color:"red"}}> *</span>
-                    <input 
-                        type="date"
-                        id="expiredDate"
-                        className="form-control"
-                        value={voucher.expiredDate} 
-                        onChange={e=>setVoucher({...voucher,expiredDate:e.target.value})}
-                        required
-                    />
-                    <div style={{color:"red"}}>{errorExpiredDate}</div>
-
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="typeVoucher" className="form-label">Loại voucher</label> <span style={{color:"red"}}> *</span>
-                    <select value={voucher.typeVoucher}  className=" form-select" onChange={handleChangeTypeVoucher}>
-                        <option value="Voucher sách">Voucher sách</option>
-                        <option value="Voucher vận chuyển">Voucher vận chuyển</option>
-                    </select>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="avatar" className="form-label">Ảnh voucher</label> <span style={{color:"red"}}> *</span>
-                    <input type="file" id="avatar"className="form-control mb-3" accept="image/**"onChange={handleVoucherImage} required></input>
-                    {
-                        voucher.voucherImage && <img src={voucher.voucherImage} alt="Ảnh voucher" style={{width:"100px"}}></img>
-                    }
-                </div>
-                <div className="text-center">
-                    <button type="submit" className="btn btn-primary">Lưu</button> 
-                    <div style={{color: isError ? "red" : "green"}}>{notice}</div> 
-                </div>
-            </form>
-        </div>
-    </div>
-        )
-        }
+              {errorExpiredDate && (
+                <Typography color="error" variant="caption">
+                  {errorExpiredDate}
+                </Typography>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel id="typeVoucher-label">Loại voucher</InputLabel>
+                <Select
+                  labelId="typeVoucher-label"
+                  id="typeVoucher"
+                  value={voucher.typeVoucher}
+                  label="Loại voucher"
+                  onChange={handleChangeTypeVoucher}
+                >
+                  <MenuItem value="Voucher sách">Voucher sách</MenuItem>
+                  <MenuItem value="Voucher vận chuyển">Voucher vận chuyển</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                component="label"
+                fullWidth
+              >
+                Tải lên ảnh voucher
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleVoucherImage}
+                />
+              </Button>
+              {voucher.voucherImage && (
+                <Box mt={2} textAlign="center">
+                  <img src={voucher.voucherImage} alt="Ảnh voucher" style={{ maxWidth: "50px", maxHeight: "50x" }} />
+                </Box>
+              )}
+            </Grid>
+          </Grid>
+          {notice && (
+          <Alert severity={isError ? "error" : "success"} sx={{ mt: 2 }}>
+            {notice}
+          </Alert>
+        )}
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Lưu
+          </Button>
+        </Box>
+       
+      </Paper>
+    </Container>
+  );
+};
+    
 
 const AddVoucher_Admin = RequireAdmin(AddVoucher)
 export default AddVoucher_Admin

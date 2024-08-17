@@ -17,7 +17,6 @@ import ChangeEmail from "./user/email/ChangeEmail";
 import ConfirmChangeEmail from "./user/email/ConfirmChangeEmail";
 import ForgotPassword from "./user/password/ForgotPassword";
 import ConfirmForgotPassword from "./user/password/ConfirmForgotPassword";
-import GetAllUser_Admin from "./admin/user/UserManagement";
 import BookForm_Admin from "./admin/book/AddBook";
 import EditBook_Admin from "./admin/book/EditBook";
 import ShowWishListByUser from "./user/wishList/ShowWishListByUser";
@@ -27,16 +26,12 @@ import { Error404Page } from "./layouts/page/404Page";
 import EditWishList from "./user/wishList/EditWishList";
 import DeleteBookOfWishList from "./user/wishList/DeleteBookOfWishList";
 import EditCategory_Admin from "./admin/category/EditCategory";
-import ShowAllCategory_Admin from "./admin/category/CategoryManagement";
 import ShowCart from "./user/cartItem/ShowCartItemByUser";
 import AddVoucher_Admin from "./admin/voucher/AddVoucher";
 import EditVoucherAdmin from "./admin/voucher/EditVoucher";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ShowAllVoucher_Admin from "./admin/voucher/ShowAllVoucher";
 import ShowVoucherUser from "./user/userVoucher/ShowVoucherUser";
-import GiftVouchersToUsers_Admin from "./admin/voucher/GiftVouchersToUsers";
-import AddVouchersToVoucherAvailable_Admin from "./admin/voucher/AddVouchersToVoucherAvailable";
 import ListVoucher from "./layouts/voucher/ListVoucher.tsx";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -49,9 +44,9 @@ import OrderSummary from "./user/order/OrderSummary";
 import { SlideBar } from "./admin/components/SlideBar";
 import DashboardPage_Admin from "./admin/components/Dashboard";
 import { ConfirmProvider } from "material-ui-confirm";
-import CategoryCategoryManagementPage from "./admin/category/CategoryManagement";
 import CategoryManagementPage from "./admin/category/CategoryManagement";
 import UserManagementPage from "./admin/user/UserManagement";
+import VoucherManagementPage from "./admin/voucher/VoucherManagement";
 
 const MyRoutes = () =>{
   const [bookNameFind, setBookNameFind] = useState('');
@@ -122,19 +117,14 @@ const MyRoutes = () =>{
                         <Route path="/admin/book/editBook/:bookId" element={<EditBook_Admin/>}/>
                         {/* <Route path="/books/deleteBook/:bookId" element={<DeleteBook_Admin/>}/> */}
                         <Route path="/admin/userManagement/" element={<UserManagementPage/>}/>
-                        {/* <Route path="/user/deleteUser/:username" element={<DeleteUser_Admin/>}/> */}
 
                         <Route path="/admin/categoryManagement" element={<CategoryManagementPage/>}/>
                         <Route path="/admin/category/editCategory/:categoryId" element={<EditCategory_Admin/>}/>
 
 
-                        <Route path="/admin/voucher/addVoucher" element={<AddVoucher_Admin/>}></Route>
-                        <Route path="/voucher/showAllVoucherAdmin" element={<ShowAllVoucher_Admin/>}></Route>
-                        {/* <Route path="/voucher/deleteVoucher/:voucherId" element={<DeleteVoucher_Admin/>}></Route> */}
-                        <Route path="/voucher/editVoucher/:voucherId" element={<EditVoucherAdmin/>}></Route>
-                        <Route path="/vouchers/GiftVouchersToUsers" element={<GiftVouchersToUsers_Admin/>}></Route>
-                        {/* <Route path="/vouchers/deleteAllVouchersSelected" element={<DeleteAllVouchersSelected_Admin/>}></Route> */}
-                        <Route path="/vouchers/addVouchersToVoucherAvailable" element={<AddVouchersToVoucherAvailable_Admin/>}></Route>
+                        <Route path="/admin/voucherManagement/addVoucher" element={<AddVoucher_Admin/>}></Route>
+                        <Route path="/admin/voucherManagement" element={<VoucherManagementPage/>}></Route>
+                        <Route path="/admin/voucher/editVoucher/:voucherId" element={<EditVoucherAdmin/>}></Route>
 
 
                         <Route path="/admin/order" element={<OrderManagement_Admin/>}></Route>

@@ -8,8 +8,9 @@ import { faClock, faEdit, faGift, faPlus, faTicket, faTrash, faTrashAlt } from "
 import useScrollToTop from "../../hooks/ScrollToTop";
 import { toast } from "react-toastify";
 import handleUpdateIsActiveFromVoucher from "../../layouts/voucher/HandleUpdateIsActiveFromVoucher";
+import { addVouchersToVoucherAvailable, deleteSelectedVouchers, deleteVoucher, giftVouchersToUsers } from "./voucherActions";
 
-const ShowAllVoucher : React.FC=()=>{
+const VoucherManagement : React.FC=()=>{
     const [allVouchers,setAllVouchers] = useState<VoucherModel[]>([])
     const [isLoading,setIsLoading] = useState(false);
     const [notice,setNotice] = useState("")
@@ -20,6 +21,7 @@ const ShowAllVoucher : React.FC=()=>{
     const [voucherNameFind,setVoucherNameFind] = useState('')
     const [condition,setCondition] = useState('')
     const [countVoucher,setCountVoucher] = useState(0)
+    const [isUpdate,setIsUpdate] = useState(false);
 
     useScrollToTop();
 
@@ -57,21 +59,13 @@ const ShowAllVoucher : React.FC=()=>{
         }
 
         showAllVouchers();
-    },[condition, voucherNameFind])
+    },[condition, voucherNameFind,isUpdate])
 
     const handleAddVoucher =()=>{ // Thêm voucher
         navigate("/voucher/addVoucher");
     }
 
-    const handleDelete=(voucherId:number)=>{ // Xóa voucher
-        const confirmAdmin = window.confirm("Bạn có muốn xóa voucher?");
-        if(!confirmAdmin){
-            return;
-        }else{
-            navigate(`/voucher/deleteVoucher/${voucherId}`);
-        }
-    }
-
+    
     const handleSelectAll=()=>{ // Chọn tất cả voucher
         setSelectAll(!selectAll);
         if(!selectAll){
@@ -93,53 +87,54 @@ const ShowAllVoucher : React.FC=()=>{
         }
     }
 
-    const handleDeleteSelected=()=>{ // Xóa nhưng voucher đã chọn
-      if(selectedVouchers.length===0){
-        toast.error("Vui lòng chọn ít nhất 1 voucher để xóa");
-      }else{
-        const adminConfirm = window.confirm("Bạn có chắc chắn muốn xóa!")
-        if(!adminConfirm){
-          return;
-        }else{
-          navigate("/vouchers/deleteAllVouchersSelected",{state:{selectedVouchers}})
-        }
+    const handleDelete = async (voucherId: number) => {
+      const success = await deleteVoucher(voucherId);
+      if (success) {
+        setIsUpdate(prev => !prev);
       }
-     
-      }
+    };
 
-    const handleGiftVoucher=()=>{ // Tặng voucher cho người dùng
-      if(selectedVouchers.length===0){
-        toast.error("Vui lòng chọn ít nhất 1 voucher để tặng");
-      }else{
-        const adminConfirm = window.confirm("Bạn có chắc chắn muốn tặng cho tất cả người dùng!")
-        if(!adminConfirm){
-          return;
-        }else{
-          navigate("/vouchers/giftVouchersToUsers",{state:{selectedVouchers}})
+
+    const handleDeleteSelected = async () => {
+      if (selectedVouchers.length === 0) {
+        toast.error("Vui lòng chọn ít nhất 1 voucher để xóa");
+      } else {
+        const success = await deleteSelectedVouchers(selectedVouchers);
+        if (success) {
+          setIsUpdate(prev => !prev);
         }
       }
-    }
+    };
+
+    const handleGiftVoucher = async () => {
+      if (selectedVouchers.length === 0) {
+        toast.error("Vui lòng chọn ít nhất 1 voucher để tặng");
+      } else {
+        const success = await giftVouchersToUsers(selectedVouchers);
+        if (success) {
+          setIsUpdate(prev => !prev);
+        }
+      }
+    };
+  
+    const handleAddVoucherToVoucherAvailable = async () => {
+      if (selectedVouchers.length === 0) {
+        toast.error("Vui lòng chọn ít nhất 1 voucher để thêm");
+      } else {
+        const success = await addVouchersToVoucherAvailable(selectedVouchers);
+        if (success) {
+          setIsUpdate(prev => !prev);
+        }
+      }
+    };
 
     const handleFindVoucherName=(e:ChangeEvent<HTMLInputElement>)=>{ // Nhập form tìm mã
-        setVoucherNameFind(e.target.value);
-    }
-        
-    const handleClickFindVoucher=()=>{ // Ấn tìm mã
-        setVoucherNameFind(voucherNameFind);
-    }
-
-    const handleAddVoucherToVoucherAvailable=()=>{ // Xử lý thêm voucher vào danh sách voucher có sẵn
-      if(selectedVouchers.length===0){
-        toast.error("Vui lòng chọn ít nhất 1 voucher để thêm");
-      }else{
-        const adminConfirm = window.confirm("Bạn có chắc chắn muốn thêm vào danh sách voucher có sẵn cho tất cả người dùng!")
-        if(!adminConfirm){
-          return;
-        }else{
-          navigate("/vouchers/addVouchersToVoucherAvailable",{state:{selectedVouchers}})
-        }
-      }
-    }
+      setVoucherNameFind(e.target.value);
+  }
+      
+  const handleClickFindVoucher=()=>{ // Ấn tìm mã
+      setVoucherNameFind(voucherNameFind);
+  }
 
     const handleChangeCondition=(e:ChangeEvent<HTMLSelectElement>)=>{ // Thay đổi điều kiện condition
       setCondition(e.target.value);
@@ -160,9 +155,12 @@ const ShowAllVoucher : React.FC=()=>{
                 <button type="submit" className="btn btn-secondary" onClick={handleClickFindVoucher}>Tìm</button>
             </div>
         <div className="d-flex justify-content-end mb-3 mt-3">
-          <button className="btn btn-primary me-2" onClick={handleAddVoucher}>
-            <FontAwesomeIcon icon={faPlus} className="me-2" /> Thêm Voucher
-          </button> 
+          <Link to="/admin/voucherManagement/addVoucher">
+              <button className="btn btn-primary me-2" onClick={handleAddVoucher}>
+                <FontAwesomeIcon icon={faPlus} className="me-2" /> Thêm Voucher
+              </button> 
+          </Link>
+  
           
             <button className="btn btn-success me-2" onClick={handleAddVoucherToVoucherAvailable}>
             <FontAwesomeIcon icon={faTicket} className="me-2" /> Thêm Voucher vào danh sách voucher có sẵn
@@ -171,6 +169,7 @@ const ShowAllVoucher : React.FC=()=>{
           <button className="btn btn-warning me-2" onClick={handleGiftVoucher}>
           <FontAwesomeIcon icon={faGift} className="me-2" /> Tặng Voucher
         </button>
+
         <button className="btn btn-danger" onClick={handleDeleteSelected}>
           <FontAwesomeIcon icon={faTrashAlt} className="me-2" /> Xóa Tất Cả Voucher Đã Chọn
         </button>
@@ -244,7 +243,7 @@ const ShowAllVoucher : React.FC=()=>{
                           className="ms-3"></input>
                     </div>
                     <div>
-                      <Link to={`/voucher/editVoucher/${voucher.voucherId}`} className="btn btn-sm btn-outline-primary me-2">
+                      <Link to={`/admin/voucher/editVoucher/${voucher.voucherId}`} className="btn btn-sm btn-outline-primary me-2">
                         <FontAwesomeIcon icon={faEdit} />
                       </Link>
                       <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(voucher.voucherId)}>
@@ -264,5 +263,5 @@ const ShowAllVoucher : React.FC=()=>{
     )
 }
 
-const ShowAllVoucher_Admin = RequireAdmin(ShowAllVoucher);
-export default ShowAllVoucher_Admin;
+const VoucherManagementPage = RequireAdmin(VoucherManagement);
+export default VoucherManagementPage;
