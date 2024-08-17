@@ -31,7 +31,7 @@ const AddCategoryForm:React.FC<CategoryFormProps>=(props)=>{
                 setIsError(false);
                 props.setIsUpdate(prevState=>!prevState);
             }else{
-                setNoticeFormSubmit(data.content || "Lỗi không thể tạo thể loại mới");
+                setNoticeFormSubmit("Lỗi không thể tạo thể loại mới");
                 setIsError(true);
             }
         }catch(error){

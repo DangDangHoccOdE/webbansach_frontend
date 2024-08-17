@@ -12,6 +12,9 @@ import ImageModel from "../../models/ImageModel";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { Pagination } from "../../layouts/utils/Pagination";
 import { getAllIconImage } from "../../layouts/utils/ImageService";
+import { Box, CircularProgress } from "@mui/material";
+import { confirm } from "material-ui-confirm";
+import { toast } from "react-toastify";
 
 const EditCategory:React.FC=()=>{
     useScrollToTop();
@@ -81,12 +84,34 @@ const EditCategory:React.FC=()=>{
     }, [bookList]);
 
     const handleDelete=(bookId:number)=>{   // thực hiện xóa sách trong category
-        const userConfirmed = window.confirm("Bạn có chắc chắn muốn xóa!");
-        if(!userConfirmed){
-            return;
-        }else{
-            navigate(`/category/deleteBookOfCategory/${categoryId}/${bookId}`)
-        }
+        confirm({
+            title:'Xóa sách khỏi thể loại',
+            description:`Bạn có chắc muốn xóa sách này ra khỏi thể loại ${category?.categoryName}`,
+            confirmationText:['Xóa'],
+            cancellationText:['Hủy'],
+        }).then(()=>{
+            toast.promise(
+                fetchWithAuth(`http://localhost:8080/category/${categoryIdNumber}/books/${bookId}`,{
+                    method:"DELETE",
+                    headers:{
+                        "Content-Type":"application/json",
+                        "Authorization":`Bearer ${localStorage.getItem("accessToken")}`
+                    }
+                }
+            ).then((response)=>{
+                if(response.ok){
+                    toast.success("Đã xóa sách khỏi thể loại thành công");
+                    setIsUpdate(prev=>!prev); // Biến này để cập nhật lại giao diện khi xóa
+                }else{
+                    toast.error("Lỗi khi xóa sách khỏi thể loại");
+                }
+            }).catch(error=>{
+                toast.error("Lỗi khi xóa sách khỏi thể loại");
+                console.error(error);
+            }),
+            {pending:"Đang trong quá trình xử lý..."}
+        )})
+        .catch(()=>{});
     }
     const handleFormSubmit=async(e:FormEvent)=>{  // form đổi tên thể loại
         e.preventDefault();
@@ -107,7 +132,6 @@ const EditCategory:React.FC=()=>{
             });
      
             const data = await response.json();
-            console.log(data)
             if(response.ok){
                 setErrorNewCategoryName(data.content);
                 setIsError(false)
@@ -139,12 +163,22 @@ const EditCategory:React.FC=()=>{
     return(
             <div className="container">
                     <h2 className="text-center mt-2">{category?.categoryName}</h2>
-                    {isLoading && <p className="text-center">Đang tải...</p>}
-                        <div className="col-3">
-                            <button className="btn btn-secondary ms-auto" onClick={toggleForm}>Đổi tên thể loại</button>  
+                    {isLoading && (
+                        <Box sx={{ textAlign: "center", mt: 5 }}>
+                        <CircularProgress color="inherit" />
+                    </Box>
+                    )}
+                     <div className="row mb-3">
+                        <div className="col">
+                        <button 
+                            className="btn btn-primary" 
+                            onClick={toggleForm}
+                        >
+                            <i className="fa fa-plus me-2"></i>Sửa tên thể loại 
+                        </button>
                         </div>
-                    {
-                    showForm&&(
+                    </div>
+                    {showForm&&(
                         <div className="row justify-content-center mb-3">
                             <div className="col-md-6">
                             <form onSubmit={handleFormSubmit}>
@@ -185,12 +219,12 @@ const EditCategory:React.FC=()=>{
                             {
                                 bookList?.map((book,index)=>(
                                     <tr  key={index}>
-                                    <th scope="row">{index}</th>
+                                    <th scope="row">{(currentPage - 1) * 10 + index + 1}</th>
                                   <td>
                                      <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' ,color:"black"}}> {book.bookName}</Link>     
                                   </td>
                                         <td> <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' }}>
-                                           {imageList[index] ? <img src={imageList[index].imageData} alt="Ảnh"  style={{ width: "50px" }}></img>: "Sách chưa có ảnh"}
+                                           {imageList[index] ? <img src={imageList[index].imageData} alt="Ảnh"  style={{ width: "50px",height:"50px" }}></img>: "Sách chưa có ảnh"}
                                            </Link>
                                         </td>
                                         <td>{renderRating(book.averageRate)}</td>
