@@ -34,7 +34,6 @@ function ResendActivationCode(){
             }else{
                 setNotice(data.content);
             }
-            console.log(data.content);
         }catch(error){
             setNotice("Đã có lỗi xảy ra, không thể gửi lại mã kích hoạt tài khoản!");
             console.error("Error: ", error);

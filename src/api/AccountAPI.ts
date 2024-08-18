@@ -13,16 +13,16 @@ export async function checkEmail(email:string,{setErrorEmail}:checkEmailProps):P
 
             if(data==="true"){
                 setErrorEmail("Tên email đã tồn tại!");
-                return false;
+                return true;
             }else if(!regexEmail.test(email)){
                 setErrorEmail("Định dạng email không hợp lệ!");
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         }catch(error){
             console.error("Lỗi khi kiểm tra tên email",error);
-            return false;
+            return true;
         }
 }
 

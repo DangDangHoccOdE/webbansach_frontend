@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ResendActivationCode from "./ResendActivationCode";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import WarningIcon from '@mui/icons-material/Warning';
 
 function ActivatedAccount() {
   const { email, activationCode } = useParams();
@@ -17,7 +19,6 @@ function ActivatedAccount() {
 
         const data = await response.json();
 
-        console.log(data.content)
         if (response.ok) {
           setIsActivated(true);
           setNotice(data.content); 
@@ -37,13 +38,36 @@ function ActivatedAccount() {
   }, [email, activationCode]);
 
   return (
-    <div className="text-center">
-      <h1>Kích hoạt tài khoản</h1>
-        <h4 style={{color:isActivated?"green":"red"}}>{notice}</h4>
-        {
-            !isActivated && <ResendActivationCode/>
-        }
-     </div>
+    <div className="container py-5">
+    <div className="row justify-content-center">
+      <div className="col-md-8 col-lg-6">
+        <div className="card border-0 shadow">
+          <div className="card-body p-5">
+            <h2 className="card-title text-center mb-4">Kích hoạt tài khoản</h2>
+            
+            <div className={`alert ${isActivated ? 'alert-success' : 'alert-warning'} d-flex align-items-center`} role="alert">
+            <span className="flex-shrink-0 me-2">
+              {isActivated ? <CheckCircleIcon /> : <WarningIcon />}
+            </span>
+              <div>{notice}</div>
+            </div>
+            
+            {!isActivated && (
+              <div className="mt-4">
+                <ResendActivationCode />
+              </div>
+            )}
+            
+            {isActivated && (
+              <div className="text-center mt-4">
+                <button className="btn btn-primary">Tiếp tục đến trang chủ</button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   );
 }
 
