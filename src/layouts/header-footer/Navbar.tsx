@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { ChangeEvent, useState ,KeyboardEvent, useEffect, useContext} from "react";
-import {  Link, NavLink, useNavigate } from "react-router-dom";
+import {  Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { getAllCategory } from "../../api/CategoryAPI";
 import CategoryModel from "../../models/CategoryModel";
 import { Search } from "react-bootstrap-icons";
@@ -10,11 +10,12 @@ import UserModel from "../../models/UserModel";
 import { useAuth } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
 import { Avatar } from "@mui/material";
+import { HideNavbarEnpoint } from "../utils/HideNavbar";
 interface NavbarProps{
     setBookNameFind: (keyword:string)=> void
   }
 
-function Navbar({setBookNameFind} : NavbarProps){
+  const Navbar: React.FC<NavbarProps> = ({setBookNameFind}) => {
 
   const [temporaryKeyWord,setTemporaryKeyWord] = useState('');
   const [categoryList,setCategoryList] = useState<CategoryModel[]>([]);
@@ -23,7 +24,8 @@ function Navbar({setBookNameFind} : NavbarProps){
   const navigator = useNavigate();
   const {setLoggedIn} = useAuth();
   const {itemCounter} = useContext(CartContext);
-  
+
+   
   useEffect(() => {
     const fetchCategories = async () => { // gọi api lấy thể loại
       try {
@@ -31,6 +33,7 @@ function Navbar({setBookNameFind} : NavbarProps){
         setCategoryList(result); 
       } catch (error) {
         setError("Lỗi khi gọi api danh sách thể loại"); 
+        console.error(error)
       }
     };
 
@@ -42,6 +45,7 @@ function Navbar({setBookNameFind} : NavbarProps){
               setUser(result);
           }catch(error){
             setError("Lỗi khi gọi api user!");
+            console.error(error)
           }          
       } 
     }
@@ -49,6 +53,14 @@ function Navbar({setBookNameFind} : NavbarProps){
     fetchCategories(); 
 
   },[navigator, setLoggedIn]);
+  
+ // Thực hiện ẩn Navbar
+ const location = useLocation();
+
+ const pathHideNavbar = HideNavbarEnpoint;
+ if(pathHideNavbar.includes(location.pathname)){
+   return null;
+ }
 
 
   if(error!==null){
@@ -77,6 +89,7 @@ function Navbar({setBookNameFind} : NavbarProps){
       setLoggedIn(false);
       navigator("/login")
   }
+
 
     return(
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">

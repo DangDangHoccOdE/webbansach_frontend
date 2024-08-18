@@ -14,10 +14,8 @@ import { faCartShopping, faGift } from "@fortawesome/free-solid-svg-icons";
 import VoucherModel from "../../models/VoucherModel";
 import SelectVoucherToAddCreate from "../order/SelectVoucherToAddOrder";
 import { CartContext } from "../../context/CartContext";
-import { deleteAllCartItemsIsChoose } from "./deleteAllCartItem";
-import { deleteCartItem } from "./deleteCartItem";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
-import updateQuantityOfCarts from "./updateQuantityOfCarts";
+import { deleteAllCartItemsIsChoose, deleteCartItem, updateQuantityOfCarts } from "./cartItemActions";
 
 const ShowCart=()=>{
     const location = useLocation();
@@ -137,35 +135,22 @@ const ShowCart=()=>{
       },[selectedItems,cartItem])
       
     const handleDelete=async(cartItemId:number)=>{ // Xóa sách trong giỏ hàng
-        const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa khỏi giỏ hàng!")
-        if(!userConfirm){
-            return;
-        }else{
-            const isUpdate = await deleteCartItem(cartItemId);
-            if(isUpdate===true){
-                setCartUpdated(prev=>!prev)
-                updateCartItemCount();
-            }else{
-                navigate("/error-404")
-            }
+        const result = await deleteCartItem(cartItemId);
+        if(result){
+            setCartUpdated(prev=>!prev)
+            updateCartItemCount();
         }
     }
 
     const handleDeleteBooksIsChoose=async()=>{ // Xóa sách đã chọn trong giỏ hàng
         if(selectedItems.length===0){
-            toast.error("Bạn cần chọn ít nhất 1 sản phẩm để xóa!")
+            toast.warning("Bạn cần chọn ít nhất 1 sản phẩm để xóa!")
         }else{
-            const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa những những sách đã chọn khỏi giỏ hàng!")
-            if(!userConfirm){
-                return;
-            }else{
-                const isUpdate = await deleteAllCartItemsIsChoose(selectedItems);
-                if(isUpdate){
-                    setCartUpdated(prev=>!prev)
-                    updateCartItemCount();
-                    setSelectedItems([])
-                }
-            }
+            const result = await deleteAllCartItemsIsChoose(selectedItems);
+        if(result){
+            setCartUpdated(prev=>!prev)
+            updateCartItemCount();
+        }
         }
       
     }
@@ -247,7 +232,7 @@ const ShowCart=()=>{
                                             totalProduct:totalProduct,
                                             isBuyNow:false }});
         }else{
-            toast.error("Vui lòng chọn ít nhất một sản phẩm để mua hàng.");
+            toast.warning("Vui lòng chọn ít nhất một sản phẩm để mua hàng.");
         }
     }
 
@@ -258,7 +243,7 @@ const ShowCart=()=>{
             navigate("/login",{replace:true})
         }
         if(selectedItems.length===0){
-            toast.error("Vui lòng chọn ít nhất 1 sản phẩm để chọn voucher")
+            toast.warning("Vui lòng chọn ít nhất 1 sản phẩm để chọn voucher")
         }else{
             setShowModal(true);
         }

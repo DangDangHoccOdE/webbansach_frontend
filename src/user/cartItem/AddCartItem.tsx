@@ -43,10 +43,11 @@ const AddCartItem:React.FC<AddToCartProps> = (props)=>{
                     updateCartItemCount();
                         toast.success(data.content)
                 }else{
-                    toast.error(data.content || "Lỗi, không thể thêm vào giỏ hàng")
+                    toast.error("Lỗi, không thể thêm vào giỏ hàng")
                 }
             }catch(error){
                 console.log({error})
+                toast.error("Lỗi, không thể thêm vào giỏ hàng")
             }
         }
 
