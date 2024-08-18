@@ -59,7 +59,7 @@ const SaveVoucher:React.FC<VoucherProps>=(props)=>{
             toast.success(data.content);
             setIsVoucherSaved(true);
           }else{
-            toast.error(data.content || "Không thể lưu voucher !")
+            toast.error("Không thể lưu voucher !")
           }
         }catch(error){
           console.log({error});
