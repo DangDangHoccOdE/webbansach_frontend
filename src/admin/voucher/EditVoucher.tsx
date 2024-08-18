@@ -117,7 +117,7 @@ const EditVoucher:React.FC=()=>{
                     setNotice(data.content)
                 }else{
                     setIsError(true);
-                    setNotice(data.content || "Lỗi không thể chỉnh sửa voucher!");
+                    setNotice("Lỗi không thể chỉnh sửa voucher!");
                 }
             }catch(error){
                 console.log({error})

@@ -84,7 +84,7 @@ const AddVoucher :React.FC=()=>{
                     setNotice(data.content)
                 }else{
                     setIsError(true);
-                    setNotice(data.content || "Lỗi không thể tạo voucher!");
+                    setNotice("Lỗi không thể tạo voucher!");
                 }
             }catch(error){
                 setNotice("Đã xảy ra lỗi trong quá trình đăng ký tài khoản!")
