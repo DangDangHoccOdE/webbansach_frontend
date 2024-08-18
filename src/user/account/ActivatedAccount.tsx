@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ResendActivationCode from "./ResendActivationCode";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -60,7 +60,9 @@ function ActivatedAccount() {
             
             {isActivated && (
               <div className="text-center mt-4">
-                <button className="btn btn-primary">Tiếp tục đến trang chủ</button>
+                <Link to="/">
+                    <button className="btn btn-primary">Tiếp tục đến trang chủ</button>
+                </Link>
               </div>
             )}
           </div>
