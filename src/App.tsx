@@ -63,6 +63,7 @@ const MyRoutes = () =>{
             {/* Customer */}
             {!isAdminPath && <Navbar setBookNameFind={setBookNameFind}/>}
                   <Routes>
+                  <Route path="/user/confirmForgotPassword/:username/:forgotPasswordCode" element={<ConfirmForgotPassword/>}/>
                   <Route path="/" element={<HomePage  bookNameFind={bookNameFind} />} />
                   <Route path="/:categoryId" element={<HomePage  bookNameFind={bookNameFind} />} />
                   <Route path="/about" element={<About />} />
@@ -77,7 +78,6 @@ const MyRoutes = () =>{
                   <Route path="/user/changeEmail" element={<ChangeEmail/>} />
                   <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail/>}/>
                   <Route path="/user/forgotPassword" element={<ForgotPassword/>}/>
-                  <Route path="/user/confirmForgotPassword/:username/:forgotPasswordCode" element={<ConfirmForgotPassword/>}/>
                   <Route path="/user/showWishList/:userId" element={<ShowWishListByUser/>}/>
                   <Route path="/wishList/deleteWishList/:wishListId/:userId" element={<DeleteWishList/>}/>
                   <Route path="/wishList/editWishList/:wishListId" element={<EditWishList/>}/>

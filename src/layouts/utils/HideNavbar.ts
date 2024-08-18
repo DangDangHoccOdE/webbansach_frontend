@@ -4,5 +4,7 @@ export const HideNavbarEnpoint = ["/admin",
                                     '/login',
                                     '/error-403',
                                     '/error-404',
-                                    '/register'];
+                                    '/register',
+                                    '/user/forgotPassword',
+                                    ];
 

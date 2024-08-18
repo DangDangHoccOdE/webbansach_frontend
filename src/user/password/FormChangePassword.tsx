@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import useScrollToTop from "../../hooks/ScrollToTop";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Paper,
+  Alert
+} from '@mui/material';
 
 const FormForgotPassword=()=>{
     const {username} = useParams();
@@ -81,32 +90,60 @@ const handleDuplicatePasswordChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
             setNotice("Lỗi, Không thể thay đổi mật khẩu!");
         }
     }
-    return(
-        <div className="container">
-            <div>
-            <h1 className="mt-5 text-center">Thay đổi mật khẩu</h1>
-                <div className="mb-4 col-md-6 col-12 mx-auto">
-                    <form className="form" onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                                <label htmlFor="password">Nhập mật khẩu mới</label> <span style={{color:"red"}}> *</span>
-                                <input type="password" id="password" className="form-control" value={password} required onChange={handlePasswordChange}></input>
-                                <p style={{color:"red"}}> {errorPassword}</p>
-                            </div>
-                             <div className="mb-3">
-                                <label htmlFor="duplicatePassword">Nhập lại mật khẩu mới</label> <span style={{color:"red"}}> *</span>
-                                <input type="password" id="duplicatePassword" className="form-control" value={duplicatePassword} required onChange={handleDuplicatePasswordChange}></input>
-                                <p style={{color:"red"}}> {errorDuplicatePassword}</p>
-
-                            </div>
-                            <div className="mb-3 text-center">
-                                <button type="submit" className="btn btn-primary">Lưu</button>
-                                <p style={{color : isError?"red":"green"}}>{notice}</p>
-                            </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    )
-}   
-
-export default FormForgotPassword;
+    return (
+        <Container maxWidth="sm">
+          <Box sx={{ mt: 5, mb: 4 }}>
+            <Typography variant="h4" align="center" gutterBottom>
+              Thay đổi mật khẩu
+            </Typography>
+            <Paper elevation={3} sx={{ p: 4 }}>
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  fullWidth
+                  label="Nhập mật khẩu mới"
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  required
+                  margin="normal"
+                  error={!!errorPassword}
+                  helperText={errorPassword}
+                />
+                <TextField
+                  fullWidth
+                  label="Nhập lại mật khẩu mới"
+                  type="password"
+                  id="duplicatePassword"
+                  value={duplicatePassword}
+                  onChange={handleDuplicatePasswordChange}
+                  required
+                  margin="normal"
+                  error={!!errorDuplicatePassword}
+                  helperText={errorDuplicatePassword}
+                />
+                <Box sx={{ mt: 3, textAlign: 'center' }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                  >
+                    Lưu
+                  </Button>
+                </Box>
+                {notice && (
+                  <Alert 
+                    severity={isError ? "error" : "success"} 
+                    sx={{ mt: 2 }}
+                  >
+                    {notice}
+                  </Alert>
+                )}
+              </form>
+            </Paper>
+          </Box>
+        </Container>
+      );
+    };
+    
+    export default FormForgotPassword;

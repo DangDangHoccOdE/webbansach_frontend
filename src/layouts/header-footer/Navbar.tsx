@@ -58,7 +58,7 @@ interface NavbarProps{
  const location = useLocation();
 
  const pathHideNavbar = HideNavbarEnpoint;
- if(pathHideNavbar.includes(location.pathname)){
+ if(pathHideNavbar.includes(location.pathname) || location.pathname.startsWith("/user/confirmForgotPassword")) {
    return null;
  }
 
