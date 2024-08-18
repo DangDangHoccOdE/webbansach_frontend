@@ -73,7 +73,7 @@ const handleSubmit=async()=>{
                 setErrorSubmit(false);
                 setIsUpdate(true)
             }else{
-                setNoticeSubmit(data.content || "Không thể thêm vào danh sách yêu thích!")
+                setNoticeSubmit( "Không thể thêm vào danh sách yêu thích!")
                 setErrorSubmit(true);
             }
         }catch(error){
