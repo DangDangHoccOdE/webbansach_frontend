@@ -34,7 +34,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import ShowVoucherUser from "./user/userVoucher/ShowVoucherUser";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
-import HandleCreateOrder from "./user/order/CreateOrder";
 import ShowOrder from "./user/order/ShowOrder";
 import OrderManagement_Admin from "./admin/order/OrderManagement";
 import ViewPurchasedOrder from "./user/order/ViewPurchasedOrder";
@@ -47,6 +46,7 @@ import CategoryManagementPage from "./admin/category/CategoryManagement";
 import UserManagementPage from "./admin/user/UserManagement";
 import VoucherManagementPage from "./admin/voucher/VoucherManagement";
 import ListVoucherToday from "./layouts/voucher/ListVoucherToday.tsx";
+import CreateOrder from "./user/order/CreateOrder";
 
 const MyRoutes = () =>{
   const [bookNameFind, setBookNameFind] = useState('');
@@ -83,8 +83,8 @@ const MyRoutes = () =>{
                   <Route path="/wishList/editWishList/:wishListId" element={<EditWishList/>}/>
                   <Route path="/wishList/deleteBookOfWishList/:bookId/:wishListIdNumber" element={<DeleteBookOfWishList/>}/>
                   <Route path="/user/showCart" element={<ShowCart/>}></Route>
-                  <Route path="/order/createOrder" element={<OrderSummary/>}></Route>
-                  <Route path="/order/handleCreateOrder" element={<HandleCreateOrder/>}></Route>
+                  <Route path="/order/orderSummary" element={<OrderSummary/>}></Route>
+                  <Route path="/order/createOrder" element={<CreateOrder/>}></Route>
                   <Route path="/user/showOrder" element={<ShowOrder/>}></Route>
                   <Route path="/vouchers" element={<ListVoucherToday/>}></Route>
                   <Route path="/user/showVoucherUser" element={<ShowVoucherUser/>}></Route>

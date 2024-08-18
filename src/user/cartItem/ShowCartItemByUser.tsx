@@ -225,7 +225,7 @@ const ShowCart=()=>{
 
     const handleClickBuy = ()=>{
         if(selectedItems.length>0){
-            navigate("/order/createOrder", { state: { selectedItems, 
+            navigate("/order/orderSummary", { state: { selectedItems, 
                                             total: total, 
                                             bookVoucher:appliedBookVoucher, 
                                             shipVoucher:appliedShipVoucher,

@@ -3,12 +3,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import OrderModel from "../../models/OrderModel";
 import { useAuth } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
-import handleCreateOrder from "./handleCreateOrder";
 import { Box, CircularProgress } from "@mui/material";
 import { CheckoutFail } from "../../layouts/page/CheckoutFail";
 import { CheckoutSuccess } from "../../layouts/page/CheckoutSuccess";
+import { handleCreateOrder } from "./OrderActions";
 
-const HandleCreateOrder: React.FC = () => {
+const CreateOrder: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn } = useAuth();
@@ -55,4 +55,4 @@ const HandleCreateOrder: React.FC = () => {
      </>
       }
 
-export default HandleCreateOrder;
+export default CreateOrder;

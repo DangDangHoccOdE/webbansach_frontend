@@ -15,12 +15,12 @@ import { useAuth } from "../../context/AuthContext";
 import VoucherModel from "../../models/VoucherModel";
 import SelectVoucherToPay from "./SelectVoucherToAddOrder";
 import { getCartItemById } from "../../api/CartItemAPI";
-import OrderModel from "../../models/OrderModel";
 import { format } from "date-fns";
 import generateOrderCode from "../../layouts/utils/generateOrderCode";
 import { handleBankPayment } from "../payment/handleBankPayment";
-import handleCreateOrder from "./handleCreateOrder";
 import { getUserByCondition } from "../../api/UserAPI";
+import { handleCreateOrder } from "./OrderActions";
+import { confirm } from "material-ui-confirm";
 
 const OrderSummary:React.FC =()=>{
     const location = useLocation();
@@ -187,62 +187,74 @@ const OrderSummary:React.FC =()=>{
     const handleSelectMethodPayment=(e:ChangeEvent<HTMLSelectElement>)=>{  // Xử lý chọn phương thức thanh toán
         setSelectMethodPayment(e.target.value);
     }
-
-    const handleClickBuy=async()=>{  // Xử lý đặt hàng
-        const confirmUser = window.confirm("Bạn đã chắc chắn muốn đặt hàng");
-        if(!confirmUser){
-            return;
-        }else{  
-            if(user){
-                let updatedVoucherIds  = [...voucherIds] // Lọc những voucher đã chọn 
-                if(appliedBookVoucher){
-                    updatedVoucherIds.push(appliedBookVoucher.voucherId)
-                 
-                }
-                
-                if(appliedShipVoucher){
-                    updatedVoucherIds.push(appliedShipVoucher.voucherId)
-
-                }
-
-                setVoucherIds(updatedVoucherIds)
-                const order:OrderModel={
-                    orderId:0,
-                    date:format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
-                    orderCode:generateOrderCode(), // Tạo mã đơn hàng
-                    deliveryAddress:user.deliveryAddress,
-                    deliveryStatus:"", // Sau này sẽ cập nhật
-                    orderStatus:'Đang xử lý',
-                    paymentCost:priceByVoucher,
-                    purchaseAddress:"BookStore Hà Nội",
-                    shippingFee:priceShip, // giá ship khi chưa chọn voucher giảm giá ship
-                    shippingFeeVoucher:appliedShipVoucher?priceShip-priceShip*(appliedShipVoucher.discountValue/100):priceShip,
-                    totalPrice:total,
-                    totalProduct:totalProduct,
-                    noteFromUser:noteUser,
-                    userId:user.userId,
-                    cartItems:selectedItems,
-                    paymentMethod:selectMethodPayment,
-                    deliveryMethod:formOfDelivery,
-                    voucherIds:updatedVoucherIds,
-                }
-                if(selectMethodPayment==="Thanh toán khi nhận hàng"){
-                    navigate("/order/handleCreateOrder",{state:{ order,isBuyNow},replace:true})
-                }else{ // Thanh toán qua ngân hàng
-                    const paymentUrl = await handleBankPayment(order)
-                    if(paymentUrl){
-                        order.orderStatus = 'Chờ thanh toán'; // Sét trạng thái thành chờ thanh toán
-                        // Tạo đơn hàng trạng thái chờ thanh toán (false là không phải là ấn vào mua ngay)
-                        await handleCreateOrder(order,false);
-                        window.location.replace(paymentUrl);;  // Chuyển hướng đến trang thanh toán
-                    } else {
-                        alert("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
-                      }
-                }
-             
+    
+    const handleClickBuy = () => {
+      confirm({
+        title: 'Đơn hàng',
+        description: `Bạn có chắc muốn mua đơn hàng này không?`,
+        confirmationText: 'Đồng ý',
+        cancellationText: 'Hủy',
+      })
+        .then(() => {
+          // Người dùng đã xác nhận
+          if (user) {
+            let updatedVoucherIds = [...voucherIds];
+            if (appliedBookVoucher) {
+              updatedVoucherIds.push(appliedBookVoucher.voucherId);
             }
-        }
-    }
+            if (appliedShipVoucher) {
+              updatedVoucherIds.push(appliedShipVoucher.voucherId);
+            }
+            setVoucherIds(updatedVoucherIds);
+    
+            const order = {
+              orderId: 0,
+              date: format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
+              orderCode: generateOrderCode(),
+              deliveryAddress: user.deliveryAddress,
+              deliveryStatus: "",
+              orderStatus: 'Đang xử lý',
+              paymentCost: priceByVoucher,
+              purchaseAddress: "BookStore Hà Nội",
+              shippingFee: priceShip,
+              shippingFeeVoucher: appliedShipVoucher ? priceShip - priceShip * (appliedShipVoucher.discountValue / 100) : priceShip,
+              totalPrice: total,
+              totalProduct: totalProduct,
+              noteFromUser: noteUser,
+              userId: user.userId,
+              cartItems: selectedItems,
+              paymentMethod: selectMethodPayment,
+              deliveryMethod: formOfDelivery,
+              voucherIds: updatedVoucherIds,
+            };
+    
+            if (selectMethodPayment === "Thanh toán khi nhận hàng") {
+              navigate("/order/createOrder", { state: { order, isBuyNow }, replace: true });
+            } else {
+              handleBankPayment(order)
+                .then(paymentUrl => {
+                  if (paymentUrl) {
+                    order.orderStatus = 'Chờ thanh toán';
+                    return handleCreateOrder(order, false)  // isBuyNow là false
+                      .then(() => {
+                        window.location.replace(paymentUrl);
+                      });
+                  } else {
+                    throw new Error("Không tạo được URL thanh toán");
+                  }
+                })
+                .catch(error => {
+                  console.error("Lỗi khi xử lý thanh toán:", error);
+                  alert("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
+                });
+            }
+          }
+        })
+        .catch(() => {
+          // Người dùng đã hủy hoặc có lỗi xảy ra
+          console.log("Người dùng đã hủy hoặc có lỗi xảy ra");
+        });
+    };
 
    
 

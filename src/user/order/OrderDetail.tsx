@@ -11,12 +11,10 @@ import { getOrderByOrderId } from "../../api/OrderAPI";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import { getOrderDetailsFromOrder } from "../../api/OrderDetailAPI";
 import { Box, Card, CardContent, Typography, Button } from "@mui/material";
-import cancelOrder from "./CancelOrder";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
-import repurchase from "./handleRepurchase";
-import confirmReceivedOrder from "./handleConfirmReceivedOrder";
 import OrderReview from "../review/OrderReview";
 import { CartContext } from "../../context/CartContext";
+import { cancelOrder, confirmReceivedOrder, repurchase } from "./OrderActions";
 
 interface OrderProps {
   orderId: number;
@@ -68,10 +66,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
   }, [isLoggedIn, navigate, orderId]);
 
   const handleCancelOrder = useCallback(async () => {
-    const confirmUser = window.confirm("Bạn có chắc muốn hủy đơn");
-    if (!confirmUser || !order) {
-      return;
-    }else{
+    if (order) {
         const isUpdate = await cancelOrder(order.orderId);
         if(isUpdate && onOrderUpdate){
           const updateOrder = {...order,orderStatus:"Đã hủy"};
@@ -94,10 +89,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
   }
 
   const handleConfirmReceivedOrder=async()=>{ // Xử lý đã nhận đơn hàng
-    const confirmUser = window.confirm("Bạn có chắc muốn xác nhận đã nhận đơn hàng");
-    if (!confirmUser || !order) {
-      return;
-    }else{
+    if (order) {
         const isUpdate = await confirmReceivedOrder(order.orderId);
         if(isUpdate&& onOrderUpdate){
           const updateOrder = {...order,orderStatus:"Hoàn thành"};
@@ -221,7 +213,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
             }
           
             <Typography variant="h5" color="error">
-              Thành tiền: {NumberFormat(order?.totalPrice)} đ
+              Thành tiền: {NumberFormat(order?.paymentCost)} đ
             </Typography>
          </Box>
       }
