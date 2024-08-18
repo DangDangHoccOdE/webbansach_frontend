@@ -137,7 +137,7 @@ const EditCategory:React.FC=()=>{
                 setIsError(false)
                 setIsUpdate(prevState=>!prevState)
             }else{
-                setErrorNewCategoryName(data.content || "Lỗi đổi tên thể loại");
+                setErrorNewCategoryName("Lỗi đổi tên thể loại");
                 setIsError(true);
             }
     
