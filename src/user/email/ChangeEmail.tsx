@@ -34,7 +34,6 @@ const ChangeEmail: React.FC = () => {
                     .then((user) => {
                         setUser(user);
                         setEmailValue(user?.email || ""); // Cập nhật giá trị email từ user
-                        console.log(user);
                     })
                     .catch((error) => {
                         console.error("Lỗi load info user!", error);
@@ -54,8 +53,12 @@ const ChangeEmail: React.FC = () => {
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setNewEmail(e.target.value);
         setErrorEmail("");
+    };
 
-        return checkEmail(e.target.value, { setErrorEmail });
+    const handleEmailBlur = async () => {
+        if (newEmail) {
+            await checkEmail(newEmail, { setErrorEmail });
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -65,12 +68,14 @@ const ChangeEmail: React.FC = () => {
         if (!newEmail) {
             setErrorEmail("Email không thể bỏ trống!");
             return;
+        } 
+        
+        if (errorEmail) {
+            return; // Không tiếp tục nếu có lỗi email
         }
 
         const email = user?.email;
-        const emailValid = await checkEmail(newEmail, { setErrorEmail });
-
-        if (emailValid) {
+       
             try {
                 setHasError(false);
                 setIsLoading(true); // Bắt đầu hiển thị biểu tượng loading
@@ -104,55 +109,66 @@ const ChangeEmail: React.FC = () => {
             } finally {
                 setIsLoading(false); // Kết thúc hiển thị biểu tượng loading
             }
-        }
     };
 
     if (!isLoggedIn) {
         return null;
     }
     return (
-        <div className="container">
-            <h1 className="mt-5 text-center">Chỉnh sửa email</h1>
-            <div className="mb-3 col-md-6 col-12 mx-auto">
-                {isLoading && <div className="text-center">Đang tải...</div>}
-                <form className="form" onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label htmlFor="email">
-                            Email <span style={{ color: "red" }}> *</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="email"
-                            className="form-control"
-                            value={emailValue}
-                            readOnly
-                        />
+        <div className="container py-5">
+        <div className="row justify-content-center">
+            <div className="col-md-6">
+                <div className="card shadow">
+                    <div className="card-body">
+                        <h2 className="card-title text-center mb-4">Chỉnh sửa email</h2>
+                        {isLoading && (
+                            <div className="text-center mb-4">
+                                <div className="spinner-border text-primary" role="status">
+                                    <span className="visually-hidden">Đang tải...</span>
+                                </div>
+                            </div>
+                        )}
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-3">
+                                <label htmlFor="email" className="form-label">Email hiện tại</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    className="form-control"
+                                    value={emailValue}
+                                    readOnly
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="newEmail" className="form-label">
+                                    Email mới <span className="text-danger">*</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    id="newEmail"
+                                    className={`form-control ${errorEmail ? 'is-invalid' : ''}`}
+                                    value={newEmail}
+                                    onChange={handleEmailChange}
+                                    onBlur={handleEmailBlur}
+                                />
+                                {errorEmail && <div className="invalid-feedback">{errorEmail}</div>}
+                            </div>
+                            <div className="d-grid gap-2">
+                                <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                                   Lưu thay đổi
+                                </button>
+                            </div>
+                        </form>
+                        {notice && (
+                            <div className={`alert mt-3 ${hasError ? 'alert-danger' : 'alert-success'}`} role="alert">
+                                {notice}
+                            </div>
+                        )}
                     </div>
-
-                    <div className="mb-3">
-                        <label htmlFor="newEmail">
-                            Email mới <span style={{ color: "red" }}> *</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="newEmail"
-                            className="form-control"
-                            value={newEmail}
-                            onChange={handleEmailChange}
-                        />
-                        <div style={{ color: "red" }}>{errorEmail}</div>
-                    </div>
-                    <div className="text-center">
-                        <button type="submit" className="btn btn-primary">
-                            Lưu
-                        </button>
-                        <div style={{ color: notice === "Đang xử lý..." ? "red" : hasError ? "red" : "green" }}>
-                            {notice}
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
+    </div>
     );
 };
 
