@@ -52,6 +52,7 @@ const ShowVoucherUser =()=>{
                     const filterVoucher = update.filter(voucher =>
                         voucherQuantityFromUserVoucher.has(voucher.voucherId) &&
                         voucherQuantityFromUserVoucher.get(voucher.voucherId)! > 0
+                        && voucher.isActive
                     );
                     if (filterVoucher.length === 0) {
                         setNotice("Bạn hiện chưa có voucher nào.");

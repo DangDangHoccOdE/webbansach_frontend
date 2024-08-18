@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTag, faTruck } from "@fortawesome/free-solid-svg-icons";
 import { updateVoucher } from "./UpdateIsActiveFromVoucher";
 
-const ListVoucher=()=>{
+const ListVoucherToday=()=>{
     useScrollToTop();
 
     const [vouchersForBook,setVouchersForBook] = useState<VoucherModel[]>([])
@@ -19,22 +19,21 @@ const ListVoucher=()=>{
         const fetchData = async()=>{
             try{
                 setIsLoading(true);
-                const vouchersAvailable = await showVouchersAvailable();
-                
-              const voucherBook = vouchersAvailable.filter(voucher=>voucher.typeVoucher==="Voucher sách")
+                const vouchersAvailable = await showVouchersAvailable();                              
+                const voucherBook = vouchersAvailable.filter(voucher=>voucher.typeVoucher==="Voucher sách")
 
-              const updateBook = await updateVoucher(voucherBook);
+              const updateBook = (await updateVoucher(voucherBook)).filter(voucher=>voucher.isActive===true) as VoucherModel[];
               if(updateBook.length===0){
                 setNoticeBook("Hôm nay không có voucher khuyến mại")
             }
               setVouchersForBook(updateBook)
 
                 const voucherShip = vouchersAvailable.filter(voucher=>voucher.typeVoucher==="Voucher vận chuyển")
+              
+                const updateShip = (await updateVoucher(voucherShip)).filter(voucher=>voucher.isActive===true) as VoucherModel[];
                 if(voucherShip.length===0){
                   setNoticeShip("Hôm nay không có voucher khuyến mại")
               }
-                const updateShip = await updateVoucher(voucherShip);
-
                 setVouchersForShip(updateShip);
             }catch(error){
                 console.log({error});
@@ -74,4 +73,4 @@ const ListVoucher=()=>{
     };
     
    
-export default ListVoucher;
+export default ListVoucherToday;

@@ -7,8 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faEdit, faGift, faPlus, faTicket, faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import { toast } from "react-toastify";
-import handleUpdateIsActiveFromVoucher from "../../layouts/voucher/HandleUpdateIsActiveFromVoucher";
 import { addVouchersToVoucherAvailable, deleteSelectedVouchers, deleteVoucher, giftVouchersToUsers } from "./voucherActions";
+import { updateVoucher } from "../../layouts/voucher/UpdateIsActiveFromVoucher";
 
 const VoucherManagement : React.FC=()=>{
     const [allVouchers,setAllVouchers] = useState<VoucherModel[]>([])
@@ -36,18 +36,19 @@ const VoucherManagement : React.FC=()=>{
                 }else{
                   if(vouchers.length>0){
                     setNotice("")
-                  const updateVouchers= vouchers.map(async(voucherItem)=>{
-                      const nowDate = new Date();
-                      nowDate.setDate(nowDate.getDate()-1);
-                      const expiredDate = new Date(voucherItem.expiredDate);
-                      if(expiredDate<nowDate && voucherItem.isActive){
-                        const voucher =  await handleUpdateIsActiveFromVoucher(voucherItem.voucherId) // Cập nhật lại trạng thái voucher khi hết hạn
-                        return {...voucherItem,isActive:voucher.isActive};                    
-                      }
-                      return voucherItem;
-                  })
-                  const update = await Promise.all(updateVouchers);
-                  setAllVouchers(update)
+                  // const updateVouchers= vouchers.map(async(voucherItem)=>{
+                  //     const nowDate = new Date();
+                  //     nowDate.setDate(nowDate.getDate()-1);
+                  //     const expiredDate = new Date(voucherItem.expiredDate);
+                  //     if(expiredDate<nowDate && voucherItem.isActive){
+                  //       const voucher =  await handleUpdateIsActiveFromVoucher(voucherItem.voucherId) // Cập nhật lại trạng thái voucher khi hết hạn
+                  //       return {...voucherItem,isActive:voucher.isActive};                    
+                  //     }
+                  //     return voucherItem;
+                  // })
+                  // const update = await Promise.all(updateVouchers);
+                  const updateStatusVoucher = await updateVoucher(vouchers);
+                  setAllVouchers(updateStatusVoucher)
                 }
               }
             }catch(error){

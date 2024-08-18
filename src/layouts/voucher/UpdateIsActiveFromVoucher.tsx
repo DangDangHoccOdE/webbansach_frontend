@@ -1,5 +1,4 @@
 import VoucherModel from "../../models/VoucherModel";
-import handleUpdateIsActiveFromVoucher from "./HandleUpdateIsActiveFromVoucher";
 
 export const updateVoucher=async(vouchers:VoucherModel[]):Promise<VoucherModel[]>=>{
     const updateVouchers= vouchers.map(async(voucherItem)=>{
@@ -13,6 +12,29 @@ export const updateVoucher=async(vouchers:VoucherModel[]):Promise<VoucherModel[]
         return voucherItem;
     })
     const update = await Promise.all(updateVouchers);
-    const voucherValid = update.filter(voucher=>voucher.isActive===true) as VoucherModel[];
-    return voucherValid;
+    return update;
+}
+
+const handleUpdateIsActiveFromVoucher=async(voucherId:number)=>{
+  try{
+      const url:string=`http://localhost:8080/vouchers/updateIsActive/${voucherId}`
+      const response = await fetch(url,{
+          method:"PUT",
+          headers:{
+              "Content-type":"application/json"
+          }
+      })
+      const data = await response.json();
+      if(response.ok){
+          return data;
+      }else
+      if(!response.ok){
+          alert("Lỗi, không thể cập nhật trạng thái voucher!")
+          return null;
+      }
+  }catch(error){
+      console.log({error})
+      alert("Lỗi, không thể cập nhật trạng thái voucher!")
+      return null;
+  }
 }

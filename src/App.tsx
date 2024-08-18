@@ -32,7 +32,6 @@ import EditVoucherAdmin from "./admin/voucher/EditVoucher";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ShowVoucherUser from "./user/userVoucher/ShowVoucherUser";
-import ListVoucher from "./layouts/voucher/ListVoucher.tsx";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import HandleCreateOrder from "./user/order/CreateOrder";
@@ -47,6 +46,7 @@ import { ConfirmProvider } from "material-ui-confirm";
 import CategoryManagementPage from "./admin/category/CategoryManagement";
 import UserManagementPage from "./admin/user/UserManagement";
 import VoucherManagementPage from "./admin/voucher/VoucherManagement";
+import ListVoucherToday from "./layouts/voucher/ListVoucherToday.tsx";
 
 const MyRoutes = () =>{
   const [bookNameFind, setBookNameFind] = useState('');
@@ -86,7 +86,7 @@ const MyRoutes = () =>{
                   <Route path="/order/createOrder" element={<OrderSummary/>}></Route>
                   <Route path="/order/handleCreateOrder" element={<HandleCreateOrder/>}></Route>
                   <Route path="/user/showOrder" element={<ShowOrder/>}></Route>
-                  <Route path="/vouchers" element={<ListVoucher/>}></Route>
+                  <Route path="/vouchers" element={<ListVoucherToday/>}></Route>
                   <Route path="/user/showVoucherUser" element={<ShowVoucherUser/>}></Route>
                   <Route path="/order/purchase/:orderId" element={<ViewPurchasedOrder/>}></Route>
                   

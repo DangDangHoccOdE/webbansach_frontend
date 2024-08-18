@@ -61,19 +61,21 @@ const SelectVoucherToAddCreate: React.FC<SelectVoucherProps> = (props) => {
       try {
         if (userId) {
           const fetchData = await showAllVouchers_User(findVoucherName,userId);
-          const updateData = await updateVoucher(fetchData);
+          const updateData =await updateVoucher(fetchData)
    
           const filterVoucherBook = updateData.filter(voucher =>( voucher.typeVoucher === "Voucher sách"
                                                         && voucherQuantityFromUserVoucher.has(voucher.voucherId) &&
-                                                        voucherQuantityFromUserVoucher.get(voucher.voucherId)! > 0)
+                                                        voucherQuantityFromUserVoucher.get(voucher.voucherId)! > 0
+                                                        && voucher.isActive)
           );
      
           setNoticeVouchersBook(filterVoucherBook.length===0?"Bạn hiện chưa có voucher":"");
           
           
-          const filterVoucherShip = updateData.filter(voucher => voucher.typeVoucher === "Voucher vận chuyển"
+          const filterVoucherShip = updateData.filter(voucher =>( voucher.typeVoucher === "Voucher vận chuyển"
                                                         &&  voucherQuantityFromUserVoucher.has(voucher.voucherId) &&
                                                         voucherQuantityFromUserVoucher.get(voucher.voucherId)! > 0
+                                                         && voucher.isActive)
           );
           setNoticeVouchersShip(filterVoucherShip.length===0?"Bạn hiện chưa có voucher":"");
 
