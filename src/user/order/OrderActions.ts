@@ -104,7 +104,7 @@ export const handleCreateOrder = async (order:OrderModel,isBuyNow:boolean):Promi
           toast.success("Đã tạo lại đơn hàng thành công")
           return data;
         }else{
-        toast.error(data.content || "Lỗi, không thể mua lại đơn hàng")
+        toast.error("Lỗi, không thể mua lại đơn hàng")
       }
     }catch(error){
         console.error({error})

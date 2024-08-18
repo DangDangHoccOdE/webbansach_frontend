@@ -157,7 +157,7 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
                     toast.success(data.content)
                     onReviewSubmit();
                 }else{
-                    toast.error(data.content || "Lỗi, không thể tải bình luận")
+                    toast.error("Lỗi, không thể tải bình luận")
                 }
             }catch(error){
                 console.error({error})
