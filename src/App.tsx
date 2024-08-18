@@ -20,11 +20,9 @@ import ConfirmForgotPassword from "./user/password/ConfirmForgotPassword";
 import BookForm_Admin from "./admin/book/AddBook";
 import EditBook_Admin from "./admin/book/EditBook";
 import ShowWishListByUser from "./user/wishList/ShowWishListByUser";
-import DeleteWishList from "./user/wishList/DeleteWishList";
 import { Error403Page } from "./layouts/page/403Page";
 import { Error404Page } from "./layouts/page/404Page";
 import EditWishList from "./user/wishList/EditWishList";
-import DeleteBookOfWishList from "./user/wishList/DeleteBookOfWishList";
 import EditCategory_Admin from "./admin/category/EditCategory";
 import ShowCart from "./user/cartItem/ShowCartItemByUser";
 import AddVoucher_Admin from "./admin/voucher/AddVoucher";
@@ -79,9 +77,7 @@ const MyRoutes = () =>{
                   <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail/>}/>
                   <Route path="/user/forgotPassword" element={<ForgotPassword/>}/>
                   <Route path="/user/showWishList/:userId" element={<ShowWishListByUser/>}/>
-                  <Route path="/wishList/deleteWishList/:wishListId/:userId" element={<DeleteWishList/>}/>
                   <Route path="/wishList/editWishList/:wishListId" element={<EditWishList/>}/>
-                  <Route path="/wishList/deleteBookOfWishList/:bookId/:wishListIdNumber" element={<DeleteBookOfWishList/>}/>
                   <Route path="/user/showCart" element={<ShowCart/>}></Route>
                   <Route path="/order/orderSummary" element={<OrderSummary/>}></Route>
                   <Route path="/order/createOrder" element={<CreateOrder/>}></Route>

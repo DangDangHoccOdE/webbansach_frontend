@@ -12,6 +12,7 @@ import NumberFormat from "../../layouts/utils/NumberFormat";
 import renderRating from "../../layouts/utils/StarRate";
 import { getAllIconImage } from "../../layouts/utils/ImageService";
 import { useAuth } from "../../context/AuthContext";
+import { deleteBookOfWishList } from "./wishListAction";
 
 const EditWishList=()=>{
     useScrollToTop();
@@ -93,13 +94,13 @@ const EditWishList=()=>{
         fetchImages();
     }, [bookList]);
 
-    const handleDelete=(bookId:number)=>{  // xóa sách trong wishList
-        const userConfirm = window.confirm("Bạn có chắc chắn muốn xóa!");
-        if(!userConfirm){
-            return;
-        }else{
-            navigate(`/wishList/deleteBookOfWishList/${bookId}/${wishListIdNumber}`)
+    const handleDeleteBookOfWishList=async(bookId:number)=>{  // xóa sách trong wishList
+        const userConfirm = await deleteBookOfWishList(wishListIdNumber,bookId);
+
+        if(userConfirm){
+            setIsUpdate(prev=>!prev)
         }
+
     }
 
     const pagination=(currentPage:number)=>{ // phân trang
@@ -130,7 +131,7 @@ const EditWishList=()=>{
                 setIsError(false)
                 setIsUpdate(prevState=>!prevState)
             }else{
-                setErrorNewWishList(data.content || "Lỗi đổi tên danh sách yêu thích");
+                setErrorNewWishList("Lỗi đổi tên danh sách yêu thích");
                 setIsError(true);
             }
     
@@ -200,7 +201,7 @@ const EditWishList=()=>{
                         {
                             bookList?.map((book,index)=>(
                                 <tr  key={index}>
-                                <th scope="row">{index}</th>
+                                <th scope="row">{(currentPage-1) * 8 +1 + index}</th>
                               <td>
                                  <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' ,color:"black"}}> {book.bookName}</Link>     
                               </td>
@@ -213,7 +214,7 @@ const EditWishList=()=>{
                                     <td>{book.author}</td>
                                     <td>
                                         <div className="mt-2">
-                                            <button  className="btn btn-danger"  onClick={()=>handleDelete(book.bookId)}>
+                                            <button  className="btn btn-danger"  onClick={()=>handleDeleteBookOfWishList(book.bookId)}>
                                             <i className="fas fa-trash"></i></button>
                                             </div>
                                     </td>

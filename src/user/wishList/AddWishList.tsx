@@ -37,7 +37,7 @@ const AddWishList:React.FC<WishListFormProps>=(props)=>{
                 props.setIsUpdate(prevState=>!prevState);
             }else{
                 console.log(data.content)
-                setErrorNewWishList(data.content || "Lỗi không thể tạo thể danh sách yêu thích mới");
+                setErrorNewWishList("Lỗi không thể tạo thể danh sách yêu thích mới");
                 setIsError(true);
             }
         }catch(error){

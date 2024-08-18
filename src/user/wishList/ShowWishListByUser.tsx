@@ -5,6 +5,7 @@ import useScrollToTop from "../../hooks/ScrollToTop";
 import { getWishListByUserId } from "../../api/WishListAPI";
 import AddWishList from "./AddWishList";
 import { useAuth } from "../../context/AuthContext";
+import { deleteWishList } from "./wishListAction";
 
 const ShowWishListByUser=()=>{
     const {isLoggedIn} = useAuth();
@@ -14,7 +15,7 @@ const ShowWishListByUser=()=>{
     const [notice,setNotice] = useState("");
     const [wishList,setWishList] = useState<WishListModel[]|null>([]);
     const [showForm,setShowForm] = useState(false);
-    const [isUpdate,setIsUpdate] = useState(false);;
+    const [isUpdate,setIsUpdate] = useState(false);
 
     let userIdNumber = parseInt(userId+"");
 
@@ -48,13 +49,12 @@ const ShowWishListByUser=()=>{
          getIdWishList();
     },[isUpdate, navigate, userIdNumber,isLoggedIn])
 
-    const handleDelete=(wishListId:number)=>{   // thực hiện xóa wishList
-        const userConfirmed = window.confirm("Bạn có chắc chắn muốn xóa!");
-        if(!userConfirmed){
-            return;
-        }else{
-            navigate(`/wishList/deleteWishList/${wishListId}/${userIdNumber}`)
+    const handleDelete=async(wishListId:number)=>{   // thực hiện xóa wishList
+        const result = await deleteWishList(wishListId);
+        if(result){
+            setIsUpdate(prev=>!prev)
         }
+
     }
 
     const toggleForm=()=>{   // Mở form thêm wishList
