@@ -153,7 +153,7 @@ export const Chart: React.FC<ChartProps> = (props) => {
 					);
 					props.orders?.forEach((order) => {
 						const orderDate = new Date(order.date);
-						if (order.orderStatus === "Thành công") {
+						if (order.orderStatus === "Hoàn thành") {
 							const year = orderDate.getFullYear() + "";
 
 							newDataNumberOfOrder_Yearly[BY_YEAR.indexOf(year)] += 1;
@@ -170,7 +170,7 @@ export const Chart: React.FC<ChartProps> = (props) => {
 					props.orders?.forEach((order) => {
 						const orderDate = new Date(order.date);
 						if (
-							order.orderStatus === "Thành công" &&
+							order.orderStatus === "Hoàn thành" &&
 							orderDate.getFullYear() === parseInt(year + "")
 						) {
 							const month = orderDate.getMonth();
@@ -196,7 +196,7 @@ export const Chart: React.FC<ChartProps> = (props) => {
 						const orderDateFormatted = formatDate(orderDate);
 
 						if (
-							order.orderStatus === "Thành công" &&
+							order.orderStatus === "Hoàn thành" &&
 							latestDays?.includes(orderDateFormatted)
 						) {
 							newDataNumberOfOrder_Daily[
@@ -254,13 +254,13 @@ export const Chart: React.FC<ChartProps> = (props) => {
 		let orderFailureTotal = 0;
 		let orderDeliveringTotal = 0;
 		props.orders?.forEach((order) => {
-			if (order.orderStatus === "Thành công") {
+			if (order.orderStatus === "Hoàn thành") {
 				orderSuccessfulTotal++;
 			} else if (order.orderStatus === "Đang xử lý") {
 				orderProcessingTotal++;
-			} else if (order.orderStatus === "Bị huỷ") {
+			} else if (order.orderStatus === "Đã hủy") {
 				orderFailureTotal++;
-			} else if (order.orderStatus === "Đang giao hàng") {
+			} else if (order.orderStatus === "Đang vận chuyển") {
 				orderDeliveringTotal++;
 			}
 		});

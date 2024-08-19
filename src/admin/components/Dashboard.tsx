@@ -25,11 +25,11 @@ const Dashboard=()=>{
         }).catch(error=>{
             console.log(error);
         })
-    })
+    },[])
 
     // Lấy tổng số hoá đơn và tổng tiền kiếm được
     useEffect(()=>{
-        fetchAllOrders(1) // 1 là currentPage
+        fetchAllOrders(0) // 0 là lấy tất cả đơn hàng
             .then(response=>{
                 if(response){
                     setOrders(response.resultOrders)
@@ -41,7 +41,7 @@ const Dashboard=()=>{
                     setTotalPrice(totalPriceResponse);
                 }
             }).catch((error) => console.log(error));
-    })
+        },[])
 
     // Lấy tổng số sách
     useEffect(()=>{
@@ -50,7 +50,7 @@ const Dashboard=()=>{
                 setTotalNumberBooks(response);
             })
             .catch((error) => console.log(error));
-    })
+        },[])
 
     useEffect(() => {
 		getNumberOfReview()

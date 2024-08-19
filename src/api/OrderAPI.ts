@@ -96,10 +96,17 @@ export async function getOrderByOrderId(orderId:number):Promise<OrderModel|null>
 } 
 
 export async function fetchAllOrders(currentPage:number):Promise<ResultInterface|null> {
-    const url:string=`http://localhost:8080/orders?sort=date,desc&size=10&page=${currentPage}`
+    let url:string='';
+    if(currentPage!==0){
+        url=`http://localhost:8080/orders?sort=date,desc&size=10&page=${currentPage}`
+    }
+    else{
+        url='http://localhost:8080/orders?sort=date,desc&size=10000';
+    }
     const result:OrderModel[] = [];
 
     try{
+        console.log(url)
         const response = await fetchWithAuth(url);
         if(!response){
             throw new Error(`Lỗi khi gọi api danh sách đặt hàng`)
@@ -133,7 +140,6 @@ export async function fetchAllOrders(currentPage:number):Promise<ResultInterface
                 voucherIds:responseData[key].voucherIds,
             })
         }
-
         return {resultOrders:result, totalOrders:totalOrders , totalPages:totalPages};
     }catch(error){
         console.error(error)
