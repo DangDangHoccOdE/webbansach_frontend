@@ -1,4 +1,5 @@
 import fetchWithAuth from "../layouts/utils/AuthService";
+import { getAllIconImage } from "../layouts/utils/ImageService";
 import BookModel from "../models/BookModel";
 
 interface ResultInterface{
@@ -212,3 +213,23 @@ export async function getNumberOfBook(): Promise<number> {
      }
      return 0;
   }
+
+
+  export async function get5BestSellerBooks(): Promise<BookModel[]> {
+    const url:string=`http://localhost:8080/books?sort=soldQuantity,desc&size=5`;   
+    let bookList = await getBook(url);
+ 
+    // Use Promise.all to wait for all promises in the map to resolve
+    let newBookList = await Promise.all(bookList.resultBooks.map(async (book: any) => {
+       // Trả về quyển sách
+       const responseImg = await getAllIconImage(bookList.resultBooks);
+       const thumbnail = responseImg.find(image => image.icon);
+ 
+       return {
+          ...book,
+          thumbnail: thumbnail ? thumbnail.imageData : null,
+       };
+    }));
+ 
+    return newBookList;
+ }

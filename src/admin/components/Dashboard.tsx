@@ -6,6 +6,7 @@ import { getNumberOfReview } from "../../api/ReviewAPI";
 import { ParameterDigital } from "./ParameterDigital";
 import RequireAdmin from "../RequireAdmin";
 import OrderModel from "../../models/OrderModel";
+import { Chart } from "./Chart";
 
 const Dashboard=()=>{
     const [numberOfAccount,setNumberOfAccount] = useState(0);
@@ -14,7 +15,7 @@ const Dashboard=()=>{
     const [totalNumberOfFeedbacks,setTotalNumberOfFeedbacks] = useState(0);
     const [totalNumberOfReviews,setTotalNumberOfReviews] = useState(0);
     const [totalPrice,setTotalPrice] = useState(0);
-    const [oders,setOrders] = useState<OrderModel[]>([])
+    const [orders,setOrders] = useState<OrderModel[]>([])
 
     // Lấy tổng số account
     useEffect(()=>{
@@ -31,6 +32,7 @@ const Dashboard=()=>{
         fetchAllOrders(1) // 1 là currentPage
             .then(response=>{
                 if(response){
+                    setOrders(response.resultOrders)
                     setNumberOfOrder(response?.totalOrders)
                     // tổng tiền kiếm được
                     const totalPriceResponse = response.resultOrders.reduce((total,orderPrice)=>{
@@ -68,7 +70,7 @@ const Dashboard=()=>{
 				totalNumberOfFeedbacks={totalNumberOfFeedbacks}
 				totalNumberOfReviews={totalNumberOfReviews}
 			/>
-			{/* <Chart orders={orders} /> */}
+			<Chart orders={orders} />
 		</div>
 	);
 };
