@@ -123,7 +123,7 @@ const MyRoutes = () =>{
                         <Route path="/admin/voucher/editVoucher/:voucherId" element={<EditVoucherAdmin/>}></Route>
 
 
-                        <Route path="/admin/order" element={<OrderManagement_Admin/>}></Route>
+                        <Route path="/admin/orderManagement" element={<OrderManagement_Admin/>}></Route>
 
                       
                         <Route path="/admin/order/purchase" element={<ViewPurchasedOrder/>}></Route>
