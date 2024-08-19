@@ -33,7 +33,7 @@ const Top5BestSeller:React.FC=()=>{
                         <tr key={book.bookId}>
                             <th scope="row">{book.bookId}</th>
                             <td>
-                                <Link to={`/book/${book.bookId}`}
+                                <Link to={`/books/${book.bookId}`}
                                     className="d-inline text-black"
                                     >
                                     <img src={book.thumbnail}  alt='' width={30}></img>
@@ -42,7 +42,7 @@ const Top5BestSeller:React.FC=()=>{
                             <Tooltip title={book.bookName}arrow>
                                 <td>
                                 <Link
-										to={`/book/${book.bookId}`} style={{textDecoration:"none"}}
+										to={`/books/${book.bookId}`} style={{textDecoration:"none"}}
 										className='d-inline text-black'
 									>
 										{book.bookName}
