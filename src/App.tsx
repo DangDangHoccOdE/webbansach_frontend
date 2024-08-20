@@ -45,6 +45,7 @@ import UserManagementPage from "./admin/user/UserManagement";
 import VoucherManagementPage from "./admin/voucher/VoucherManagement";
 import ListVoucherToday from "./layouts/voucher/ListVoucherToday.tsx";
 import CreateOrder from "./user/order/CreateOrder";
+import BookManagementPage from "./admin/book/BookManagement";
 
 const MyRoutes = () =>{
   const [bookNameFind, setBookNameFind] = useState('');
@@ -124,6 +125,7 @@ const MyRoutes = () =>{
 
 
                         <Route path="/admin/orderManagement" element={<OrderManagement_Admin/>}></Route>
+                        <Route path="/admin/bookManagement" element={<BookManagementPage/>}></Route>
 
                       
                         <Route path="/admin/order/purchase" element={<ViewPurchasedOrder/>}></Route>

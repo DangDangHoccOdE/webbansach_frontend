@@ -44,13 +44,74 @@ export async function getBook(link:string):Promise<ResultInterface> {
                 publishingYear:responseData[key].publishingYear
                 });
     }
-    return {resultBooks:result, totalPages: totalPages , totalBooks: totalBooks};
+
+    let newBookList = await Promise.all(result.map(async (book: any) => {
+        // Trả về quyển sách
+        const responseImg = await getAllIconImage(result);
+        const thumbnail = responseImg.find(image => image.icon);
+  
+        return {
+           ...book,
+           thumbnail: thumbnail ? thumbnail.imageData : null,
+        };
+     }));
+    return {resultBooks:newBookList, totalPages: totalPages , totalBooks: totalBooks};
 }
 
 export async function getAllBook(currentPage:number):Promise<ResultInterface> {
-    const url:string=`http://localhost:8080/books?sort=bookId,desc&size=8&page=${currentPage}`;
+    const size:number = 8; // Giả sử số sách môi trang là 8
+    const url:string=`http://localhost:8080/books?sort=bookId,desc&size=${size}&page=${currentPage}`;
 
     return getBook(url);
+}
+
+export async function searchBook(keyBookFind?:string,idCate?:number,filter?:number,size?:number,page?:number):Promise<ResultInterface> {
+    const optionShow = `size=${size}&page=${page}`
+
+    if(keyBookFind){
+        keyBookFind = keyBookFind.trim();
+    }
+
+    // endpoint mặc định
+    let endpoint:string = `http://localhost:8080/books?`+optionShow;
+
+    let filterEndpoint = '';
+    if(filter===1){
+        filterEndpoint = "sort=bookName,asc";  // Sắp xếp tên sách A-Z
+    }else if(filter===2){
+        filterEndpoint = "sort=bookName,desc"; // Sắp xếp tên sách Z-A
+    }else if(filter === 3){
+        filterEndpoint= "sort=price,asc"; // Sắp xếp mức giá tăng dần
+    }else if(filter ===4){
+        filterEndpoint = "sort=price,desc"; // Sắp xếp mức giá giảm dần
+    }else if(filter === 5){ 
+        filterEndpoint = "sort=soldQuantity,desc"; // Sắp ếp theo số lượng đã bán giảm dần
+    }
+
+    // Nếu có từ khóa tìm kiếm và không có lọc thể loại
+    if(keyBookFind!==""){
+        endpoint = `http://localhost:8080/books/search/findByBookNameContaining?bookName=${keyBookFind}&`+optionShow+"&"+filterEndpoint;
+    }
+
+    // Nếu id Category !== undifined
+    if(idCate!==undefined){
+        // Nếu không có từ khóa tim kiếm và có lọc thể loại
+        if(keyBookFind === '' && idCate > 0){
+            endpoint = `http://localhost:8080/books/search/findByCategoryList_categoryId?categoryId=${idCate}&` + optionShow +"&"+filterEndpoint
+        }else if(keyBookFind !== '' && idCate > 0){ // Nếu có từ khóa tìm kiếm và lọc thể loại
+            endpoint = `http://localhost:8080/books/search/findByBookNameContainingAndCategoryList_categoryId?bookName=${keyBookFind}&categoryId=${idCate}&` + optionShow +"&"+ filterEndpoint
+        }
+
+        // Chỉ có lọc filter
+        if(keyBookFind === '' && (idCate ===0 || typeof(idCate) === "string")){
+            endpoint = `http://localhost:8080/books?`+optionShow+"&"+filterEndpoint
+        }
+        
+    }
+
+    console.log(endpoint)
+    return getBook(endpoint)
+
 }
 
 export async function getThreeBooksLatest():Promise<ResultInterface> {
@@ -58,19 +119,19 @@ export async function getThreeBooksLatest():Promise<ResultInterface> {
     return getBook(url);
 }
 
-export async function findBook(bookName:string,categoryId : number):Promise<ResultInterface> {
-    let url:string=`http://localhost:8080/books?sort=bookId,desc&size=8&page=0`;
+// export async function findBook(bookName:string,categoryId : number):Promise<ResultInterface> {
+//     let url:string=`http://localhost:8080/books?sort=bookId,desc&size=8&page=0`;
 
-    if(bookName!=='' && categoryId===0){
-        url = `http://localhost:8080/books/search/findByBookNameContaining?sort=bookId,desc&size=8&page=0&bookName=${bookName}`
-    }else if(bookName==='' && categoryId>0){
-        url = `http://localhost:8080/books/search/findByCategoryList_categoryId?sort=bookId,desc&size=8&page=0&categoryId=${categoryId}`
-    }else if(bookName!=='' && categoryId>0){
-        url = `http://localhost:8080/books/search/findByBookNameContainingAndCategoryList_categoryId?sort=bookId,desc&size=8&page=0&bookName=${bookName}&categoryId=${categoryId}`
-    }
+//     if(bookName!=='' && categoryId===0){
+//         url = `http://localhost:8080/books/search/findByBookNameContaining?sort=bookId,desc&size=8&page=0&bookName=${bookName}`
+//     }else if(bookName==='' && categoryId>0){
+//         url = `http://localhost:8080/books/search/findByCategoryList_categoryId?sort=bookId,desc&size=8&page=0&categoryId=${categoryId}`
+//     }else if(bookName!=='' && categoryId>0){
+//         url = `http://localhost:8080/books/search/findByBookNameContainingAndCategoryList_categoryId?sort=bookId,desc&size=8&page=0&bookName=${bookName}&categoryId=${categoryId}`
+//     }
 
-    return getBook(url);
-}
+//     return getBook(url);
+// }
 
 export async function getBookByBookId(bookId:number): Promise<BookModel | null> {
     const link = `http://localhost:8080/books/${bookId}`;

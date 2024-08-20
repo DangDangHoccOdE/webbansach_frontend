@@ -1,63 +1,98 @@
 import React, { useEffect, useState } from "react";
 import BookModel from "../../models/BookModel";
 import BookProps from "./components/BookProps";
-import { findBook, getAllBook } from "../../api/BookAPI";
+import { getAllBook, searchBook } from "../../api/BookAPI";
 import { Pagination } from "../utils/Pagination";
 import useScrollToTop from "../../hooks/ScrollToTop";
-import { CircularProgress } from "@mui/material";
+import {  Skeleton } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFaceSadCry } from "@fortawesome/free-solid-svg-icons";
 
 interface ListProductProps{
-  bookNameFind : string;
-  categoryId : number;
+  bookNameFind? : string;
+  categoryId? : number;
+  filter?:number;
 }
 
-function ListProduct({bookNameFind, categoryId} : ListProductProps){
+function ListProduct({bookNameFind, categoryId,filter} : ListProductProps){
   const [bookList, setBookList] = useState<BookModel[]>([]);
-  const [loadingData, setLoadingData] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [noticeError, setNoticeError] = useState(null);
   const [currentPage,setCurrentPage] = useState(1);
   const [totalPages,setTotalPages] = useState(0);
 
   useScrollToTop();
   useEffect(() => {
-    if(bookNameFind === '' && categoryId === 0 ){
-      getAllBook(currentPage-1)
-        .then((result) => {
-          setTotalPages(result.totalPages);
-          setBookList(result.resultBooks);
-          setLoadingData(false);
-        })
-        .catch((error) => {
-          setLoadingData(false);
-          setNoticeError(error.message);
-        });
-  }else{
-      findBook(bookNameFind,categoryId)
-      .then((result) => {
-        setTotalPages(result.totalPages);
-        setBookList(result.resultBooks);
-        setLoadingData(false);
-      })
-      .catch((error) => {
-        setLoadingData(false);
-        setNoticeError(error.message);
-      });
-  }
+      // Mặc định sẽ gọi tất cả các sách
+      if(bookNameFind === '' && categoryId===0 && filter===0){
+          // currentPage - 1 vì trong endpoint trang đầu tiên se là 0
+          getAllBook(currentPage-1)
+              .then((response)=>{
+                setBookList(response.resultBooks);
+                setTotalPages(response.totalPages);
+                setIsLoading(false)
+              })
+              .catch(error=>{
+                console.error(error);
+                setIsLoading(false);
+                setNoticeError(error.message);
+              })
+      }else{
+        const size:number=8;
+        // Khi có sử dụng bộ lọc
+        searchBook(bookNameFind,categoryId,filter,size,currentPage-1)
+            .then((response)=>{
+              setBookList(response.resultBooks);
+              setTotalPages(response.totalPages);
+              setIsLoading(false);
+            })
+            .catch((error) => {
+              setIsLoading(false);
+              setNoticeError(error.message);
+            });
+      }
   
-  },[currentPage,bookNameFind,categoryId] 
+  },[currentPage, bookNameFind, categoryId, filter] 
   );
 
   const pagination = (pageCurrent:number)=> {
     setCurrentPage(pageCurrent)
   }
 
-  if (loadingData) {
+  if (isLoading) {
     return (
-      <div className="text-center mt-5">
-        <CircularProgress color="inherit" />
-      </div>
+      <div className='container-book container mb-5 py-5 px-5 bg-light'>
+				<div className='row'>
+					<div className='col-md-6 col-lg-3 mt-3'>
+						<Skeleton
+							className='my-3'
+							variant='rectangular'
+							height={400}
+						/>
+					</div>
+					<div className='col-md-6 col-lg-3 mt-3'>
+						<Skeleton
+							className='my-3'
+							variant='rectangular'
+							height={400}
+						/>
+					</div>
+					<div className='col-md-6 col-lg-3 mt-3'>
+						<Skeleton
+							className='my-3'
+							variant='rectangular'
+							height={400}
+						/>
+					</div>
+					<div className='col-md-6 col-lg-3 mt-3'>
+						<Skeleton
+							className='my-3'
+							variant='rectangular'
+							height={400}
+						/>
+					</div>
+				</div>
+			</div>
     );
   }
 
