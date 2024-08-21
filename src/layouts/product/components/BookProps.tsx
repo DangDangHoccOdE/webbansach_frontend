@@ -11,11 +11,10 @@ import AddCartItem from "../../../user/cartItem/AddCartItem";
 import { useAuth } from "../../../context/AuthContext";
 import SoldQuantityFormat from "../../utils/SoldQuantityFormat";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faHeart, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {  faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Badge, Button, Card } from "react-bootstrap";
 import renderRating from "../../utils/StarRate";
 import { CircularProgress } from "@mui/material";
-import { checkRoleAdmin } from "../../utils/JwtService";
 
 interface BookPropsInterface {
     book: BookModel;
@@ -33,8 +32,6 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [noticeSubmit, setNoticeSubmit] = useState("");
     const [isLoading,setIsLoading] = useState(false)
-
-    const isAdmin = checkRoleAdmin(); // Kiểm tra role Admin
 
     useEffect(() => {
         getIconImageByBook(bookId)
@@ -68,15 +65,6 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
     let imageData: string = "";
     if (iconOfBook && iconOfBook.imageData) {
         imageData = iconOfBook.imageData;
-    }
-
-    const handleDelete = () => {
-        const userConfirmed = window.confirm("Bạn có chắc chắn muốn xóa!");
-        if (!userConfirmed) {
-            return;
-        } else {
-            navigate(`/books/deleteBook/${bookId}`);
-        }
     }
 
     const handleHeartClick = () => { // Thêm vào danh sách yêu thích
@@ -147,16 +135,6 @@ const BookProps: React.FC<BookPropsInterface> = (props) => {
                     <AddCartItem bookId={bookId} quantity={1} isIcon={true} isDisabled={props.book.soldQuantity === props.book.quantity}/>
                 </div>
             </div>
-            {isAdmin && (
-                <div className="d-flex justify-content-end mt-3">
-                    <Link to={`/books/editBook/${bookId}`} className="btn btn-outline-primary btn-sm me-2">
-                        <FontAwesomeIcon icon={faEdit} />
-                    </Link>
-                    <Button variant="outline-danger" size="sm" onClick={handleDelete}>
-                        <FontAwesomeIcon icon={faTrash} />
-                    </Button>
-                </div>
-            )}
         </Card.Body>
         <AddBookToWishList
             bookId={bookId}
