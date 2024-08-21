@@ -140,9 +140,9 @@ const OrderManagement:React.FC=()=>{
                                   value={order.deliveryStatus}
                                   onChange={(e) => handleDeliveryStatusChange(order.orderId, e.target.value)}
                                 >
-                                  <MenuItem value="Chưa giao">CHƯA GIAO</MenuItem>
-                                  <MenuItem value="Đang giao">ĐANG GIAO</MenuItem>
-                                  <MenuItem value="Đã giao">ĐÃ GIAO</MenuItem>
+                                  <MenuItem value="Chưa giao">Chưa giao</MenuItem>
+                                  <MenuItem value="Đang giao">Đang giao</MenuItem>
+                                  <MenuItem value="Đã giao">Đã giao</MenuItem>
                                 </Select>
                               </FormControl>
                             </TableCell>

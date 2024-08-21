@@ -19,7 +19,6 @@ const ToolFilter:React.FC<ToolFilterProps>= (props)=>{
 
     const onSetKeySearch = (e:ChangeEvent<HTMLInputElement>)=>{
         setKeySearchTemp(e.target.value);   
-        console.log(e.target.value)
         if(e.target.value.trim() === ""){
             props.setKeySearch(e.target.value);
         }
@@ -27,15 +26,14 @@ const ToolFilter:React.FC<ToolFilterProps>= (props)=>{
 
     // Khi Nhấn nút search
     const submitSearch=()=>{
-        console.log("Search",keySearchTemp)
-        props.setKeySearch();
+        props.setKeySearch(keySearchTemp);
     }
 
     // Khi nhấn enter thì sẽ submit
     const handleKeyUp =(event:any)=>{
         if(event.key === "Enter"){
-            submitSearch();
-        }
+			submitSearch();
+		}
     }
 
     // Thay đổi giá trị thể loại

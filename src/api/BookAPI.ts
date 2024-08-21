@@ -73,7 +73,7 @@ export async function searchBook(keyBookFind?:string,idCate?:number,filter?:numb
     }
 
     // endpoint mặc định
-    let endpoint:string = `http://localhost:8080/books?`+optionShow;
+    let endpoint:string = `http://localhost:8080/books?sort=bookId,desc&`+optionShow;
 
     let filterEndpoint = '';
     if(filter===1){
@@ -103,13 +103,12 @@ export async function searchBook(keyBookFind?:string,idCate?:number,filter?:numb
         }
 
         // Chỉ có lọc filter
-        if(keyBookFind === '' && (idCate ===0 || typeof(idCate) === "string")){
+        if(keyBookFind === '' && (idCate ===0 || typeof(idCate) === "string") && filter){
             endpoint = `http://localhost:8080/books?`+optionShow+"&"+filterEndpoint
         }
         
     }
 
-    console.log(endpoint)
     return getBook(endpoint)
 
 }

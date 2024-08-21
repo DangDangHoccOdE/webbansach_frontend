@@ -125,12 +125,13 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
       <CardContent>
         <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
           {  showFunctionRelateOrder &&
-              (  order?.deliveryStatus==="Đã giao hàng thành công" ?
+              (  order?.deliveryStatus==="Đã giao" ?
               <>
                   <Typography color={"green"}>
                     {order?.deliveryStatus}
                 </Typography>
                 <Typography mx={2}>|</Typography>
+                <Typography color="orange">{order?.orderStatus}</Typography>
               </>  :  
                <Typography color="orange">{order?.orderStatus}</Typography> )
           }
