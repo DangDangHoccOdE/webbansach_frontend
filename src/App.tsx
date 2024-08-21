@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-pascal-case */
-import React, {  useState } from "react";
 import "./App.css";
 import Navbar from "./layouts/header-footer/Navbar";
 import Footer from "./layouts/header-footer/Footer";
@@ -48,8 +47,6 @@ import CreateOrder from "./user/order/CreateOrder";
 import BookManagementPage from "./admin/book/BookManagement";
 
 const MyRoutes = () =>{
-  const [bookNameFind, setBookNameFind] = useState('');
-
   // Xử lý ẩn hiện navbar và footer
   const location = useLocation();
 
@@ -60,11 +57,10 @@ const MyRoutes = () =>{
         <CartProvider>
           <ConfirmProvider>
             {/* Customer */}
-            {!isAdminPath && <Navbar setBookNameFind={setBookNameFind}/>}
+            {!isAdminPath && <Navbar/>}
                   <Routes>
                   <Route path="/user/confirmForgotPassword/:username/:forgotPasswordCode" element={<ConfirmForgotPassword/>}/>
-                  <Route path="/" element={<HomePage  bookNameFind={bookNameFind} />} />
-                  <Route path="/:categoryId" element={<HomePage  bookNameFind={bookNameFind} />} />
+                  <Route path="/" element={<HomePage />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/books/:bookId" element={<ProductDetail/>} />
                   <Route path="/register" element={<RegisterUser />} />

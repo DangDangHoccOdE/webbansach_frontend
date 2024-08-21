@@ -9,12 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFaceSadCry } from "@fortawesome/free-solid-svg-icons";
 import ToolFilter from "./components/ToolFilter";
 
-interface ListProductProps{
-  bookNameFind? : string;
-  categoryId? : number;
-}
-
-const ListProduct:React.FC<ListProductProps>=(props)=>{
+const ListProduct:React.FC=(props)=>{
   const [bookList, setBookList] = useState<BookModel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentPage,setCurrentPage] = useState(1);

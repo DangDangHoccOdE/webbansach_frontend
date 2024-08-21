@@ -1,24 +1,15 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { ChangeEvent, useState ,KeyboardEvent, useEffect, useContext} from "react";
+import React, {  useState , useEffect, useContext} from "react";
 import {  Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { getAllCategory } from "../../api/CategoryAPI";
-import CategoryModel from "../../models/CategoryModel";
-import { Search } from "react-bootstrap-icons";
 import { getUsernameByToken, isToken, logout } from "../utils/JwtService";
 import { getUserByCondition } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
 import { useAuth } from "../../context/AuthContext";
 import { CartContext } from "../../context/CartContext";
-import { Avatar } from "@mui/material";
+import { Avatar, Button } from "@mui/material";
 import { HideNavbarEnpoint } from "../utils/HideNavbar";
-interface NavbarProps{
-    setBookNameFind: (keyword:string)=> void
-  }
 
-  const Navbar: React.FC<NavbarProps> = ({setBookNameFind}) => {
-
-  const [temporaryKeyWord,setTemporaryKeyWord] = useState('');
-  const [categoryList,setCategoryList] = useState<CategoryModel[]>([]);
+  const Navbar: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [user,setUser] = useState<UserModel|null>(null); 
   const navigator = useNavigate();
@@ -27,16 +18,6 @@ interface NavbarProps{
 
    
   useEffect(() => {
-    const fetchCategories = async () => { // gọi api lấy thể loại
-      try {
-        const result = await getAllCategory(); 
-        setCategoryList(result); 
-      } catch (error) {
-        setError("Lỗi khi gọi api danh sách thể loại"); 
-        console.error(error)
-      }
-    };
-
     const getUser = async () =>{ // gọi api lấy user
         const username = getUsernameByToken();
         if(username!==undefined){
@@ -50,7 +31,6 @@ interface NavbarProps{
       } 
     }
     getUser();
-    fetchCategories(); 
 
   },[navigator, setLoggedIn]);
   
@@ -69,19 +49,6 @@ interface NavbarProps{
         <h1>{error}</h1>
       </div>
     )
-  }
-  const onSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTemporaryKeyWord(e.target.value);
-  }
-
-  const handleSearch=()=>{
-    setBookNameFind(temporaryKeyWord);
-  }
-
-  const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
   }
 
   const handleLogout=() =>{
@@ -105,16 +72,6 @@ interface NavbarProps{
                 <NavLink className="nav-link active" aria-current="page" to="/">Trang chủ</NavLink>
               </li>
               <li className="nav-item dropdown">
-                <NavLink className="nav-link dropdown-toggle" to="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Thể loại sách
-                </NavLink>
-                <ul className="dropdown-menu" aria-labelledby="navbarDropdown1">
-                    {categoryList.map(item=> 
-                        <li key={item.categoryId}><NavLink className="dropdown-item" to={`/${item.categoryId}`}>{item.categoryName}</NavLink></li>
-                    )}
-                </ul>
-              </li>
-              <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Quy định bán hàng
                 </a>
@@ -127,15 +84,12 @@ interface NavbarProps{
               <li className="nav-item">
                 <a className="nav-link" href="#">Liên hệ</a>
               </li>
+              <li className='nav-item'>
+							<Link className='nav-link' to={"/policy"}>
+								Chính sách
+							</Link>
+						</li>
             </ul>
-          </div>
-  
-          {/* Tìm kiếm */}
-          <div className="d-flex">
-            <input className="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search" onChange={onSearchInputChange} value={temporaryKeyWord} onKeyPress={handleEnter}/>
-            <button className="btn btn-outline-success" type="submit" onClick={handleSearch}>
-                    <Search/>
-            </button>
           </div>
   
           {/* Biểu tượng giỏ hàng */}
@@ -151,26 +105,45 @@ interface NavbarProps{
           {/* { Biểu tượng đăng nhập */}
           {
             isToken() ? 
-            <ul className="navbar-nav me-1">
-            <li className="nav-item dropdown">
-                 <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-               {  
-                  user?.avatar===null?
-                           <i className="fas fa-user"></i>
-                           : <Avatar alt={user?.firstName?.toUpperCase()} src={user?.avatar}   sx={{ width: 30, height: 30 }} />
-                  
-              }</a>
-                 <div className="dropdown-menu dropdown-menu-end">
-                 <p className="dropdown-item">Chào, {user?.firstName}</p>
-                 <Link className="dropdown-item" to={`/user/info/${user?.userName}`}>Xem thông tin</Link>
-                 <Link className="dropdown-item" to={`/user/showWishList/${user?.userId}`}>Danh sách yêu thích</Link>
-                 <Link className="dropdown-item" to={`/user/showVoucherUser`}>Voucher của tôi</Link>
-                 <Link className="dropdown-item" to={`/user/showOrder`}>Đơn hàng</Link>
-                   <div className="dropdown-divider"></div>
-                   <button className="dropdown-item" onClick={handleLogout}>Đăng xuất</button>
-                 </div>
-             </li>
-         </ul> : <Link className="btn btn-warning" to={"/login"}>Đăng nhập</Link>
+              <ul className="navbar-nav me-1">
+                <li className="nav-item dropdown">
+                  <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {user?.avatar === null ? (
+                      <i className="fas fa-user"></i>
+                    ) : (
+                      <Avatar alt={user?.firstName?.toUpperCase()} src={user?.avatar} sx={{ width: 30, height: 30 }} />
+                    )}
+                  </a>
+                  <div className="dropdown-menu dropdown-menu-end">
+                    <div className="dropdown-header">
+                      <p className="mb-0">Chào, {user?.firstName}</p>
+                    </div>
+                    <Link className="dropdown-item" to={`/user/info/${user?.userName}`}>
+                      <i className="fas fa-user-circle me-2"></i>
+                      Xem thông tin
+                    </Link>
+                    <Link className="dropdown-item" to={`/user/showWishList/${user?.userId}`}>
+                      <i className="fas fa-heart me-2"></i>
+                      Danh sách yêu thích
+                    </Link>
+                    <Link className="dropdown-item" to={`/user/showVoucherUser`}>
+                      <i className="fas fa-ticket-alt me-2"></i>
+                      Voucher của tôi
+                    </Link>
+                    <Link className="dropdown-item" to={`/user/showOrder`}>
+                      <i className="fas fa-shopping-bag me-2"></i>
+                      Đơn hàng
+                    </Link>
+                    <div className="dropdown-divider"></div>
+                    <button className="dropdown-item" onClick={handleLogout}>
+                      <i className="fas fa-sign-out-alt me-2"></i>
+                      Đăng xuất
+                    </button>
+                  </div>
+                </li>
+         </ul> :<Link to={"/login"}>
+                     <Button>Đăng nhập</Button>
+                  </Link>
           }
          
         </div>
