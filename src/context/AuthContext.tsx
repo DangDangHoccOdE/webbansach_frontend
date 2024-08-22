@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import { toast } from "react-toastify";
 import UserModel from "../models/UserModel";
@@ -60,3 +60,14 @@ export const useAuth=():AuthContextType=>{
 	}
 	return context;
 };
+
+export const ProtectedRoute= ({ children }: { children: React.ReactElement })=>{
+    const location = useLocation();
+    const {isLoggedIn} = useAuth();
+        if(!isLoggedIn){
+            localStorage.setItem("redirectPath",location.pathname);
+            return <Navigate to="/login" replace/>;
+        }
+
+    return children;
+} 

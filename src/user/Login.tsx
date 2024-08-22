@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import useScrollToTop from "../hooks/ScrollToTop";
 import { useAuth } from "../context/AuthContext";
 
@@ -15,7 +14,8 @@ const {isLoggedIn,setLoggedIn} = useAuth();
 useScrollToTop()
 useEffect(() => {
     if(isLoggedIn){
-        navigate("/",{replace:true});
+        const redirectPath = localStorage.getItem("redirectPath") || "/"
+        navigate(redirectPath,{replace:true});
     }
 },[isLoggedIn, navigate]);
 
@@ -37,26 +37,20 @@ const handleLogin=async (e:React.FormEvent) =>{
         })
 
         const data = await response.json();
-        console.log(data)
 
         if(response.ok){
-            console.log("Đăng nhập thành công!")
-
             setIsError(false)
             const {accessTokenJwt,refreshTokenJwt} = data;
             localStorage.setItem("accessToken",accessTokenJwt);
             localStorage.setItem("refreshToken",refreshTokenJwt);
             setNotice("Đăng nhập thành công!");
 
-            if(accessTokenJwt && refreshTokenJwt){
-                console.log(jwtDecode(accessTokenJwt));
-                console.log(jwtDecode(refreshTokenJwt));
-
-            }
             setTimeout(() => {
-                navigate('/',{replace:true});
-                setLoggedIn(true)
-              }, 2000);
+                const redirectPath = localStorage.getItem("redirectPath") || "/";
+                localStorage.removeItem("redirectPath"); // Xóa redirectPath sau khi sử dụng
+                navigate(redirectPath, { replace: true });
+                setLoggedIn(true);
+            }, 2000);
 
         }else{
             setNotice(data.content)

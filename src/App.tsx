@@ -3,7 +3,7 @@ import "./App.css";
 import Navbar from "./layouts/header-footer/Navbar";
 import Footer from "./layouts/header-footer/Footer";
 import HomePage from "./layouts/homepage/HomePage";
-import { BrowserRouter, Route, Routes, useLocation, } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes, useLocation, } from "react-router-dom";
 import About from "./layouts/about/About";
 import ProductDetail from "./layouts/product/ProductDetail";
 import ResendActivationCode from "./user/account/ResendActivationCode";
@@ -30,7 +30,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ShowVoucherUser from "./user/userVoucher/ShowVoucherUser";
 import { CartProvider } from "./context/CartContext";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, ProtectedRoute } from "./context/AuthContext";
 import ShowOrder from "./user/order/ShowOrder";
 import OrderManagement_Admin from "./admin/order/OrderManagement";
 import ViewPurchasedOrder from "./user/order/ViewPurchasedOrder";
@@ -73,21 +73,24 @@ const MyRoutes = () =>{
                     <Route path="/login" element={<Login />} />
                     <Route path="/error-403" element={<Error403Page />} />
                     <Route path="/error-404" element={<Error404Page />} />
-                    <Route path="/user/info/:username" element={<UserInformation />} />
-                    <Route path="/user/changeEmail" element={<ChangeEmail />} />
-                    <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail />} />
                     <Route path="/user/forgotPassword" element={<ForgotPassword />} />
-                    <Route path="/user/showWishList/:userId" element={<ShowWishListByUser />} />
-                    <Route path="/wishList/editWishList/:wishListId" element={<EditWishList />} />
-                    <Route path="/user/showCart" element={<ShowCart />} />
-                    <Route path="/order/orderSummary" element={<OrderSummary />} />
-                    <Route path="/order/createOrder" element={<CreateOrder />} />
-                    <Route path="/user/showOrder" element={<ShowOrder />} />
                     <Route path="/vouchers" element={<ListVoucherToday />} />
-                    <Route path="/user/showVoucherUser" element={<ShowVoucherUser />} />
-                    <Route path="/order/purchase/:orderId" element={<ViewPurchasedOrder />} />
-                    <Route path="/check-out/status" element={<CheckoutStatus />} />
                     <Route path="/policy" element={<PolicyPage />} />
+
+                    <Route element={<ProtectedRoute><Outlet/></ProtectedRoute>}>  {/* Các endpoint yêu cầu xác thực , ProtectedRoute có chức năng lưu đường dẫn trước đó vào local Storage*/}
+                          <Route path="/user/info/:username" element={<UserInformation />}/>
+                          <Route path="/user/changeEmail" element={<ChangeEmail />}/>  
+                          <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail />}/>  
+                          <Route path="/user/showWishList/:userId" element={ <ShowWishListByUser />}/>  
+                          <Route path="/wishList/editWishList/:wishListId" element={<EditWishList />}/>  
+                          <Route path="/user/showCart" element= {<ShowCart />}/>  
+                          <Route path="/order/orderSummary" element={ <OrderSummary />}/>  
+                          <Route path="/order/createOrder" element={ <CreateOrder />}/>  
+                          <Route path="/user/showVoucherUser" element={ <ShowVoucherUser /> }/>  
+                          <Route path="/order/purchase/:orderId" element={ <ViewPurchasedOrder />}/>  
+                          <Route path="/check-out/status" element={ <CheckoutStatus />}/>  
+                          <Route path="/user/showOrder" element={<ShowOrder />} />
+                    </Route>
                     {/* Các route khác */}
                     <Route path="*" element={<Error404Page />} />
                   </Routes>
@@ -105,36 +108,26 @@ const MyRoutes = () =>{
                     </div>
                       <div className='col-10 col-md-9 col-lg-10'>
                     <Routes>
-                        <Route path='/admin' element={<DashboardPage_Admin />} />
-                        <Route
-                          path='/admin/dashboard'
-                          element={<DashboardPage_Admin />}
-                        />
-                        <Route path="/user/test" element={<Test/>} />
-                        <Route path="/admin/book/addBook" element={<BookForm_Admin/>} />
-                        <Route path="/admin/book/editBook/:bookId" element={<EditBook_Admin/>}/>
-                        {/* <Route path="/books/deleteBook/:bookId" element={<DeleteBook_Admin/>}/> */}
-                        <Route path="/admin/userManagement/" element={<UserManagementPage/>}/>
-
-                        <Route path="/admin/categoryManagement" element={<CategoryManagementPage/>}/>
-                        <Route path="/admin/category/editCategory/:categoryId" element={<EditCategory_Admin/>}/>
-
-
-                        <Route path="/admin/voucherManagement/addVoucher" element={<AddVoucher_Admin/>}></Route>
-                        <Route path="/admin/voucherManagement" element={<VoucherManagementPage/>}></Route>
-                        <Route path="/admin/voucher/editVoucher/:voucherId" element={<EditVoucherAdmin/>}></Route>
-
-
-                        <Route path="/admin/orderManagement" element={<OrderManagement_Admin/>}></Route>
-                        <Route path="/admin/bookManagement" element={<BookManagementPage/>}></Route>
-
-                      
-                        <Route path="/admin/order/purchase" element={<ViewPurchasedOrder/>}></Route>
-                        
-                        <Route
-                        path='/check-out/status'
-                        element={<CheckoutStatus />}
-                      />
+                         <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>   {/* Các endpoint yêu cầu xác thực , ProtectedRoute có chức năng lưu đường dẫn trước đó vào local Storage */}
+                            <Route path='/admin' element={<DashboardPage_Admin />} />
+                            <Route path="/dashboard" element={<DashboardPage_Admin />} />
+                            <Route path="/user/test" element={<Test/>} />
+                            <Route path="/admin/book/addBook" element={<BookForm_Admin/>} />
+                            <Route path="/admin/book/editBook/:bookId" element={<EditBook_Admin/>}/>
+                            <Route path="/admin/userManagement/" element={<UserManagementPage/>}/>
+                            <Route path="/admin/categoryManagement" element={<CategoryManagementPage/>}/>
+                            <Route path="/admin/category/editCategory/:categoryId" element={<EditCategory_Admin/>}/>
+                            <Route path="/admin/voucherManagement/addVoucher" element={<AddVoucher_Admin/>}></Route>
+                            <Route path="/admin/voucherManagement" element={<VoucherManagementPage/>}></Route>
+                            <Route path="/admin/voucher/editVoucher/:voucherId" element={<EditVoucherAdmin/>}></Route>
+                            <Route path="/admin/orderManagement" element={<OrderManagement_Admin/>}></Route>
+                            <Route path="/admin/bookManagement" element={<BookManagementPage/>}></Route>
+                            <Route path="/admin/order/purchase" element={<ViewPurchasedOrder/>}></Route>
+                            <Route
+                            path='/check-out/status'
+                            element={<CheckoutStatus />}
+                          />
+                      </Route>
                     </Routes>
                     </div>
                   </div>
