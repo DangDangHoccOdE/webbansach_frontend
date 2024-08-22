@@ -112,7 +112,7 @@ const ProductDetail: React.FC = () => {
 
   const handlePurchase = () => {
     if(book){
-      navigate("/order/createOrder", { state: { selectedItems:bookIdSelected, 
+      navigate("/order/orderSummary", { state: { selectedItems:bookIdSelected, 
         total: book?.price * quantity, 
         bookVoucher:null, 
         shipVoucher:null,
