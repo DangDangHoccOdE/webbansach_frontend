@@ -45,6 +45,7 @@ import VoucherManagementPage from "./admin/voucher/VoucherManagement";
 import ListVoucherToday from "./layouts/voucher/ListVoucherToday.tsx";
 import CreateOrder from "./user/order/CreateOrder";
 import BookManagementPage from "./admin/book/BookManagement";
+import PolicyPage from "./layouts/page/PolicyPage";
 
 const MyRoutes = () =>{
   // Xử lý ẩn hiện navbar và footer
@@ -57,40 +58,43 @@ const MyRoutes = () =>{
         <CartProvider>
           <ConfirmProvider>
             {/* Customer */}
-            {!isAdminPath && <Navbar/>}
+            <div id="root" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                {!isAdminPath && <Navbar />} {/* Hiển thị Navbar nếu không phải đường dẫn admin */}
+                
+                <div className="content" style={{ flex: 1 }}>
                   <Routes>
-                  <Route path="/user/confirmForgotPassword/:username/:forgotPasswordCode" element={<ConfirmForgotPassword/>}/>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/books/:bookId" element={<ProductDetail/>} />
-                  <Route path="/register" element={<RegisterUser />} />
-                  <Route path="/activatedAccount/:email/:activationCode" element={<ActivatedAccount/>} />
-                  <Route path="/resendActivationCode/:email" element={<ResendActivationCode/>} />
-                  <Route path="/login" element={ <Login/>}  />
-                  <Route path="/error-403" element={<Error403Page/>} />
-                  <Route path="/error-404" element={<Error404Page/>} />
-                  <Route path="/user/info/:username" element={<UserInformation/>} />
-                  <Route path="/user/changeEmail" element={<ChangeEmail/>} />
-                  <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail/>}/>
-                  <Route path="/user/forgotPassword" element={<ForgotPassword/>}/>
-                  <Route path="/user/showWishList/:userId" element={<ShowWishListByUser/>}/>
-                  <Route path="/wishList/editWishList/:wishListId" element={<EditWishList/>}/>
-                  <Route path="/user/showCart" element={<ShowCart/>}></Route>
-                  <Route path="/order/orderSummary" element={<OrderSummary/>}></Route>
-                  <Route path="/order/createOrder" element={<CreateOrder/>}></Route>
-                  <Route path="/user/showOrder" element={<ShowOrder/>}></Route>
-                  <Route path="/vouchers" element={<ListVoucherToday/>}></Route>
-                  <Route path="/user/showVoucherUser" element={<ShowVoucherUser/>}></Route>
-                  <Route path="/order/purchase/:orderId" element={<ViewPurchasedOrder/>}></Route>
-                  <Route path="/check-out/status" element={<CheckoutStatus/>}></Route>
-                  
-                    {!isAdminPath && (
-                      <Route path='/error-404' element={<Error404Page />} />
-                    )}
-              </Routes>
-                  {!isAdminPath && <Footer />}
-
-
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/books/:bookId" element={<ProductDetail />} />
+                    <Route path="/register" element={<RegisterUser />} />
+                    <Route path="/user/confirmForgotPassword/:username/:forgotPasswordCode" element={<ConfirmForgotPassword />} />
+                    <Route path="/activatedAccount/:email/:activationCode" element={<ActivatedAccount />} />
+                    <Route path="/resendActivationCode/:email" element={<ResendActivationCode />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/error-403" element={<Error403Page />} />
+                    <Route path="/error-404" element={<Error404Page />} />
+                    <Route path="/user/info/:username" element={<UserInformation />} />
+                    <Route path="/user/changeEmail" element={<ChangeEmail />} />
+                    <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail />} />
+                    <Route path="/user/forgotPassword" element={<ForgotPassword />} />
+                    <Route path="/user/showWishList/:userId" element={<ShowWishListByUser />} />
+                    <Route path="/wishList/editWishList/:wishListId" element={<EditWishList />} />
+                    <Route path="/user/showCart" element={<ShowCart />} />
+                    <Route path="/order/orderSummary" element={<OrderSummary />} />
+                    <Route path="/order/createOrder" element={<CreateOrder />} />
+                    <Route path="/user/showOrder" element={<ShowOrder />} />
+                    <Route path="/vouchers" element={<ListVoucherToday />} />
+                    <Route path="/user/showVoucherUser" element={<ShowVoucherUser />} />
+                    <Route path="/order/purchase/:orderId" element={<ViewPurchasedOrder />} />
+                    <Route path="/check-out/status" element={<CheckoutStatus />} />
+                    <Route path="/policy" element={<PolicyPage />} />
+                    {/* Các route khác */}
+                    <Route path="*" element={<Error404Page />} />
+                  </Routes>
+                </div>
+                
+                {!isAdminPath && <Footer />} {/* Hiển thị Footer nếu không phải đường dẫn admin */}
+      </div>
             
         {/* Admin */}
         {

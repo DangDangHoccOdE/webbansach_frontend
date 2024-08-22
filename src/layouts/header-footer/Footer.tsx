@@ -1,69 +1,60 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
+import { useLocation } from "react-router-dom";
+import { HideNavbarEnpoint } from "../utils/HideNavbar";
 
-function Footer(){
-    return(
-        
-<div className="container">
-  <footer className="py-5">
-    <div className="row">
-      <div className="col-6 col-md-2 mb-3">
-        <h5>Section</h5>
-        <ul className="nav flex-column">
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">Home</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">Features</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">Pricing</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">FAQs</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">About</a></li>
+function Footer() {
+  const location = useLocation();
+  const pathHideNavbar = HideNavbarEnpoint;
+  
+  if (pathHideNavbar.includes(location.pathname) || location.pathname.startsWith("/user/confirmForgotPassword")) {
+    return null;
+  }
+
+  return (  
+    <footer className='bg-secondary text-light py-2'>
+  <div className='container'>
+    <div className='row'>
+      <div className='col-md-4 mb-1'>
+        <h5 className='text-uppercase fs-6 mb-1'>Dịch vụ</h5>
+        <ul className='list-unstyled mb-0'>
+          <li><a href='#!' className='text-light text-decoration-none fs-6'>Điều khoản sử dụng</a></li>
+          <li><a href='#!' className='text-light text-decoration-none fs-6'>Chính sách bảo mật</a></li>
+          <li><a href='#!' className='text-light text-decoration-none fs-6'>Hệ thống trung tâm</a></li>
         </ul>
       </div>
-
-      <div className="col-6 col-md-2 mb-3">
-        <h5>Section</h5>
-        <ul className="nav flex-column">
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">Home</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">Features</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">Pricing</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">FAQs</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">About</a></li>
+      <div className='col-md-4 mb-1'>
+        <h5 className='text-uppercase fs-6 mb-1'>Hỗ trợ</h5>
+        <ul className='list-unstyled mb-0'>
+          <li><a href='#!' className='text-light text-decoration-none fs-6'>Chính sách đổi trả</a></li>
+          <li><a href='#!' className='text-light text-decoration-none fs-6'>Chính sách vận chuyển</a></li>
+          <li><a href='#!' className='text-light text-decoration-none fs-6'>Chính sách khách sỉ</a></li>
         </ul>
       </div>
-
-      <div className="col-6 col-md-2 mb-3">
-        <h5>Section</h5>
-        <ul className="nav flex-column">
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">Home</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">Features</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">Pricing</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">FAQs</a></li>
-          <li className="nav-item mb-2"><a href="#" className="nav-link p-0 text-body-secondary">About</a></li>
+      <div className='col-md-4 mb-1'>
+        <h5 className='text-uppercase fs-6 mb-1'>Tài khoản</h5>
+        <ul className='list-unstyled mb-0'>
+          <li><a href='/login' className='text-light text-decoration-none fs-6'>Đăng nhập/Đăng ký</a></li>
+          <li><a href='#!' className='text-light text-decoration-none fs-6'>Chi tiết tài khoản</a></li>
+          <li><a href='#!' className='text-light text-decoration-none fs-6'>Lịch sử mua hàng</a></li>
         </ul>
-      </div>
-
-      <div className="col-md-5 offset-md-1 mb-3">
-        <form>
-          <h5>Subscribe to our newsletter</h5>
-          <p>Monthly digest of what's new and exciting from us.</p>
-          <div className="d-flex flex-column flex-sm-row w-100 gap-2">
-            <label className="visually-hidden">Email address</label>
-            <input id="newsletter1" type="text" className="form-control" placeholder="Email address"/>
-            <button className="btn btn-primary" type="button">Subscribe</button>
-          </div>
-        </form>
       </div>
     </div>
-
-    <div className="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
-      <p>&copy; 2024 Company, Inc. All rights reserved.</p>
-      <ul className="list-unstyled d-flex">
-        <li className="ms-3"><a className="link-body-emphasis" href="#"><i className="fa-brands fa-twitter"></i></a></li>
-        <li className="ms-3"><a className="link-body-emphasis" href="#"><i className="fa-brands fa-instagram"></i></a></li>
-        <li className="ms-3"><a className="link-body-emphasis" href="#"><i className="fa-brands fa-facebook"></i></a></li>
-      </ul>
+    <hr className='bg-light my-2' />
+    <div className='row'>
+      <div className='col-md-6 mb-1'>
+        <small>© 2023 Copyright BookStore</small>
+      </div>
+      <div className='col-md-6 text-md-end'>
+        <a href='#!' className='text-light me-1'><i className='fab fa-facebook-f fa-xs'></i></a>
+        <a href='#!' className='text-light me-1'><i className='fab fa-twitter fa-xs'></i></a>
+        <a href='#!' className='text-light me-1'><i className='fab fa-instagram fa-xs'></i></a>
+        <a href='#!' className='text-light'><i className='fab fa-linkedin-in fa-xs'></i></a>
+      </div>
     </div>
-  </footer>
-</div>
-    )
+  </div>
+</footer>
+
+  );
 }
 
 export default Footer;

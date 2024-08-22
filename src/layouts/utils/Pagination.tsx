@@ -39,7 +39,7 @@ export const Pagination:React.FC<PaginationInterface>=(props)=>{
     }
 
     return(
-        <nav aria-label="...">
+        <nav aria-label="... " className="d-flex justify-content-center">
          <ul className="pagination">
            <li className="page-item">
                 <button className="page-link" onClick={()=>props.pagination(1)}>Trang Đầu</button>
