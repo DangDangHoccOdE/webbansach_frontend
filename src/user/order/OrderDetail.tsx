@@ -2,7 +2,7 @@ import React, {useCallback, useContext, useEffect, useState } from "react";
 import BookModel from "../../models/BookModel";
 import OrderDetailModel from "../../models/OrderDetailModel";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getBooksOfOrders } from "../../api/BookAPI";
 import OrderModel from "../../models/OrderModel";
 import { getOrderByOrderId } from "../../api/OrderAPI";
@@ -12,7 +12,9 @@ import { Box, Card, CardContent, Typography, Button } from "@mui/material";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import OrderReview from "../review/OrderReview";
 import { CartContext } from "../../context/CartContext";
-import { cancelOrder, confirmReceivedOrder, repurchase } from "./OrderActions";
+import { cancelOrder, confirmReceivedOrder, handleCreateOrder, repurchase } from "./OrderActions";
+import { handleBankPayment } from "../payment/handleBankPayment";
+import { toast } from "react-toastify";
 
 interface OrderProps {
   orderId: number;
@@ -49,7 +51,6 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
           return;
         }
     
-        console.log(fetchBooks)
         setOrder(fetchOrder);
         setOrderDetails(fetchOrderDetails);
         setBooks(fetchBooks);
@@ -61,7 +62,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
     fetchData()    
   }, [isLoggedIn, navigate, orderId]);
 
-  const handleCancelOrder = useCallback(async () => {
+  const handleCancelOrder = useCallback(async () => { // Xác nhận hủy đơn hàng
     if (order) {
         const isUpdate = await cancelOrder(order.orderId);
         if(isUpdate && onOrderUpdate){
@@ -96,16 +97,38 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
 
 }
 
+  const handleShowRequestReturnOrder=()=>{ // Xử lý khi ấn vào yêu cầu trả hàng/ hoàn tiền
+      toast.warn("Tính năng đang cập nhật!")
+}  
+
+const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu trả hàng/ hoàn tiền
+      toast.warn("Tính năng đang cập nhật!")
+}
+
   const handleClose=()=>{  // Mở form đánh giá sản phẩm
       setShowModal(false);
   }
 
   const handleReviewClick=()=>{
-    if (!isLoggedIn) {
-      navigate("/login", { replace: true });
-    }else{
       setShowModal(true);
-    }
+  }
+  const handlePaymentWithBank=()=>{  // Tiến hành thanh toán ngân hàng
+    if(order)
+         handleBankPayment(order)
+            .then(paymentUrl => {
+              if (paymentUrl) {
+                return handleCreateOrder(order, false)  // isBuyNow là false
+                  .then(() => {
+                    window.location.replace(paymentUrl);
+                  });
+              } else {
+                throw new Error("Không tạo được URL thanh toán");
+              }
+            })
+            .catch(error => {
+              console.error("Lỗi khi xử lý thanh toán:", error);
+              alert("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
+            });
   }
 
   const handleReviewSubmit=useCallback(()=>{ // Khi người dùng đánh giá thành công thì cập nhật lại trạng thái đơn hàng
@@ -121,7 +144,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
       <CardContent>
         <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
           {  showFunctionRelateOrder &&
-              (  order?.deliveryStatus==="Đã giao" ?
+              (  order?.deliveryStatus==="Đã giao" && order.orderStatus==="Hoàn thành" ?
               <>
                   <Typography color={"green"}>
                     {order?.deliveryStatus}
@@ -133,36 +156,37 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
           }
          </Box>
 
-
-        {orderDetails.map((orderDetail, index) => (
-         <Box key={index} display="flex" alignItems="flex-start" mb={2} borderBottom={1} pb={2}>
-         <Box display="flex" alignItems="center" flexGrow={1}>
-           <img
-             src={books[index].thumbnail}
-             alt="Bìa sách"
-             style={{ width: '80px', height: '80px', objectFit: 'cover', marginRight: '16px' }}
-           />
-           <Box display="flex" flexDirection="column">
-             <Typography variant="subtitle1" fontWeight="medium">
-               {books[index]?.bookName}
-             </Typography>
-             <Typography variant="body2" color="text.secondary">
-               x{orderDetail.quantity}
-             </Typography>
-           </Box>
-         </Box>
-         {
-          books[index].discountPercent>0 &&  
-          <Typography variant="body1" mr={1} color="#6c757d"  fontSize={14} alignSelf="center">
-            <del>{NumberFormat(books[index]?.listedPrice)} đ</del>
-         </Typography>
-         }
-        
-         <Typography variant="body1" color="error" alignSelf="center">
-           {NumberFormat(books[index]?.price)} đ
-         </Typography>
-       </Box>
-        ))}
+         <Link to={`/order/purchase/${order?.orderId}`} style={{textDecoration:"none"}} >
+              {orderDetails.map((orderDetail, index) => (
+              <Box key={index} display="flex" alignItems="flex-start" mb={2} borderBottom={1} pb={2}>
+              <Box display="flex" alignItems="center" flexGrow={1}>
+                <img
+                  src={books[index].thumbnail}
+                  alt="Bìa sách"
+                  style={{ width: '80px', height: '80px', objectFit: 'cover', marginRight: '16px' }}
+                />
+                <Box display="flex" flexDirection="column">
+                  <Typography variant="subtitle1" fontWeight="medium">
+                    {books[index]?.bookName}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    x{orderDetail.quantity}
+                  </Typography>
+                </Box>
+              </Box>
+              {
+                books[index].discountPercent>0 &&  
+                <Typography variant="body1" mr={1} color="#6c757d"  fontSize={14} alignSelf="center">
+                  <del>{NumberFormat(books[index]?.listedPrice)} đ</del>
+              </Typography>
+              }
+              
+              <Typography variant="body1" color="error" alignSelf="center">
+                {NumberFormat(books[index]?.price)} đ
+              </Typography>
+            </Box>
+              ))}
+        </Link>
 
       {
         showFunctionRelateOrder && 
@@ -178,7 +202,6 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
                       onReviewSubmit={handleReviewSubmit} 
                       books={books} 
                       handleClose={handleClose} 
-                      // imageOfBooks={imageBooks} 
                       showModal={showModal} 
                       orderId={orderId} 
                       reviews={null}
@@ -187,19 +210,24 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
                     <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
                   </>
                 ) : (
-                  <>
-                    <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleConfirmReceivedOrder}>Đã nhận được hàng</Button>
-                    <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button>
-                  </>
+                  order?.orderStatus === "Chờ thanh toán" ?
+                          <>
+                          <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handlePaymentWithBank}>Thanh toán</Button>
+                          <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button>
+                        </> : 
+                          <>
+                          <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={handleConfirmReceivedOrder}>Đã nhận được hàng</Button>
+                          <Button variant="outlined" color="secondary" type="button" onClick={handleCancelOrder}>Hủy đơn</Button>
+                        </>
                 )
               ) : (
                 <>
                   <Button variant="contained" type="button" onClick={handleRepurchase} color="error" sx={{ mr: 1 }}>Mua lại</Button>
                   {
                     order?.orderStatus === 'Đánh giá' ? (
-                      <Button variant="outlined" color="secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
+                      <Button variant="outlined" color="secondary" type="button" onClick={handleShowRequestReturnOrder}>Yêu Cầu Trả Hàng/Hoàn Tiền</Button>
                     ) : (
-                      <Button variant="outlined" color="secondary" type="button">Xem chi tiết hủy đơn</Button>
+                      <Button variant="outlined" color="secondary" type="button" onClick={handleShowDetailCancelOrder}> Xem chi tiết hủy đơn</Button>
                     )
                   }
                 </>

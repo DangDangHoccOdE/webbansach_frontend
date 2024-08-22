@@ -37,11 +37,11 @@ const OrderList: React.FC<OrderProps> = (props) => {
     setOrders([])
   }, [props.value]);
 
-  const fetchOrders = useCallback(async () => {
+  const fetchOrders = useCallback(async () => {   // Lấy tất cả dữ liệu đơn hàng
     if (userId) {
       try {
         setIsLoading(true);
-        const data = await showOrders(userId, orderStatus,currentPage);
+        const data = await showOrders(userId, orderStatus,currentPage); /// Thực hiện tìm kiếm các đơn hàng theo trạng thái đơn hàng
         if (!data) {
           navigate("/error-404", { replace: true });
           return;
@@ -91,12 +91,11 @@ const OrderList: React.FC<OrderProps> = (props) => {
   return (
     <div className="container">
       {orders?.map((order, index) => (
-        <OrderDetail
-          key={index}
-          orderId={order.orderId}
-          onOrderUpdate={handleOrderUpdate}
-          showFunctionRelateOrder={true}
-        />
+              <OrderDetail
+            key={index}
+            orderId={order.orderId}
+            onOrderUpdate={handleOrderUpdate}
+            showFunctionRelateOrder={true}/>
       ))}
           {isLoading && (
       <div className="text-center mt-3">

@@ -197,7 +197,7 @@ const OrderSummary:React.FC =()=>{
               date: format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
               orderCode: generateOrderCode(),
               deliveryAddress: user.deliveryAddress,
-              deliveryStatus: "",
+              deliveryStatus: "Chưa giao",
               orderStatus: 'Đang xử lý',
               paymentCost: priceByVoucher,
               purchaseAddress: "BookStore Hà Nội",
@@ -219,7 +219,7 @@ const OrderSummary:React.FC =()=>{
               handleBankPayment(order)
                 .then(paymentUrl => {
                   if (paymentUrl) {
-                    order.orderStatus = 'Chờ thanh toán';
+                    order.orderStatus = 'Chờ thanh toán';  // Cập nhật trạng thái đơn hàng thành chờ thanh toán
                     return handleCreateOrder(order, false)  // isBuyNow là false
                       .then(() => {
                         window.location.replace(paymentUrl);

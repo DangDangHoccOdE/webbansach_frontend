@@ -58,7 +58,7 @@ const MyRoutes = () =>{
         <CartProvider>
           <ConfirmProvider>
             {/* Customer */}
-            <div id="root" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+           {!isAdminPath &&  <div id="root" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
                 {!isAdminPath && <Navbar />} {/* Hiển thị Navbar nếu không phải đường dẫn admin */}
                 
                 <div className="content" style={{ flex: 1 }}>
@@ -92,12 +92,11 @@ const MyRoutes = () =>{
                           <Route path="/user/showOrder" element={<ShowOrder />} />
                     </Route>
                     {/* Các route khác */}
-                    <Route path="*" element={<Error404Page />} />
                   </Routes>
                 </div>
                 
                 {!isAdminPath && <Footer />} {/* Hiển thị Footer nếu không phải đường dẫn admin */}
-      </div>
+      </div>}
             
         {/* Admin */}
         {
@@ -110,7 +109,7 @@ const MyRoutes = () =>{
                     <Routes>
                          <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>   {/* Các endpoint yêu cầu xác thực , ProtectedRoute có chức năng lưu đường dẫn trước đó vào local Storage */}
                             <Route path='/admin' element={<DashboardPage_Admin />} />
-                            <Route path="/dashboard" element={<DashboardPage_Admin />} />
+                            <Route path="/admin/dashboard" element={<DashboardPage_Admin />} />
                             <Route path="/user/test" element={<Test/>} />
                             <Route path="/admin/book/addBook" element={<BookForm_Admin/>} />
                             <Route path="/admin/book/editBook/:bookId" element={<EditBook_Admin/>}/>
