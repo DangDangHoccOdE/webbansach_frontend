@@ -1,6 +1,6 @@
 import fetchWithAuth from "../layouts/utils/AuthService";
-import { getAllIconImage } from "../layouts/utils/ImageService";
 import BookModel from "../models/BookModel";
+import { getIconImageByBook } from "./ImageAPI";
 
 interface ResultInterface{
     resultBooks:BookModel[];
@@ -45,16 +45,8 @@ export async function getBook(link:string):Promise<ResultInterface> {
                 });
     }
 
-    let newBookList = await Promise.all(result.map(async (book: any) => {
-        // Trả về quyển sách
-        const responseImg = await getAllIconImage(result);
-        const thumbnail = responseImg.find(image => image.icon);
-  
-        return {
-           ...book,
-           thumbnail: thumbnail ? thumbnail.imageData : null,
-        };
-     }));
+    let newBookList = await fetchImageOfBooks(result);
+
     return {resultBooks:newBookList, totalPages: totalPages , totalBooks: totalBooks};
 }
 
@@ -118,20 +110,6 @@ export async function getThreeBooksLatest():Promise<ResultInterface> {
     return getBook(url);
 }
 
-// export async function findBook(bookName:string,categoryId : number):Promise<ResultInterface> {
-//     let url:string=`http://localhost:8080/books?sort=bookId,desc&size=8&page=0`;
-
-//     if(bookName!=='' && categoryId===0){
-//         url = `http://localhost:8080/books/search/findByBookNameContaining?sort=bookId,desc&size=8&page=0&bookName=${bookName}`
-//     }else if(bookName==='' && categoryId>0){
-//         url = `http://localhost:8080/books/search/findByCategoryList_categoryId?sort=bookId,desc&size=8&page=0&categoryId=${categoryId}`
-//     }else if(bookName!=='' && categoryId>0){
-//         url = `http://localhost:8080/books/search/findByBookNameContainingAndCategoryList_categoryId?sort=bookId,desc&size=8&page=0&bookName=${bookName}&categoryId=${categoryId}`
-//     }
-
-//     return getBook(url);
-// }
-
 export async function getBookByBookId(bookId:number): Promise<BookModel | null> {
     const link = `http://localhost:8080/books/${bookId}`;
     
@@ -143,7 +121,12 @@ export async function getBookByBookId(bookId:number): Promise<BookModel | null> 
         }
 
         const bookData = await response.json();
+        const image = await getIconImageByBook(bookData.bookId);
 
+        if(!image){
+            throw new Error("Lỗi tải ảnh")
+        }
+      
         if(bookData){
             return{
                 bookId: bookData.bookId,
@@ -160,6 +143,7 @@ export async function getBookByBookId(bookId:number): Promise<BookModel | null> 
                 language:bookData.language,
                 pageNumber:bookData.pageNumber,
                 publishingYear:bookData.publishingYear,
+                thumbnail:image.imageData
             }
         }else{
             throw new Error("Sách không tồn tại!")
@@ -197,6 +181,12 @@ export async function getBookByCartItem(cartItemId:number):Promise<BookModel|nul
 
         const bookData = await response.json();
 
+        const image = await getIconImageByBook(bookData.bookId);
+
+        if(!image){
+            throw new Error("Lỗi tải ảnh")
+        }
+
         if(bookData){
             return{
                 bookId: bookData.bookId,
@@ -213,7 +203,7 @@ export async function getBookByCartItem(cartItemId:number):Promise<BookModel|nul
                 language:bookData.language,
                 pageNumber:bookData.pageNumber,
                 publishingYear:bookData.publishingYear,
-                
+                thumbnail:image.imageData
             }
         }else{
             throw new Error("Sách không tồn tại!")
@@ -256,9 +246,24 @@ export async function getBooksOfOrders(orderId:number):Promise<BookModel[]> {
                 publishingYear:data[key].publishingYear
                 });
     }
-    return result;
+
+    let newBookList = await fetchImageOfBooks(result);
+
+    return newBookList;
 }
 
+const fetchImageOfBooks=async(books:any)=>{
+    let newBookList = await Promise.all(books.map(async (book: any) => {
+        // Trả về quyển sách
+        const thumbnail = await getIconImageByBook(book.bookId);
+        return {
+           ...book,
+           thumbnail: thumbnail ? thumbnail.imageData : null,
+        };
+     }));
+
+     return newBookList;
+}
 
 export async function getNumberOfBook(): Promise<number> {
     const url: string = `http://localhost:8080/books/search/countBy`;
@@ -280,16 +285,6 @@ export async function getNumberOfBook(): Promise<number> {
     let bookList = await getBook(url);
  
     // Use Promise.all to wait for all promises in the map to resolve
-    let newBookList = await Promise.all(bookList.resultBooks.map(async (book: any) => {
-       // Trả về quyển sách
-       const responseImg = await getAllIconImage(bookList.resultBooks);
-       const thumbnail = responseImg.find(image => image.icon);
- 
-       return {
-          ...book,
-          thumbnail: thumbnail ? thumbnail.imageData : null,
-       };
-    }));
- 
+    let newBookList = await fetchImageOfBooks(bookList.resultBooks);
     return newBookList;
  }

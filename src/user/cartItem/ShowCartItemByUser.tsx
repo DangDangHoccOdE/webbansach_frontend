@@ -2,8 +2,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChangeEvent, useContext, useEffect, useMemo, useState } from "react";
 import BookModel from "../../models/BookModel";
 import { getAllCartItemByUser } from "../../api/CartItemAPI";
-import ImageModel from "../../models/ImageModel";
-import { getAllIconImage } from "../../layouts/utils/ImageService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import CartItemModel from "../../models/CartItemModel";
 import { getBookByCartItem } from "../../api/BookAPI";
@@ -26,7 +24,6 @@ const ShowCart=()=>{
     const [bookListOfCart,setBookListOfCart] = useState<BookModel[]>([])
     const [cartItem,setCartItem] = useState<CartItemModel[]>([])
     const [notice,setNotice] = useState("")
-    const [iconImageList,setIconImageList]=useState<ImageModel[]>([])
     const [selectAll,setSelectAll] = useState(false); // Trạng thái cho checkbox "Tất cả"
     const [selectedItems, setSelectedItems] = useState<number[]>([]); // Trạng thái cho các checkbox
     const [total,setTotal] = useState(0);
@@ -85,15 +82,6 @@ const ShowCart=()=>{
         }
         getBookOfCart()
     },[cartItem,navigate])
-
-    useEffect(()=>{ // Lấy ra các icon của sách
-        const fetchIconImageList = async()=>{
-            const result = await getAllIconImage(bookListOfCart);
-            setIconImageList(result);
-        }
-
-        fetchIconImageList();
-    },[bookListOfCart,])
 
     useEffect(() => {
         const updateTotal = async () => {
@@ -300,8 +288,8 @@ const ShowCart=()=>{
                                                 <td>
                                                     <div className="d-flex">
                                                         <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' }}>
-                                                            {iconImageList[index] ? (
-                                                                <img src={iconImageList[index].imageData} alt="Ảnh" style={{ width: "50px", maxHeight: "50px", marginRight: "10px" }} />
+                                                            {bookListOfCart[index] ? (
+                                                                <img src={bookListOfCart[index].thumbnail} alt="Ảnh" style={{ width: "50px", maxHeight: "50px", marginRight: "10px" }} />
                                                             ) : "Sách chưa có ảnh"}
                                                         </Link>
                                                         <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none', color: "black" }}>

@@ -5,12 +5,10 @@ import BookModel from "../../models/BookModel";
 import { getBookListByWishList } from "../../api/BookAPI";
 import WishListModel from "../../models/WishListModel";
 import { getWishListByWishListId } from "../../api/WishListAPI";
-import ImageModel from "../../models/ImageModel";
 import { Pagination } from "../../layouts/utils/Pagination";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import renderRating from "../../layouts/utils/StarRate";
-import { getAllIconImage } from "../../layouts/utils/ImageService";
 import { useAuth } from "../../context/AuthContext";
 import { deleteBookOfWishList } from "./wishListAction";
 
@@ -25,7 +23,6 @@ const EditWishList=()=>{
     const [notice,setNotice] = useState("")
     const navigate = useNavigate();
     const [wishList,setWishList] = useState<WishListModel|null>(null);
-    const [imageList,setImageList] = useState<ImageModel[]>([])
     const [showForm,setShowForm] = useState(false);
     const [newWishListName,setNewWishListName] = useState("");    
     const [errorNewWishList,setErrorNewWishList] = useState("");
@@ -85,14 +82,6 @@ const EditWishList=()=>{
         fetchBookListData();
         getWishListById();
     },[navigate, wishListIdNumber, currentPage, isUpdate, isLoggedIn])
-    
-    useEffect(() => { // lấy ra các icon sách
-        const fetchImages = async () => {
-            const images = await getAllIconImage(bookList);
-            setImageList(images);
-        }
-        fetchImages();
-    }, [bookList]);
 
     const handleDeleteBookOfWishList=async(bookId:number)=>{  // xóa sách trong wishList
         const userConfirm = await deleteBookOfWishList(wishListIdNumber,bookId);
@@ -206,7 +195,7 @@ const EditWishList=()=>{
                                  <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' ,color:"black"}}> {book.bookName}</Link>     
                               </td>
                                     <td> <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' }}>
-                                       {imageList[index] ? <img src={imageList[index].imageData} alt="Ảnh"  style={{ width: "50px" }}></img>: "Sách chưa có ảnh"}
+                                       {bookList[index] ? <img src={bookList[index].thumbnail} alt="Ảnh"  style={{ width: "50px" }}></img>: "Sách chưa có ảnh"}
                                        </Link>
                                     </td>
                                     <td>{renderRating(book.averageRate)}</td>

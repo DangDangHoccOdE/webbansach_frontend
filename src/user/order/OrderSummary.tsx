@@ -3,8 +3,6 @@ import BookModel from "../../models/BookModel";
 import {  ChangeEvent, useEffect, useState } from "react";
 import {  getBookByBookId, getBookByCartItem } from "../../api/BookAPI";
 import { useLocation, useNavigate } from "react-router-dom";
-import ImageModel from "../../models/ImageModel";
-import { getAllIconImage } from "../../layouts/utils/ImageService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import UserModel from "../../models/UserModel";
 import {getUsernameByToken } from "../../layouts/utils/JwtService";
@@ -34,7 +32,6 @@ const OrderSummary:React.FC =()=>{
     } || { selectedItems: [],total:0 , bookVoucher:null,shipVoucher:null,totalProduct:0,isBuyNow:false};
 
     const [bookIsChoose, setBookIsChoose] = useState<BookModel[]>([]);
-    const [iconImageList,setIconImageList] = useState<ImageModel[]>([])
     const [user,setUser] = useState<UserModel|null>(null);
     const navigate = useNavigate();
     const {isLoggedIn} = useAuth();
@@ -144,18 +141,6 @@ const OrderSummary:React.FC =()=>{
         handlePurchase();
         handleUser();
     },[formOfDelivery, isBuyNow, isLoggedIn, navigate, selectedItems])
-
-    useEffect(()=>{
-        const handleIcon = async()=>{  // Lấy ra những icon của sách
-            if(bookIsChoose.length>0){
-                const iconImage = await getAllIconImage(bookIsChoose);
-                setIconImageList(iconImage);
-    
-            }
-        }
-  
-        handleIcon();
-    },[bookIsChoose])
 
     const [priceByVoucher,setPriceByVoucher] = useState(total);
     
@@ -267,9 +252,9 @@ const OrderSummary:React.FC =()=>{
           <div className="card shadow-sm">
             <div className="card-body">
               <h2 className="card-title mb-4">Đơn hàng của bạn</h2>
-              {iconImageList.length > 0 && (showAllBooks ? bookIsChoose : bookIsChoose.slice(0,3)).map((book, index) => (
+              {bookIsChoose.length > 0 && (showAllBooks ? bookIsChoose : bookIsChoose.slice(0,3)).map((book, index) => (
                 <div key={index} className="d-flex mb-3 align-items-center">
-                  <img src={iconImageList[index].imageData} alt={book.bookName} className="img-fluid me-3" style={{ width: "100px" }} />
+                  <img src={bookIsChoose[index].thumbnail} alt={book.bookName} className="img-fluid me-3" style={{ width: "100px" }} />
                   <div>
                     <h5>{book.bookName}</h5>
                     {cart.length>0 ?  

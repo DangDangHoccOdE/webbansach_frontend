@@ -4,7 +4,6 @@ import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "reac
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import BookModel from "../../models/BookModel";
-import ImageModel from "../../models/ImageModel";
 import ReviewOrderStar from "../../layouts/utils/ReviewOrderStar";
 import { Camera, CameraVideo } from "react-bootstrap-icons";
 import getBase64 from "../../layouts/utils/GetBase64";
@@ -18,14 +17,13 @@ interface ReviewOrderProps{
     handleClose:()=>void;
     showModal:boolean;
     books:BookModel[],
-    imageOfBooks:ImageModel[],
     reviews:ReviewModel[]|null
     orderId:number,
     onReviewSubmit:()=>void
     orderReview:OrderReviewModal|null
 }
 
-const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,books,imageOfBooks,orderId,onReviewSubmit,orderReview})=>{
+const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,books,orderId,onReviewSubmit,orderReview})=>{
     useScrollToTop();
     const navigate = useNavigate();
     const isLoggedIn = useAuth();
@@ -109,7 +107,7 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
 
     } 
     
-    const handleDeliveryRatingChange=(newRating:number)=>{ // Chỉnh sửa số vận chuyển
+    const handleDeliveryRatingChange=(newRating:number)=>{ // Chỉnh sửa số sao vận chuyển
         setDeliveryRating(newRating)
     }  
     
@@ -255,7 +253,7 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
                             <Card.Body>
                                 <div className="d-flex align-items-center mb-3">
                                 <Image 
-                                    src={imageOfBooks[index].imageData} 
+                                    src={books[index].thumbnail} 
                                     alt="Ảnh sách" 
                                     width={60} 
                                     height={80} 

@@ -8,10 +8,8 @@ import CategoryModel from "../../models/CategoryModel";
 import { getCategoryById } from "../../api/CategoryAPI";
 import renderRating from "../../layouts/utils/StarRate";
 import NumberFormat from "../../layouts/utils/NumberFormat";
-import ImageModel from "../../models/ImageModel";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { Pagination } from "../../layouts/utils/Pagination";
-import { getAllIconImage } from "../../layouts/utils/ImageService";
 import { Box, CircularProgress } from "@mui/material";
 import { confirm } from "material-ui-confirm";
 import { toast } from "react-toastify";
@@ -28,7 +26,6 @@ const EditCategory:React.FC=()=>{
     const [category,setCategory] = useState<CategoryModel|null>(null)
     const navigate = useNavigate();
     const [showForm,setShowForm] = useState(false)
-    const [imageList,setImageList] = useState<ImageModel[]>([])
     const [newCategoryName,setNewCategoryName] = useState("")
     const [isError,setIsError] = useState(false);
     const [errorNewCategoryName,setErrorNewCategoryName] = useState("")
@@ -73,15 +70,6 @@ const EditCategory:React.FC=()=>{
         getCategory();
         getBookList();
     },[categoryIdNumber, currentPage, navigate, isUpdate])
-
-
-    useEffect(() => {  
-        const fetchImages = async () => { 
-            const images = await getAllIconImage(bookList); // lấy ra các icon sách
-            setImageList(images);
-        }
-        fetchImages();
-    }, [bookList]);
 
     const handleDelete=(bookId:number)=>{   // thực hiện xóa sách trong category
         confirm({
@@ -224,7 +212,7 @@ const EditCategory:React.FC=()=>{
                                      <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' ,color:"black"}}> {book.bookName}</Link>     
                                   </td>
                                         <td> <Link to={`/books/${book.bookId}`} style={{ textDecoration: 'none' }}>
-                                           {imageList[index] ? <img src={imageList[index].imageData} alt="Ảnh"  style={{ width: "50px",height:"50px" }}></img>: "Sách chưa có ảnh"}
+                                           {bookList[index] ? <img src={bookList[index].thumbnail} alt="Ảnh"  style={{ width: "50px",height:"50px" }}></img>: "Sách chưa có ảnh"}
                                            </Link>
                                         </td>
                                         <td>{renderRating(book.averageRate)}</td>

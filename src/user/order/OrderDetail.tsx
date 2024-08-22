@@ -1,11 +1,9 @@
 import React, {useCallback, useContext, useEffect, useState } from "react";
-import ImageModel from "../../models/ImageModel";
 import BookModel from "../../models/BookModel";
 import OrderDetailModel from "../../models/OrderDetailModel";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getBooksOfOrders } from "../../api/BookAPI";
-import { getAllIconImage } from "../../layouts/utils/ImageService";
 import OrderModel from "../../models/OrderModel";
 import { getOrderByOrderId } from "../../api/OrderAPI";
 import NumberFormat from "../../layouts/utils/NumberFormat";
@@ -25,7 +23,6 @@ interface OrderProps {
 const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunctionRelateOrder}) => {
   const [order, setOrder] = useState<OrderModel | null>(null);
   const [books, setBooks] = useState<BookModel[]>([]);
-  const [imageBooks, setImageBooks] = useState<ImageModel[]>([]);
   const [orderDetails, setOrderDetails] = useState<OrderDetailModel[]>([]);
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -41,11 +38,10 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
       }
       try {
         // Lấy thông tin đơn hàng, order details, books, và images cùng lúc
-        const [fetchOrder, fetchOrderDetails, fetchBooks, fetchImageOfBook] = await Promise.all([
+        const [fetchOrder, fetchOrderDetails, fetchBooks] = await Promise.all([
           getOrderByOrderId(orderId),
           getOrderDetailsFromOrder(orderId),
           getBooksOfOrders(orderId),
-          getAllIconImage(await getBooksOfOrders(orderId))
         ]);
     
         if (!fetchOrder) {
@@ -53,10 +49,10 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
           return;
         }
     
+        console.log(fetchBooks)
         setOrder(fetchOrder);
         setOrderDetails(fetchOrderDetails);
         setBooks(fetchBooks);
-        setImageBooks(fetchImageOfBook);
       } catch (error) {
         console.error({ error });
         navigate("/error-404", { replace: true });
@@ -142,7 +138,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
          <Box key={index} display="flex" alignItems="flex-start" mb={2} borderBottom={1} pb={2}>
          <Box display="flex" alignItems="center" flexGrow={1}>
            <img
-             src={imageBooks[index]?.imageData}
+             src={books[index].thumbnail}
              alt="Bìa sách"
              style={{ width: '80px', height: '80px', objectFit: 'cover', marginRight: '16px' }}
            />
@@ -182,7 +178,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
                       onReviewSubmit={handleReviewSubmit} 
                       books={books} 
                       handleClose={handleClose} 
-                      imageOfBooks={imageBooks} 
+                      // imageOfBooks={imageBooks} 
                       showModal={showModal} 
                       orderId={orderId} 
                       reviews={null}

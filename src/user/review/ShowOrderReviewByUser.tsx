@@ -5,9 +5,7 @@ import { getOrderReviewByOrder } from "../../api/OrderReviewAPI";
 import ReviewModel from "../../models/ReviewModel";
 import { getReviewByOrderReview } from "../../api/ReviewAPI";
 import { getBooksOfOrders } from "../../api/BookAPI";
-import { getAllIconImage } from "../../layouts/utils/ImageService";
 import BookModel from "../../models/BookModel";
-import ImageModel from "../../models/ImageModel";
 import { Button, Card, Col, Form, Image, Modal, Row } from "react-bootstrap";
 import renderRating from "../../layouts/utils/StarRate";
 import OrderReviewModal from "../../models/OrderReviewModel";
@@ -27,7 +25,6 @@ const ShowOrderReviewByUser:React.FC<ReviewUserProps>=({orderId,handleClose,show
     const [reviews,setReviews] = useState<ReviewModel[]>([])
     const [isLoading,setIsLoading] = useState(false);
     const [books,setBooks] = useState<BookModel[]>([]);
-    const [imageBooks,setImageBooks] = useState<ImageModel[]>([]);
     const [showModalEditReview,setShowModalEditReview] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -48,12 +45,6 @@ const ShowOrderReviewByUser:React.FC<ReviewUserProps>=({orderId,handleClose,show
 
           setOrderReview(fetchOrderReview); // Đánh giá về đơn hàng
           setBooks(fetchBooks);
-
-          if(fetchBooks){
-            const dataImages =  await getAllIconImage(fetchBooks)
-            setImageBooks(dataImages);
-
-          }
 
           if (fetchOrderReview) {
             const reviewsData = await getReviewByOrderReview(fetchOrderReview.orderReviewId); // hàm này để lấy ra cái review của từng sách trong đơn 
@@ -113,7 +104,7 @@ const ShowOrderReviewByUser:React.FC<ReviewUserProps>=({orderId,handleClose,show
                             <Card.Body key={index}>
                                 <div className="d-flex align-items-center mb-3">
                                 <Image 
-                                    src={imageBooks[index].imageData} 
+                                    src={book.thumbnail} 
                                     alt="Ảnh sách" 
                                     width={60} 
                                     height={80} 
@@ -209,7 +200,7 @@ const ShowOrderReviewByUser:React.FC<ReviewUserProps>=({orderId,handleClose,show
         </Button>
             <OrderReview books={books} 
                         handleClose={handleCloseModalEditReview} 
-                        imageOfBooks={imageBooks}
+                        // imageOfBooks={imageBooks}
                         orderId={orderId} 
                         showModal={showModalEditReview} 
                         onReviewSubmit={handleSubmitEditReview}
