@@ -158,7 +158,7 @@ export const Chart: React.FC<ChartProps> = (props) => {
 
 							newDataNumberOfOrder_Yearly[BY_YEAR.indexOf(year)] += 1;
 							newDataTotalPrice_Yearly[BY_YEAR.indexOf(year)] +=
-								order.totalPrice;
+								order.paymentCost;
 						}
 					});
 					dataNumberOfOrder.current = newDataNumberOfOrder_Yearly;
@@ -176,7 +176,7 @@ export const Chart: React.FC<ChartProps> = (props) => {
 							const month = orderDate.getMonth();
 
 							newDataNumberOfOrder_Monthly[month] += 1;
-							newDataTotalPrice_Monthly[month] += order.totalPrice;
+							newDataTotalPrice_Monthly[month] += order.paymentCost;
 						}
 					});
 					dataNumberOfOrder.current = newDataNumberOfOrder_Monthly;
@@ -204,7 +204,7 @@ export const Chart: React.FC<ChartProps> = (props) => {
 							] += 1;
 							newDataTotalPrice_Daily[
 								latestDays.indexOf(orderDateFormatted)
-							] += order.totalPrice;
+							] += order.paymentCost;
 						}
 					});
 					dataNumberOfOrder.current = newDataNumberOfOrder_Daily;

@@ -82,6 +82,7 @@ const MyRoutes = () =>{
                   <Route path="/vouchers" element={<ListVoucherToday/>}></Route>
                   <Route path="/user/showVoucherUser" element={<ShowVoucherUser/>}></Route>
                   <Route path="/order/purchase/:orderId" element={<ViewPurchasedOrder/>}></Route>
+                  <Route path="/check-out/status" element={<CheckoutStatus/>}></Route>
                   
                     {!isAdminPath && (
                       <Route path='/error-404' element={<Error404Page />} />
