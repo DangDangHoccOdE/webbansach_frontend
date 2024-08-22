@@ -14,6 +14,7 @@ import SelectVoucherToAddCreate from "../order/SelectVoucherToAddOrder";
 import { CartContext } from "../../context/CartContext";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { deleteAllCartItemsIsChoose, deleteCartItem, updateQuantityOfCarts } from "./cartItemActions";
+import { CircularProgress } from "@mui/material";
 
 const ShowCart=()=>{
     const location = useLocation();
@@ -34,6 +35,7 @@ const ShowCart=()=>{
     const {updateCartItemCount} = useContext(CartContext);
     const [cartUpdated, setCartUpdated] = useState(false);
     const userId = getUserIdByToken();
+    const [isLoading,setIsLoading] = useState(false);
 
     useEffect(()=>{
         if(!isLoggedIn || !userId){
@@ -45,6 +47,7 @@ const ShowCart=()=>{
             setSelectedItems(cartItemIds);
         }
         const showCartByUser = async()=>{
+            setIsLoading(true);
             try{
                 const cartItemData = await getAllCartItemByUser(userId);
                 if(cartItemData===null){
@@ -58,13 +61,17 @@ const ShowCart=()=>{
             }catch(error){
                 console.log("Không tải được dữ liệu giỏ hàng!");
                 navigate("/error-404",{replace:true});                
+            }finally{
+                setIsLoading(false);
             }
         }
         showCartByUser()
+
     },[cartItemIds, isLoggedIn, navigate, cartUpdated, userId])
 
     useEffect(()=>{
         const getBookOfCart = async()=>{
+            setIsLoading(true)
             try{
                 if(cartItem){
                   const cart = cartItem.map(async(item:CartItemModel)=>{
@@ -78,9 +85,12 @@ const ShowCart=()=>{
                 }
             }catch(error){
                 navigate("/error-404",{replace:true}); 
+            }finally{
+                setIsLoading(false);
             }
         }
         getBookOfCart()
+
     },[cartItem,navigate])
 
     useEffect(() => {
@@ -276,7 +286,12 @@ const ShowCart=()=>{
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {bookListOfCart?.map((book, index) => (
+                                        {isLoading ? (
+                                                <div className="text-center mt-3">
+                                                    <CircularProgress />
+                                                </div>
+                                                ) : 
+                                        bookListOfCart?.map((book, index) => (
                                             cartItem[index] && (
         
                                             <tr key={index}>
@@ -313,6 +328,7 @@ const ShowCart=()=>{
                                                 </td>
                                             </tr>
                                         )))}
+                                        
                                     </tbody>
                                 </table>
                             </div>

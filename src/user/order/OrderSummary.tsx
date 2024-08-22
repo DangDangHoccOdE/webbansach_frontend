@@ -176,7 +176,7 @@ const OrderSummary:React.FC =()=>{
     const handleClickBuy = () => {
       confirm({
         title: 'Đơn hàng',
-        description: `Bạn có chắc muốn mua đơn hàng này không?`,
+        description: `Bạn có chắc muốn mua đơn hàng này không (${selectMethodPayment})?`,
         confirmationText: 'Đồng ý',
         cancellationText: 'Hủy',
       })
