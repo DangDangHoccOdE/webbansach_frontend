@@ -2,8 +2,9 @@ import { confirm } from "material-ui-confirm";
 import { toast } from "react-toastify";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import OrderModel from "../../models/OrderModel";
+import { format } from "date-fns";
 
-export const cancelOrder=async(orderId:number)=>{   // Hủy đơn hàng
+export const cancelOrder=async(orderId:number,reason:string)=>{   // Hủy đơn hàng
     try {
         await confirm({
           title: 'Đơn hàng',
@@ -18,7 +19,11 @@ export const cancelOrder=async(orderId:number)=>{   // Hủy đơn hàng
             headers:{
               "Content-Type":"application/json",
               "Authorization":`Bearer ${localStorage.getItem("accessToken")}`,
-            }
+            },
+            body:JSON.stringify({
+              reason:reason,
+              time: format(new Date(), 'yyyy/MM/dd HH:mm:ss')
+            })
           }),
           {
             pending: "Đang trong quá trình xử lý...",

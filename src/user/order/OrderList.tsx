@@ -37,35 +37,7 @@ const OrderList: React.FC<OrderProps> = (props) => {
     setOrders([])
   }, [props.value]);
 
-  const fetchOrders = useCallback(async () => {   // Lấy tất cả dữ liệu đơn hàng
-    if (userId) {
-      try {
-        setIsLoading(true);
-        const data = await showOrders(userId, orderStatus,currentPage); /// Thực hiện tìm kiếm các đơn hàng theo trạng thái đơn hàng
-        if (!data) {
-          navigate("/error-404", { replace: true });
-          return;
-        } else {
-          if (data.orders.length === 0) {
-            setNotice("Chưa có đơn hàng");
-          } else {
-            setNotice("");
-          }
-          setOrders(prevOrders => [...prevOrders, ...data.orders]);
-          setHasMore(data.hasMore)
-        }
-      } catch (error) {
-        console.log({ error });
-        navigate("/error-404", { replace: true });
-        return;
-      }finally{
-        setIsLoading(false)
-      }
-    }else{
-      return;
-    }
-  }, [userId, orderStatus, currentPage, navigate]);
-
+  
   
   useEffect(() => {
     if (!isLoggedIn || !userId) {
@@ -73,8 +45,37 @@ const OrderList: React.FC<OrderProps> = (props) => {
       return;
     }
    
+    const fetchOrders = async () => {   // Lấy tất cả dữ liệu đơn hàng
+      if (userId) {
+        try {
+          setIsLoading(true);
+          const data = await showOrders(userId, orderStatus,currentPage); /// Thực hiện tìm kiếm các đơn hàng theo trạng thái đơn hàng
+          if (!data) {
+            navigate("/error-404", { replace: true });
+            return;
+          } else {
+            if (data.orders.length === 0) {
+              setNotice("Chưa có đơn hàng");
+            } else {
+              setNotice("");
+            }
+            setOrders(prevOrders => [...prevOrders, ...data.orders]);
+            setHasMore(data.hasMore)
+          }
+        } catch (error) {
+          console.log({ error });
+          navigate("/error-404", { replace: true });
+          return;
+        }finally{
+          setIsLoading(false)
+        }
+      }else{
+        return;
+      }
+    }
+  
     fetchOrders();
-  }, [isLoggedIn, userId, fetchOrders, navigate]);
+  }, [isLoggedIn, userId, navigate, orderStatus, currentPage]);
 
   const handleOrderUpdate = useCallback((updateOrder:OrderModel)=>{ // Cập nhật lại giao diện ngay khi thay đổi trong Tất cả chỗ order.
     setOrders(prevOrders=>
@@ -104,7 +105,7 @@ const OrderList: React.FC<OrderProps> = (props) => {
     )}
       {
         hasMore && (
-          <div className="text-center mt-3">
+          <div className="text-center mt-3 mb-3">
               <button className="btn btn-primary" onClick={handleShowMore}>Hiển thị thêm</button>
           </div>
         )

@@ -12,9 +12,10 @@ import { Box, Card, CardContent, Typography, Button } from "@mui/material";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import OrderReview from "../review/OrderReview";
 import { CartContext } from "../../context/CartContext";
-import { cancelOrder, confirmReceivedOrder, handleCreateOrder, repurchase } from "./OrderActions";
+import { confirmReceivedOrder, handleCreateOrder, repurchase } from "./OrderActions";
 import { handleBankPayment } from "../payment/handleBankPayment";
 import { toast } from "react-toastify";
+import ModalCancelOrder from "./ModalCancelOrder";
 
 interface OrderProps {
   orderId: number;
@@ -29,8 +30,9 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const userId = getUserIdByToken();
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);  // form review
   const {updateCartItemCount} = useContext(CartContext);
+  const [showModalCancelOrder, setShowModalCancelOrder] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,19 +64,6 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
     fetchData()    
   }, [isLoggedIn, navigate, orderId]);
 
-  const handleCancelOrder = useCallback(async () => { // Xác nhận hủy đơn hàng
-    if (order) {
-        const isUpdate = await cancelOrder(order.orderId);
-        if(isUpdate && onOrderUpdate){
-          const updateOrder = {...order,orderStatus:"Đã hủy"};
-          onOrderUpdate(updateOrder);
-          setOrder(updateOrder)
-        }
-    }
-
-  },[onOrderUpdate, order]);
-
-
   const handleRepurchase=async()=>{ // Xử lý mua lại hàng
       if(order && userId){
         const cartItemIds = await repurchase(order.orderId);
@@ -102,7 +91,9 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
 }  
 
 const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu trả hàng/ hoàn tiền
-      toast.warn("Tính năng đang cập nhật!")
+      if(order){
+          navigate(`/user/purchase/cancellation/${orderId}`);
+      }
 }
 
   const handleClose=()=>{  // Mở form đánh giá sản phẩm
@@ -139,7 +130,34 @@ const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu tr�
     }
   },[onOrderUpdate, order])
 
+ 
+
+  const handleCancelOrder = () => { // Mở form hủy đơn hàng
+    setShowModalCancelOrder(true);
+  }; 
+  
+  const handleCloseModalCancelOrder = () => { // Đóng form hủy đơn hàng
+    setShowModalCancelOrder(false);
+  };
+
+
+  const handleOrderUpdate = (updateOrder: Partial<OrderModel>) => { // Cập nhật lại giao diện ngay sau khi xác nhận hủy
+    if (order && onOrderUpdate) {
+      const newOrder = { ...order, ...updateOrder };
+      onOrderUpdate(newOrder);
+      setOrder(newOrder);
+    }
+  };
+
   return (
+    <>
+        <ModalCancelOrder onClose={handleCloseModalCancelOrder}
+                              onOrderUpdate={handleOrderUpdate}
+                              open={showModalCancelOrder}
+                              orderId={orderId}
+                              key={orderId}
+          />
+         
     <Card sx={{ mb: 3 }}>
       <CardContent>
         <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
@@ -244,7 +262,8 @@ const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu tr�
       }
       
       </CardContent>
-    </Card>
+    </Card> 
+    </>
   );
 };
 

@@ -92,6 +92,8 @@ export async function getOrderByOrderId(orderId:number):Promise<OrderModel|null>
             cartItems:data.cartItems,
             paymentMethod:data.paymentMethod,
             deliveryMethod:data.deliveryMethod,
+            cancelOrderTime:data.cancelOrderTime,
+            reasonCancelOrder:data.reasonCancelOrder
         })
     }catch(error){
         console.log({error})

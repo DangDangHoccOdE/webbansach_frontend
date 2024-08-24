@@ -18,6 +18,8 @@ class OrderModel{
     paymentMethod:string;
     deliveryMethod:string;
     voucherIds?:number[];
+    cancelOrderTime?:string;
+    reasonCancelOrder?:string
 
     constructor(    orderId:number,
         orderCode:string,
@@ -36,7 +38,9 @@ class OrderModel{
         cartItems:number[],
         paymentMethod:string,
         deliveryMethod:string,
-        voucherIds?:number[],){
+        voucherIds?:number[],
+        cancelOrderTime?:string,
+        reasonCancelOrder?:string){
             this.orderId = orderId;
             this.orderCode = orderCode;
             this.date =date;
@@ -55,6 +59,8 @@ class OrderModel{
             this.paymentMethod = paymentMethod;
             this.deliveryMethod = deliveryMethod;
             this.voucherIds = voucherIds;
+            this.cancelOrderTime = cancelOrderTime;
+            this.reasonCancelOrder = reasonCancelOrder;
         }
 }
 
