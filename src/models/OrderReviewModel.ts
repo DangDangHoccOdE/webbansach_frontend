@@ -1,4 +1,4 @@
-class OrderReviewModal{
+class OrderReviewModel{
     orderReviewId:number;
     deliveryRate:number;
     shopRate:number;
@@ -11,4 +11,4 @@ class OrderReviewModal{
         }
 }
 
-export default OrderReviewModal;
+export default OrderReviewModel;

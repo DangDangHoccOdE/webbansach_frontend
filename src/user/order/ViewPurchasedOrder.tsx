@@ -131,7 +131,7 @@ const ViewPurchasedOrder = () =>{
 
     return (
         order &&
-        <Box sx={{ mt: 2, mx: 2 }}>
+        <Box sx={{ mt: 2, mx: 2 , mb:3}}>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Paper elevation={3} sx={{ p: 2 }}>
@@ -202,25 +202,29 @@ const ViewPurchasedOrder = () =>{
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12}>
-                    <Box display="flex" justifyContent="center" mt={2} mb={3}>
-                        <Button 
-                            variant="contained" 
-                            color="primary" 
-                            startIcon={<RateReview />}
-                            onClick={
-                                handleShowViewOrder
-                            }
-                        >
-                            Xem đánh giá
-                        </Button>
-                        <ShowOrderReviewByUser 
-                      handleClose={handleClose} 
-                      showModal={showModal} 
-                      orderId={orderIdNumber} 
-                    />
-                    </Box>
-                </Grid>
+                {
+                    order.orderStatus==="Đánh giá" &&
+                            <Grid item xs={12}>
+                            <Box display="flex" justifyContent="center" mt={2} >
+                                <Button 
+                                    variant="contained" 
+                                    color="primary" 
+                                    startIcon={<RateReview />}
+                                    onClick={
+                                        handleShowViewOrder
+                                    }
+                                >
+                                    Xem đánh giá
+                                </Button>
+                                <ShowOrderReviewByUser 
+                            handleClose={handleClose} 
+                            showModal={showModal} 
+                            orderId={orderIdNumber} 
+                            />
+                            </Box>
+                        </Grid>
+                }
+                
             </Grid>
         </Box>
     )

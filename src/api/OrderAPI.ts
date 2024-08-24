@@ -63,6 +63,45 @@ export async function showOrders(userId:number,orderStatus:string,page:number=0)
     }
 } 
 
+
+export async function getOrderByOrderCode(orderCode:string):Promise<OrderModel|null> {
+    const url:string=`http://localhost:8080/orders/search/findByOrderCode?orderCode=${orderCode}`;
+
+    try{
+        const response = await fetchWithAuth(url);
+        if(!response){
+            throw new Error(`Lỗi khi gọi api danh sách đặt hàng`)
+        }
+
+        const data = await response.json();
+
+        return({
+            orderId:data.orderId,
+            orderCode:data.orderCode,
+            date:data.date,
+            deliveryAddress:data.deliveryAddress,
+            deliveryStatus:data.deliveryStatus,
+            orderStatus:data.orderStatus,
+            paymentCost:data.paymentCost,
+            purchaseAddress:data.purchaseAddress,
+            shippingFee:data.shippingFee,
+            shippingFeeVoucher:data.shippingFeeVoucher,
+            totalPrice:data.totalPrice,
+            totalProduct:data.totalProduct,
+            noteFromUser:data.noteFromUser,
+            userId:data.userId,
+            cartItems:data.cartItems,
+            paymentMethod:data.paymentMethod,
+            deliveryMethod:data.deliveryMethod,
+            cancelOrderTime:data.cancelOrderTime,
+            reasonCancelOrder:data.reasonCancelOrder
+        })
+    }catch(error){
+        console.log({error})
+        return null;
+    }
+} 
+
 export async function getOrderByOrderId(orderId:number):Promise<OrderModel|null> {
     const url:string=`http://localhost:8080/orders/${orderId}`;
 
@@ -103,7 +142,7 @@ export async function getOrderByOrderId(orderId:number):Promise<OrderModel|null>
 
 export async function fetchAllOrders(currentPage:number):Promise<ResultInterface|null> {
     let url:string='';
-    if(currentPage!==0){
+    if(currentPage>=0){
         url=`http://localhost:8080/orders?sort=date,desc&size=10&page=${currentPage}`
     }
     else{
@@ -112,7 +151,6 @@ export async function fetchAllOrders(currentPage:number):Promise<ResultInterface
     const result:OrderModel[] = [];
 
     try{
-        console.log(url)
         const response = await fetchWithAuth(url);
         if(!response){
             throw new Error(`Lỗi khi gọi api danh sách đặt hàng`)

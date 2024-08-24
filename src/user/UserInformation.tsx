@@ -220,7 +220,7 @@ const UserInformation: React.FC = () => {
 
    
     return (
-        <div className="container mt-5">
+        <div className="container mt-5 mb-5">
             <h1 className="text-center mb-4">Chỉnh sửa thông tin</h1>
             <div className="card shadow">
                 <div className="card-body">

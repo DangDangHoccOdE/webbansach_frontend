@@ -93,12 +93,12 @@ export const SlideBar: React.FC = () => {
 					</li>
 					<li className='nav-item '>
 						<NavLink
-							to={"/admin/feedbackManagement"}
+							to={"/admin/orderReviewManagement"}
 							className={`nav-link d-flex align-items-center justify-content-center `}
 						>
 							<FeedbackIcon fontSize='small' />
 							<span className='ms-2 d-none d-sm-inline d-md-inline'>
-								Quản lý Feedback
+								Quản lý đánh giá shop
 							</span>
 						</NavLink>
 					</li>

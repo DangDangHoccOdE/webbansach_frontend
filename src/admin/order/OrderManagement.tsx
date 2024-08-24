@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import RequireAdmin from "../RequireAdmin"
 import { useNavigate } from "react-router-dom";
 import useScrollToTop from "../../hooks/ScrollToTop";
 import OrderModel from "../../models/OrderModel";
-import { fetchAllOrders } from "../../api/OrderAPI";
+import { fetchAllOrders, getOrderByOrderCode } from "../../api/OrderAPI";
 import { getUserByOrderId } from "../../api/UserAPI";
 import UserModel from "../../models/UserModel";
-import { Box,  CircularProgress, Container, FormControl, IconButton, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
+import { Box,  Button,  CircularProgress, Container, FormControl, IconButton, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip, Typography } from "@mui/material";
 import { Pagination } from "../../layouts/utils/Pagination";
 import SaveIcon from '@mui/icons-material/Save';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -24,52 +24,69 @@ const OrderManagement:React.FC=()=>{
     const [allOrders,setAllOrders] = useState<OrderModel[]>([]);
     const [orderUsers,setOrderUsers] = useState<UserModel[]>([]);
     const [isUpdate,setIsUpdate] = useState(false);
+    const [temporaryWordFind,setTemporaryWordFind] = useState("")
+    const [keySearch,setKeySearch] = useState("")
+
 
     useEffect(()=>{
-        const getAllOrderAdmin = async()=>{ // Lấy ra dữ liệu tất cả đơn hàng
-            setIsLoading(true)
-            try{
-                const dataOrders = await fetchAllOrders(currentPage-1);
-
-                if(dataOrders){
-                    setAllOrders(dataOrders.resultOrders);
-                    setTotalPages(dataOrders.totalPages);
-    
-                    const handleFetchDataUser = dataOrders.resultOrders.map(async(order:OrderModel)=>{
-                        const dataUser = await getUserByOrderId(order.orderId);
-                        return dataUser;
-                    })
-                    const fetchDataUser = (await Promise.all(handleFetchDataUser)).filter(user=>user!==null) as UserModel[]; // Lấy ra dữ liệu user từ đơn hàng
-                    setOrderUsers(fetchDataUser);
-                }else{
-                    navigate("/error-404",{replace:true})
-                }
-            }catch(error){
-                console.error(error);
-                navigate("/error-404",{replace:true})
-            }finally{
-                setIsLoading(false);
+          const getAllOrderAdmin = async () => {
+            setIsLoading(true);
+            try {
+              let dataOrders: OrderModel[] = [];
+              let totalPages = 1;
+          
+              if (keySearch === "") {
+                    const result = await fetchAllOrders(currentPage - 1);
+                    if (result) {
+                      dataOrders = result.resultOrders;
+                      totalPages = result.totalPages;
+                    }
+              } else {
+                    const dataFind = await getOrderByOrderCode(keySearch);
+                    if (dataFind) {
+                      dataOrders = [dataFind];
+                    }
+              }
+          
+              setAllOrders(dataOrders);
+              setTotalPages(totalPages);
+          
+              const fetchDataUser = await Promise.all(
+                dataOrders.map((order: OrderModel) => getUserByOrderId(order.orderId))
+              );
+              const orderUsers = fetchDataUser.filter((user): user is UserModel => user !== null);
+              setOrderUsers(orderUsers);
+          
+            } catch (error) {
+              console.error(error);
+              navigate("/error-404", { replace: true });
+            } finally {
+              setIsLoading(false);
             }
-        }
+          };
 
         getAllOrderAdmin();
-    },[navigate,currentPage,isUpdate])
+    },[navigate,currentPage,isUpdate,keySearch])
     
-    const handleDeliveryStatusChange= (orderId:number,newStatus:string)=>{
+    const handleDeliveryStatusChange= (orderId:number,newStatus:string)=>{  // Thay đổi trạng thái vận chuyển
         setAllOrders(allOrders.map(order=>
             order.orderId === orderId ? {...order,deliveryStatus:newStatus}:order
         ));
     }
 
-    const pagination=(pageCurrent:number)=>{
+    const pagination=(pageCurrent:number)=>{  // Phân trang
         setCurrentPage(pageCurrent);
+    }
+
+    const handleFindOrder=()=>{
+        setKeySearch(temporaryWordFind);
     }
 
     const handleShowOrderDetail=(orderId:number)=>{ // Xem chi tiết đơn hàng
         navigate(`/order/purchase/${orderId}`)
     }
 
-    const handleSaveStatusOrder = (order:OrderModel)=>{
+    const handleSaveStatusOrder = (order:OrderModel)=>{  // Cập nhật trạng thái đơn hàng
         confirm({
             title:'Chỉnh sửa trạng thái đơn hàng',
             description:`Bạn xác nhận lưu thay đổi trạng thái đơn hàng mã: ${order.orderCode}`,
@@ -100,14 +117,21 @@ const OrderManagement:React.FC=()=>{
         .catch(()=>{});
     }
 
-    
-
     return (
         <Container maxWidth="lg">
           <Box sx={{ minWidth: 120, py: 4 }}>
             <Typography variant="h3" align="center" gutterBottom>
               Quản lý đơn hàng
             </Typography>
+
+            <Stack direction={"row"} spacing={2} sx={{mb:2}}>
+                <TextField type="search" 
+                          id="find-order" 
+                          onChange={e=>setTemporaryWordFind(e.target.value)}
+                          fullWidth
+                          label="Nhập mã đơn hàng"></TextField>
+                  <Button variant="outlined" type="button" onClick={handleFindOrder}>Tìm</Button>
+            </Stack>
             {isLoading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
                 <CircularProgress />
@@ -127,7 +151,7 @@ const OrderManagement:React.FC=()=>{
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {allOrders && allOrders.length > 0 ? (
+                      {orderUsers.length>0 && allOrders.length > 0 ? (
                         allOrders.map((order, index) => (
                           <TableRow key={order.orderId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                             <TableCell align="center">{(currentPage - 1) * 10 + index + 1}</TableCell>
@@ -184,6 +208,7 @@ const OrderManagement:React.FC=()=>{
                     currentPage={currentPage} pagination={pagination} totalPages={totalPages}
                   />
                 </Box>
+              
               </>
             )}
           </Box>

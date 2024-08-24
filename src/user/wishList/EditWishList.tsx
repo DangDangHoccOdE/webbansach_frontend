@@ -142,7 +142,7 @@ const EditWishList=()=>{
     }
 
     return (
-        <div className="container">
+        <div className="container mb-5">
                 <h2 className="text-center mt-2">{wishList?.wishListName}</h2>
                 {isLoading && <p className="text-center">Đang tải...</p>}
                     <div className="col-3">

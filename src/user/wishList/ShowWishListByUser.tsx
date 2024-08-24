@@ -67,7 +67,7 @@ const ShowWishListByUser=()=>{
     }
 
     return(
-        <div className="container">
+        <div className="container mb-5">
             <h1 className="mt-5 text-center">Danh sách yêu thích</h1>
                  {isLoading && <div style={{ textAlign: "center" }}>Đang tải...</div> }
         

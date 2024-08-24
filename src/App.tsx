@@ -47,6 +47,7 @@ import CreateOrder from "./user/order/CreateOrder";
 import BookManagementPage from "./admin/book/BookManagement";
 import PolicyPage from "./layouts/page/PolicyPage";
 import ShowCancellationDetails from "./user/order/ShowCancellationDetails";
+import OrderReviewManagementPage from "./admin/orderReview/OrderReviewManagement";
 
 const MyRoutes = () =>{
   // Xử lý ẩn hiện navbar và footer
@@ -124,6 +125,7 @@ const MyRoutes = () =>{
                             <Route path="/admin/orderManagement" element={<OrderManagement_Admin/>}></Route>
                             <Route path="/admin/bookManagement" element={<BookManagementPage/>}></Route>
                             <Route path="/admin/order/purchase" element={<ViewPurchasedOrder/>}></Route>
+                            <Route path="/admin/orderReviewManagement" element={<OrderReviewManagementPage/>}></Route>
                             <Route
                             path='/check-out/status'
                             element={<CheckoutStatus />}

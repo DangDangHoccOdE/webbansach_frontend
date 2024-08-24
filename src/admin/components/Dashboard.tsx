@@ -7,12 +7,13 @@ import { ParameterDigital } from "./ParameterDigital";
 import RequireAdmin from "../RequireAdmin";
 import OrderModel from "../../models/OrderModel";
 import { Chart } from "./Chart";
+import { getNumberOfOrderReview } from "../../api/OrderReviewAPI";
 
 const Dashboard=()=>{
     const [numberOfAccount,setNumberOfAccount] = useState(0);
     const [numberOfOrder,setNumberOfOrder] = useState(0);
     const [totalNumberBooks,setTotalNumberBooks] = useState(0);
-    const [totalNumberOfFeedbacks,setTotalNumberOfFeedbacks] = useState(0);
+    const [totalNumberOfReviewShop,setTotalNumberOfReviewShop] = useState(0);
     const [totalNumberOfReviews,setTotalNumberOfReviews] = useState(0);
     const [totalPrice,setTotalPrice] = useState(0);
     const [orders,setOrders] = useState<OrderModel[]>([])
@@ -29,7 +30,7 @@ const Dashboard=()=>{
 
     // Lấy tổng số hoá đơn và tổng tiền kiếm được
     useEffect(()=>{
-        fetchAllOrders(0) // 0 là lấy tất cả đơn hàng
+        fetchAllOrders(-1) // -1 là lấy tất cả đơn hàng
             .then(response=>{
                 if(response){
                     setOrders(response.resultOrders)
@@ -52,13 +53,22 @@ const Dashboard=()=>{
             .catch((error) => console.log(error));
         },[])
 
-    useEffect(() => {
+    useEffect(() => { // Lấy tổng số review
 		getNumberOfReview()
 			.then((response) => {
 				setTotalNumberOfReviews(response);
 			})
 			.catch((error) => console.log(error));
 	}, []);
+
+    useEffect(() => {  // Tổng số đánh giá shop
+		getNumberOfOrderReview()
+			.then((response) => {
+				setTotalNumberOfReviewShop(response);
+			})
+			.catch((error) => console.log(error));
+	}, []);
+
 
     return (
 		<div>
@@ -67,7 +77,7 @@ const Dashboard=()=>{
 				numberOfAccount={numberOfAccount}
 				numberOfOrder={numberOfOrder}
 				totalNumberBooks={totalNumberBooks}
-				totalNumberOfFeedbacks={totalNumberOfFeedbacks}
+				totalReviewShop={totalNumberOfReviewShop}
 				totalNumberOfReviews={totalNumberOfReviews}
 			/>
 			<Chart orders={orders} />

@@ -119,8 +119,14 @@ const BookManagement:React.FC=()=>{
                             setFilter={setFilter}
                             setIdCate={setIdCate}
                             />
+
+                <Link to={`/admin/book/addBook`} className="btn btn-sm btn-outline-secondary mt-2 mb-3 ms-2">
+                              <i className="fa fa-add me-1"></i>Thêm
+                            </Link>
+
                 </div>
 
+          
                 {books.length===0  ? (
                 <div className="alert alert-danger text-center" role="alert">
                     Hiện tại danh sách sách đang rỗng
@@ -158,9 +164,6 @@ const BookManagement:React.FC=()=>{
                         <td>{NumberFormat(book.price)} đ</td>
                         <td>
                         <div className="btn-group" role="group">
-                            <Link to={`/admin/book/addBook`} className="btn btn-sm btn-outline-secondary">
-                              <i className="fa fa-add me-1"></i>Thêm
-                            </Link>
                             <Link to={`/admin/book/editBook/${book.bookId}`} className="btn btn-sm btn-outline-primary">
                             <i className="fa fa-edit me-1"></i>Sửa
                             </Link>
