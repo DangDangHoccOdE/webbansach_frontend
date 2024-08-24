@@ -127,7 +127,7 @@ const UserManagement:React.FC=()=>{
             <>
              <div className="d-flex justify-content-center mb-2">
                 <label htmlFor="findUser"className="form-label me-2">Tìm kiếm</label>
-                <input type="text" id="findUser" className="form-control me-2" onChange={handleChangeWordFind} value={temporaryWordFind} placeholder="Nhập email hoặc tài khoản người dùng"></input>
+                <input type="search" id="findUser" className="form-control me-2" onChange={handleChangeWordFind} value={temporaryWordFind} placeholder="Nhập email hoặc tài khoản người dùng"></input>
                 <button type="submit" className="btn btn-secondary" onClick={handleWordFind}>Tìm</button>
             </div>
             {allUser.length===0  ? (

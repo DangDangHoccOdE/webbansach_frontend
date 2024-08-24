@@ -152,7 +152,7 @@ const VoucherManagement : React.FC=()=>{
         {isLoading && <div className="text-center"><div className="spinner-border" role="status"></div></div>}
         <div className="d-flex justify-content-center">
                 <label htmlFor="findVoucher"className="form-label me-2">Mã Voucher</label>
-                <input type="text" id="findVoucher" className="form-control-sm me-2" placeholder="Nhập mã voucher để tìm kiếm" value={voucherNameFind} onChange={handleFindVoucherName}></input>
+                <input type="search" id="findVoucher" className="form-control-sm me-2" placeholder="Nhập mã voucher để tìm kiếm" value={voucherNameFind} onChange={handleFindVoucherName}></input>
                 <button type="submit" className="btn btn-secondary" onClick={handleClickFindVoucher}>Tìm</button>
             </div>
         <div className="d-flex justify-content-end mb-3 mt-3">
