@@ -33,6 +33,7 @@ function RegisterUser(){
     const [notice,setNotice] = useState("");
     const [hasFull, setHasFull] = useState(true);
     const [hasCalled,setHasCalled] = useState(false)
+    const [avatarPreview,setAvatarPreview] = useState<string|null>(null)
 
     useScrollToTop();
     
@@ -160,9 +161,7 @@ function RegisterUser(){
     const handleEmailChange = async(e: ChangeEvent<HTMLInputElement>)=>{
         setEmail(e.target.value);
         setErrorEmail("");
-        console.log(12)
         const result = await checkEmail(e.target.value,{setErrorEmail});
-        console.log("réult",result)
         return result;
     }
 
@@ -192,10 +191,12 @@ function RegisterUser(){
     }
 
     // avatar
-    const handleAvatarChange=(e:ChangeEvent<HTMLInputElement>)=>{
-        if(e.target.files){
+    const handleAvatarChange=async(e:ChangeEvent<HTMLInputElement>)=>{
+        if(e.target.files && e.target.files[0]){
             const file = e.target.files[0];
             setAvatar(file)
+            const render = await getBase64(file);
+            setAvatarPreview(render); 
         }
     }
 
@@ -223,6 +224,13 @@ function RegisterUser(){
         setDateOfBirth(e.target.value);
         return checkDateOfBirthRegex(e.target.value);
     }
+
+
+    const handleRemoveAvatar=()=>{
+      setAvatarPreview(null)
+      setAvatar(null)
+    }
+
 
     return(
         <div className="container-fluid bg-light py-5">
@@ -315,6 +323,12 @@ function RegisterUser(){
                         <input type="file" className="form-control" id="avatar" accept="image/*" onChange={handleAvatarChange} />
                         <label htmlFor="avatar">Avatar</label>
                       </div>
+                      {avatarPreview && (
+                            <div className="position-relative d-inline-block me-2 mb-2 mt-2">
+                                      <img src={avatarPreview} alt="Avatar preview" className="img-thumbnail" style={{maxWidth: '100px', maxHeight: '100px'}} />
+                                           <button type="button"className="btn btn-danger btn-sm position-absolute top-0 end-0 -circle"  style={{background:"red"}} onClick={handleRemoveAvatar}>x</button>
+                                      </div>
+                         )}
                     </div>
                   </div>
       

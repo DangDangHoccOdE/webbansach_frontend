@@ -127,10 +127,11 @@ const UserInformation: React.FC = () => {
 
                 if (response.ok) {
                     setHasFull(true);
+                    setNotice("Cập nhật thông tin thành công, Vui lòng tải lại trang để hoàn tất cập nhật!")
                 } else {
                     setHasFull(false);
+                    setNotice(data.content);
                 }
-                setNotice(data.content);
             } catch (error) {
                 setNotice("Đã xảy ra lỗi trong quá trình cập nhật thông tin!");
                 console.log({ error });
@@ -158,7 +159,7 @@ const UserInformation: React.FC = () => {
         return checkPhoneNumber(e.target.value);
     };
 
-    const handleSexChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const handleSexChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSex(e.target.value);
     };
 
@@ -217,123 +218,200 @@ const UserInformation: React.FC = () => {
         return null;
     }
 
-    return ( 
-        <div className="container">
-            <h1 className="mt-5 text-center">Chỉnh sửa thông tin</h1>
-            <div className="mb-3 col-md-6 col-12 mx-auto">
-                {isLoading && <div className="text-center">Đang tải...</div>}
-                <form onSubmit={handleSubmit} className="form">
-                    <div className="mb-3">
-                        <div className="row">
-                            <label htmlFor="email" className="form-label">Email<span style={{ color: "red" }}> *</span> </label>
-                            <div className="col-9">
-                                <input
-                                    type="text"
-                                    id="email"
-                                    className="form-control"
-                                    value={email}
-                                    readOnly
+   
+    return (
+        <div className="container mt-5">
+            <h1 className="text-center mb-4">Chỉnh sửa thông tin</h1>
+            <div className="card shadow">
+                <div className="card-body">
+                    {isLoading ? (
+                        <div className="text-center">
+                            <div className="spinner-border" role="status">
+                                <span className="visually-hidden">Đang tải...</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit}>
+                            <div className="row">
+                                <div className="col-md-6">
+                                    <div className="mb-3">
+                                        <label htmlFor="email" className="form-label">
+                                            <i className="fas fa-envelope me-2"></i>Email<span className="text-danger">*</span>
+                                        </label>
+                                        <div className="input-group">
+                                            <input
+                                                type="text"
+                                                id="email"
+                                                className="form-control"
+                                                value={email}
+                                                readOnly
+                                            />
+                                            <Link to="/user/changeEmail" className="btn btn-outline-secondary">
+                                                <i className="fas fa-edit"></i> Thay đổi
+                                            </Link>
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label htmlFor="lastName" className="form-label">
+                                            <i className="fas fa-user me-2"></i>Họ đệm<span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="lastName"
+                                            className="form-control"
+                                            value={lastName}
+                                            onChange={(e) => setLastName(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label htmlFor="firstName" className="form-label">
+                                            <i className="fas fa-user me-2"></i>Tên<span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="firstName"
+                                            className="form-control"
+                                            value={firstName}
+                                            onChange={(e) => setFirstName(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label htmlFor="dateOfBirth" className="form-label">
+                                            <i className="fas fa-calendar-alt me-2"></i>Ngày sinh<span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="dateOfBirth"
+                                            className="form-control"
+                                            value={dateOfBirth}
+                                            onChange={handleDateOfBirthChange}
+                                        />
+                                        {errorDateOfBirth && <div className="text-danger">{errorDateOfBirth}</div>}
+                                    </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <div className="mb-3">
+                                        <label htmlFor="phoneNumber" className="form-label">
+                                            <i className="fas fa-phone me-2"></i>Số điện thoại<span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="phoneNumber"
+                                            className="form-control"
+                                            value={phoneNumber}
+                                            onChange={handleChangePhoneNumber}
+                                        />
+                                        {errorPhoneNumber && <div className="text-danger">{errorPhoneNumber}</div>}
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label className="form-label">
+                                            <i className="fas fa-venus-mars me-2"></i>Giới tính<span className="text-danger">*</span>
+                                        </label>
+                                        <div>
+                                            <div className="form-check form-check-inline">
+                                                <input
+                                                    className="form-check-input"
+                                                    type="radio"
+                                                    name="sex"
+                                                    id="male"
+                                                    value="Nam"
+                                                    checked={sex === "Nam"}
+                                                    onChange={handleSexChange}
+                                                />
+                                                <label className="form-check-label" htmlFor="male">Nam</label>
+                                            </div>
+                                            <div className="form-check form-check-inline">
+                                                <input
+                                                    className="form-check-input"
+                                                    type="radio"
+                                                    name="sex"
+                                                    id="female"
+                                                    value="Nữ"
+                                                    checked={sex === "Nữ"}
+                                                    onChange={handleSexChange}
+                                                />
+                                                <label className="form-check-label" htmlFor="female">Nữ</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label htmlFor="avatar" className="form-label">
+                                            <i className="fas fa-image me-2"></i>Avatar<span className="text-danger">*</span>
+                                        </label>
+                                        <input 
+                                            type="file" 
+                                            id="avatar" 
+                                            className="form-control" 
+                                            accept="image/*" 
+                                            onChange={handleAvatarChange}
+                                        />
+                                        <div className="mt-2">
+                                            {avatar ? (
+                                                <img src={avatar} alt="Avatar" className="img-thumbnail" style={{ width: "100px" }} />
+                                            ) : user && user.avatar ? (
+                                                <img src={user.avatar} alt="Avatar" className="img-thumbnail" style={{ width: "100px" }} />
+                                            ) : (
+                                                <div>Chưa có ảnh đại diện được chọn!</div>
+                                            )}
+                                        </div>
+                                        <div className="form-check mt-2">
+                                            <input 
+                                                type="checkbox" 
+                                                className="form-check-input" 
+                                                id="noAvatar" 
+                                                onChange={handleNoAvatar}
+                                            />
+                                            <label className="form-check-label" htmlFor="noAvatar">Không dùng avatar</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mb-3">
+                                <label htmlFor="deliveryAddress" className="form-label">
+                                    <i className="fas fa-truck me-2"></i>Địa chỉ giao hàng<span className="text-danger">*</span>
+                                </label>
+                                <input 
+                                    id="deliveryAddress" 
+                                    className="form-control" 
+                                    value={deliveryAddress} 
+                                    onChange={e => setDeliveryAddress(e.target.value)}
                                 />
                             </div>
-                            <div className="col-3">
-                                <Link to={"/user/changeEmail"}>
-                                    <i className="fas fa-edit btn btn-info">Thay đổi</i>
-                                </Link>
+
+                            <div className="mb-3">
+                                <label htmlFor="purchaseAddress" className="form-label">
+                                    <i className="fas fa-shopping-bag me-2"></i>Địa chỉ mua hàng<span className="text-danger">*</span>
+                                </label>
+                                <input 
+                                    id="purchaseAddress" 
+                                    className="form-control" 
+                                    value={purchaseAddress} 
+                                    onChange={e => setPurchaseAddress(e.target.value)}
+                                />
                             </div>
-                        </div>
-                    </div>
 
-                    <div className="mb-3">
-                        <label htmlFor="lastName" className="form-label">Họ đệm</label> <span style={{ color: "red" }}> *</span>
-                        <input
-                            type="text"
-                            id="lastName"
-                            className="form-control"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="firstName" className="form-label">Tên</label> <span style={{ color: "red" }}> *</span>
-                        <input
-                            type="text"
-                            id="firstName"
-                            className="form-control"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="mb-3">
-                        <label htmlFor="dateOfBirth" className="form-label">Ngày sinh</label> <span style={{ color: "red" }}> *</span>
-                        <input
-                            type="date"
-                            id="dateOfBirth"
-                            className="form-control"
-                            value={dateOfBirth}
-                            onChange={handleDateOfBirthChange}
-                        />
-                        <div style={{ color: "red" }}>{errorDateOfBirth}</div>
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="phoneNumber" className="form-label">Số điện thoại</label> <span style={{ color: "red" }}> *</span>
-                        <input
-                            type="text"
-                            id="phoneNumber"
-                            className="form-control"
-                            value={phoneNumber}
-                            onChange={handleChangePhoneNumber}
-                        />
-                        <div style={{ color: "red" }}>{errorPhoneNumber}</div>
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="sex" className="form-label">Giới tính</label> <span style={{ color: "red" }}> *</span>
-                        <select className="form-control" id="sex" value={sex} onChange={handleSexChange}>
-                            <option value="Nam">Nam</option>
-                            <option value="Nữ">Nữ</option>
-                        </select>
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="avatar" className="form-label">Avatar</label> <span style={{ color: "red" }}> *</span>
-                        <input type="file" id="avatar" className="form-control" accept="image/**" onChange={handleAvatarChange} ></input>
-                        <br />
-                        <div className="row">
-                            <div className="col-6">
-                                {
-                                    avatar ? (
-                                        <img src={avatar} alt="Avatar" style={{ width: "100px" }} />
-                                    ) : user && user.avatar ? (
-                                        <img src={user.avatar} alt="Avatar" style={{ width: "100px" }} />
-                                    ) : (
-                                        <div>Chưa có ảnh đại diện được chọn!</div>
-                                    )
-                                }
+                            <div className="text-center">
+                                <button type="submit" className="btn btn-primary">
+                                    <i className="fas fa-save me-2"></i>Lưu
+                                </button>
+                                {notice && (
+                                    <div className={`mt-2 ${hasFull ? "text-success" : "text-danger"}`}>
+                                        {notice}
+                                    </div>
+                                )}
                             </div>
-                            <div className="col-6">
-                                <input type="checkbox" id="noAvatar" value="Không dùng avatar" onClick={handleNoAvatar}></input>
-                                <label htmlFor="noAvatar"> Không dùng avatar</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mb-3">
-                        <label htmlFor="deliveryAddress" className="form-label">Địa chỉ giao hàng</label> <span style={{ color: "red" }}> *</span>
-                        <input id="deliveryAddress" className="form-control" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}></input>
-                    </div>
-
-                    <div className="mb-3">
-                        <label htmlFor="purchaseAddress" className="form-label">Địa chỉ mua hàng</label> <span style={{ color: "red" }}> *</span>
-                        <input id="purchaseAddress" className="form-control" value={purchaseAddress} onChange={e => setPurchaseAddress(e.target.value)}></input>
-                    </div>
-                    <div className="text-center">
-                        <button type="submit" className="btn btn-primary">
-                            Lưu
-                        </button>
-                        <div style={{ color: hasFull ? "green" : "red" }}>{notice}</div>
-                    </div>
-                </form>
+                        </form>
+                    )}
+                </div>
             </div>
-        </div> 
+        </div>
     );
 };
 
