@@ -203,7 +203,7 @@ const ViewPurchasedOrder = () =>{
                 </Grid>
 
                 <Grid item xs={12}>
-                    <Box display="flex" justifyContent="center" mt={2}>
+                    <Box display="flex" justifyContent="center" mt={2} mb={3}>
                         <Button 
                             variant="contained" 
                             color="primary" 

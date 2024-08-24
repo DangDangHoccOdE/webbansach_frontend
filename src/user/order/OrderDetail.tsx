@@ -174,7 +174,7 @@ const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu tr�
           }
          </Box>
 
-         <Link to={`/order/purchase/${order?.orderId}`} style={{textDecoration:"none"}} >
+         <Link to={`/order/purchase/${order?.orderId}`} style={{textDecoration:"none",color:"black"}} >
               {orderDetails.map((orderDetail, index) => (
               <Box key={index} display="flex" alignItems="flex-start" mb={2} borderBottom={1} pb={2}>
               <Box display="flex" alignItems="center" flexGrow={1}>

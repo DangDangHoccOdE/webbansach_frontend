@@ -236,6 +236,29 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
           }     
      };
 
+     const handleDeleteImage=(bookId:number,imageIndex:number)=>{ // Hàm xóa ảnh
+        setMapImagesOfBook((prev)=>{
+            const newMap = new Map(prev);
+            const images = newMap.get(bookId);
+            if(images){
+                const newImages = images.filter((_,idx)=>idx!== imageIndex)
+                if(newImages.length === 0){
+                    newMap.delete(bookId);
+                }else{
+                    newMap.set(bookId,newImages);
+                }
+            }
+            return newMap;
+        })
+     }
+
+     const handleDeleteVideo=(bookId:number)=>{  // Hàm xóa ảnh
+        setMapVideoOfBook((prev)=>{
+            const newMap = new Map(prev);
+            newMap.delete(bookId);
+            return newMap;
+        })
+     }
       
     return(
         <Modal
@@ -312,11 +335,21 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
                                         mapImagesOfBook.get(book.bookId) && (
                                             <div className="mt-2">
                                                 {mapImagesOfBook.get(book.bookId)!.map((image,idx)=>(
-                                                    <Image key={idx} 
-                                                            src={image}
-                                                             alt={`Ảnh ${idx + 1}`}
-                                                              className="me-2 mb-2" 
-                                                              style={{maxWidth:"50px", maxHeight:"100px"}}/>
+                                                    <div key={idx} className="position-relative d-inline-block me-2 mb-2">
+                                                    <Image 
+                                                        src={image}
+                                                        alt={`Ảnh ${idx + 1}`}
+                                                        style={{maxWidth: "50px", maxHeight: "100px"}}
+                                                    />
+                                                    <Button 
+                                                        variant="danger" 
+                                                        size="sm" 
+                                                        className="position-absolute top-0 end-0" 
+                                                        onClick={() => handleDeleteImage(book.bookId, idx)}
+                                                    >
+                                                        X
+                                                    </Button>
+                                                </div>
                                                 ))}
                                             </div>
                                         )
@@ -324,10 +357,15 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
 
                                     {
                                         mapVideoOfBook.get(book.bookId) && (
-                                            <div>
-                                                {
-                                                    <video src={mapVideoOfBook.get(book.bookId)} controls className="mt-2" style={{maxWidth:"50px"}}></video>
-                                            }
+                                            <div className="position-relative d-inline-block mt-2">
+                                                <video src={mapVideoOfBook.get(book.bookId)} controls className="mt-2" style={{maxWidth:"50px"}}></video>
+                                                <Button
+                                                    variant="danger"
+                                                    size="sm"
+                                                    className="position-absolute top-0 end-0"
+                                                    onClick={()=>handleDeleteVideo(book.bookId)}>
+                                                            x
+                                                </Button>
                                             </div>
                                         )
                                     }
