@@ -6,7 +6,6 @@ import { getIconImageByBook } from "../../../api/ImageAPI";
 import { Link, useNavigate } from "react-router-dom";
 import NumberFormat from "../../utils/NumberFormat";
 import AddBookToWishList from "../../../user/wishList/AddBookToWishList";
-import useScrollToTop from "../../../hooks/ScrollToTop";
 import AddCartItem from "../../../user/cartItem/AddCartItem";
 import { useAuth } from "../../../context/AuthContext";
 import SoldQuantityFormat from "../../utils/SoldQuantityFormat";
@@ -21,7 +20,6 @@ interface BookPropsInterface {
 }
 
 const BookProps: React.FC<BookPropsInterface> = (props) => {
-    useScrollToTop();
 
     const bookId = props.book.bookId;
 

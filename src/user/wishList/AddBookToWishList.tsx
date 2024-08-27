@@ -4,7 +4,6 @@ import WishListModel from "../../models/WishListModel";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { getWishListByUserId } from "../../api/WishListAPI";
-import useScrollToTop from "../../hooks/ScrollToTop";
 
 interface BookSubmitFormProps {
     bookId:number,
@@ -21,7 +20,6 @@ const AddBookToWishList:React.FC<BookSubmitFormProps>=({bookId,handleClose,showM
     const [wishListId,setWishListId] = useState(0);
     const [isUpdate,setIsUpdate] = useState(false)
 
-    useScrollToTop()
 
     useEffect(()=>{
         const userId = getUserIdByToken();

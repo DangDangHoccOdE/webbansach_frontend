@@ -288,3 +288,17 @@ export async function getNumberOfBook(): Promise<number> {
     let newBookList = await fetchImageOfBooks(bookList.resultBooks);
     return newBookList;
  }
+
+ export async function getHotBook(): Promise<ResultInterface> {
+    // Xác định endpoint
+    const endpoint: string = "http://localhost:8080/books?sort=averageRate,desc&size=4";
+ 
+    return getBook(endpoint);
+ }
+ 
+ export async function getNewBook(): Promise<ResultInterface> {
+    // Xác định endpoint
+    const endpoint: string = "http://localhost:8080/books?sort=bookId,desc&size=4";
+ 
+    return getBook(endpoint);
+ }

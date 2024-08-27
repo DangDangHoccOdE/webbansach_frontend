@@ -3,10 +3,9 @@ import BookModel from "../../models/BookModel";
 import BookProps from "./components/BookProps";
 import { getAllBook, searchBook } from "../../api/BookAPI";
 import { Pagination } from "../utils/Pagination";
-import useScrollToTop from "../../hooks/ScrollToTop";
 import {  Skeleton } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFaceSadCry } from "@fortawesome/free-solid-svg-icons";
+import { faBookOpen, faSearch } from "@fortawesome/free-solid-svg-icons";
 import ToolFilter from "./components/ToolFilter";
 
 const ListProduct:React.FC=(props)=>{
@@ -18,7 +17,6 @@ const ListProduct:React.FC=(props)=>{
   const [idCate, setIdCate] = useState(0); // Thể loại muốn hiển thị
 	const [filter, setFilter] = useState(0); // Lọc theo chế độ gì (tên từ A - Z, Z - A, ...)
 
-  useScrollToTop();
   useEffect(() => {
     setIsLoading(true);
       // Mặc định sẽ gọi tất cả các sách
@@ -109,12 +107,24 @@ const ListProduct:React.FC=(props)=>{
 
                {
                 bookList.length === 0 ? (
-                      <div className="text-center">
-                      <h1>Hiện không tìm thấy sách theo yêu cầu!</h1>
-                      <h2>
-                          <FontAwesomeIcon icon={faFaceSadCry}></FontAwesomeIcon>
-                      </h2>
-                  </div>
+                      <div className="text-center py-5">
+                      <div className="mb-4">
+                        <FontAwesomeIcon icon={faBookOpen} size="4x" color="#6c757d" />
+                        <FontAwesomeIcon icon={faSearch} size="2x" color="#007bff" 
+                          style={{ marginLeft: '-15px', marginBottom: '-15px' }} />
+                      </div>
+                      <h2 className="mb-3" style={{ color: '#343a40' }}>Oops! Không tìm thấy sách</h2>
+                      <p className="text-muted mb-4">
+                        Chúng tôi không thể tìm thấy cuốn sách bạn đang tìm kiếm.
+                        <br />Hãy thử tìm kiếm với từ khóa khác hoặc duyệt qua danh mục của chúng tôi.
+                      </p>
+                      <button className="btn btn-primary me-2">
+                        Quay lại trang chủ
+                      </button>
+                      <button className="btn btn-outline-secondary">
+                        Xem danh mục sách
+                      </button>
+                    </div>
 
                  ) : (
                   <>
