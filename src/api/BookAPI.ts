@@ -105,11 +105,6 @@ export async function searchBook(keyBookFind?:string,idCate?:number,filter?:numb
 
 }
 
-export async function getThreeBooksLatest():Promise<ResultInterface> {
-    const url:string = 'http://localhost:8080/books?sort=bookId,desc&page=0&size=3';
-    return getBook(url);
-}
-
 export async function getBookByBookId(bookId:number): Promise<BookModel | null> {
     const link = `http://localhost:8080/books/${bookId}`;
     

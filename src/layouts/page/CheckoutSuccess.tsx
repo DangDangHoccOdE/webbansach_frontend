@@ -14,9 +14,6 @@ export const CheckoutSuccess = () => {
 					Đơn hàng của bạn đã được tiếp nhận
 				</h2>
 				<p className='mb-2'>Cảm ơn bạn đã mua sản phẩm của chúng tôi</p>
-				<p className='mb-2'>
-					Bạn sẽ sớm nhận được email xác nhận đơn hàng từ chúng tôi
-				</p>
 				<Link to={"/"}>
 					<Button variant='contained' className='my-3'>
 						Tiếp tục mua sắm

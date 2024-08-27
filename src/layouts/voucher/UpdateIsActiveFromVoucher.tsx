@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import VoucherModel from "../../models/VoucherModel";
 
 export const updateVoucher=async(vouchers:VoucherModel[]):Promise<VoucherModel[]>=>{
@@ -29,12 +30,12 @@ const handleUpdateIsActiveFromVoucher=async(voucherId:number)=>{
           return data;
       }else
       if(!response.ok){
-          alert("Lỗi, không thể cập nhật trạng thái voucher!")
+          toast.error("Lỗi, không thể cập nhật trạng thái voucher!")
           return null;
       }
   }catch(error){
-      console.log({error})
-      alert("Lỗi, không thể cập nhật trạng thái voucher!")
+      console.error({error})
+      toast.error("Lỗi, không thể cập nhật trạng thái voucher!")
       return null;
   }
 }

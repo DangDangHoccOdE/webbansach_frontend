@@ -8,7 +8,6 @@ import About from "./layouts/about/About";
 import ProductDetail from "./layouts/product/ProductDetail";
 import ResendActivationCode from "./user/account/ResendActivationCode";
 import Login from "./user/Login";
-import Test from "./user/Test";
 import UserInformation from "./user/UserInformation";
 import RegisterUser from "./user/account/RegisterUser";
 import ActivatedAccount from "./user/account/ActivatedAccount";
@@ -113,7 +112,6 @@ const MyRoutes = () =>{
                          <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>   {/* Các endpoint yêu cầu xác thực , ProtectedRoute có chức năng lưu đường dẫn trước đó vào local Storage */}
                             <Route path='/admin' element={<DashboardPage_Admin />} />
                             <Route path="/admin/dashboard" element={<DashboardPage_Admin />} />
-                            <Route path="/user/test" element={<Test/>} />
                             <Route path="/admin/book/addBook" element={<BookForm_Admin/>} />
                             <Route path="/admin/book/editBook/:bookId" element={<EditBook_Admin/>}/>
                             <Route path="/admin/userManagement/" element={<UserManagementPage/>}/>

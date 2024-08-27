@@ -14,11 +14,12 @@ import VoucherModel from "../../models/VoucherModel";
 import SelectVoucherToPay from "./SelectVoucherToAddOrder";
 import { getCartItemById } from "../../api/CartItemAPI";
 import { format } from "date-fns";
-import generateOrderCode from "../../layouts/utils/generateOrderCode";
 import { handleBankPayment } from "../payment/handleBankPayment";
 import { getUserByCondition } from "../../api/UserAPI";
 import { handleCreateOrder } from "./OrderActions";
 import { confirm } from "material-ui-confirm";
+import generateOrderCode from "../../layouts/utils/GenerateOrderCode";
+import { toast } from "react-toastify";
 
 const OrderSummary:React.FC =()=>{
     const location = useLocation();
@@ -230,7 +231,7 @@ const OrderSummary:React.FC =()=>{
                 })
                 .catch(error => {
                   console.error("Lỗi khi xử lý thanh toán:", error);
-                  alert("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
+                  toast.error("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
                 });
             }
           }

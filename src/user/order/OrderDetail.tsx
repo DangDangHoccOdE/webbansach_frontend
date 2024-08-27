@@ -118,7 +118,7 @@ const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu tr�
             })
             .catch(error => {
               console.error("Lỗi khi xử lý thanh toán:", error);
-              alert("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
+              toast.error("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
             });
   }
 
