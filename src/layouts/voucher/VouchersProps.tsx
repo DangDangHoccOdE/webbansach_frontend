@@ -7,7 +7,8 @@ interface VoucherProps{
     showSaveVoucher:boolean
     vouchers:VoucherModel[];
     notice:string,
-    showQuantity:Map<number,number> | null
+    showQuantity:Map<number,number> | null,
+    showRelateHistoryVoucher:boolean
 }
 const VouchersProps:React.FC<VoucherProps>=(props)=>{
     return (
@@ -55,6 +56,17 @@ const VouchersProps:React.FC<VoucherProps>=(props)=>{
                                  <span className={`badge ${voucher.isActive ? 'bg-success' : 'bg-danger'}`}>
                                    {voucher.isActive ? 'Còn hạn' : 'Hết hạn'}
                                  </span>
+                                 
+                                 {
+                                    props.showRelateHistoryVoucher && 
+                                    (props.showQuantity?.get(voucher.voucherId) ?? 0) <= 0 && 
+                                    <span className={`badge bg-danger ms-3`}>
+                                        <span>
+                                            Đã sử dụng
+                                        </span>
+                                    </span>
+                                }
+                                 
                                </div>
                              </div>
                            </div>

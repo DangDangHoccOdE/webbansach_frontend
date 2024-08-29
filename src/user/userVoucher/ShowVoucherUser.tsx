@@ -104,7 +104,7 @@ const ShowVoucherUser =()=>{
             <br/>
             {isLoading && <div className="text-center"><div className="spinner-border" role="status"></div></div>} 
 
-            <VouchersProps notice={notice} showQuantity={voucherQuantityFromUserVoucher} vouchers={allVouchers} showSaveVoucher={false} />            
+            <VouchersProps notice={notice} showQuantity={voucherQuantityFromUserVoucher} vouchers={allVouchers} showSaveVoucher={false} showRelateHistoryVoucher={false}/>            
 
         </div>
 )      

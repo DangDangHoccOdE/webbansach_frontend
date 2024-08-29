@@ -47,6 +47,7 @@ import BookManagementPage from "./admin/book/BookManagement";
 import PolicyPage from "./layouts/page/PolicyPage";
 import ShowCancellationDetails from "./user/order/ShowCancellationDetails";
 import OrderReviewManagementPage from "./admin/orderReview/OrderReviewManagement";
+import ViewHistoryVoucherUser from "./user/userVoucher/ViewHistoryVoucherUser";
 
 const MyRoutes = () =>{
   // Xử lý ẩn hiện navbar và footer
@@ -92,6 +93,7 @@ const MyRoutes = () =>{
                           <Route path="/check-out/status" element={ <CheckoutStatus />}/>  
                           <Route path="/user/showOrder" element={<ShowOrder />} />
                           <Route path="/user/purchase/cancellation/:orderId" element={<ShowCancellationDetails />} />
+                          <Route path="/user/vouchers/historyVouchers" element={<ViewHistoryVoucherUser />} />
                     </Route>
                     {/* Các route khác */}
                   </Routes>
