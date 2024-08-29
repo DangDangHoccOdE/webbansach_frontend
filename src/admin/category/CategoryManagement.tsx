@@ -27,6 +27,7 @@ const CategoryManagement:React.FC=()=>{
                 if(data.length===0){
                     setNotice("Danh sách thể loại đang trống!");
                 }          
+                setNotice("")
                 setCategory(data);
             }catch(error){
                 setNotice("Lỗi, không thể lấy được danh sách thể loại!");
@@ -122,7 +123,7 @@ const CategoryManagement:React.FC=()=>{
                     <td>
                     <div className="btn-group" role="group">
                         <Link 
-                        to={`/category/editCategory/${item.categoryId}`} 
+                        to={`/admin/category/editCategory/${item.categoryId}`} 
                         className="btn btn-sm btn-outline-primary"
                         >
                         <i className="fa fa-edit me-1"></i>Sửa

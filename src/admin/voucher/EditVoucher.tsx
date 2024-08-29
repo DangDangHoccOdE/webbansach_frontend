@@ -34,7 +34,7 @@ const EditVoucher:React.FC=()=>{
 
         getVoucher();
     },[navigate, voucherIdNumber])
-
+    const [errorMinimumSingleValue,setErrorMinimumSingleValue] = useState("")
     const [errorDiscountValue,setErrorDiscountValue] = useState("")
     const [errorExpiredDate,setErrorExpiredDate] = useState("")
     const [notice,setNotice] = useState("")
@@ -53,6 +53,8 @@ const EditVoucher:React.FC=()=>{
         isActive:true,
         isAvailable:false,
         typeVoucher:"",
+        minimumSingleValue:0,
+        maximumOrderDiscount:0
     })
 
     useEffect(() => {
@@ -67,7 +69,9 @@ const EditVoucher:React.FC=()=>{
                 voucherImage: findVoucher.voucherImage || "",
                 isActive: findVoucher.isActive || true,
                 isAvailable: findVoucher.isAvailable || false,
-                typeVoucher:findVoucher.typeVoucher || ""
+                typeVoucher:findVoucher.typeVoucher || "",
+                minimumSingleValue:findVoucher.minimumSingleValue || 0,
+                maximumOrderDiscount:findVoucher.maximumOrderDiscount || 0
             });
         }
     }, [findVoucher]);
@@ -89,11 +93,13 @@ const EditVoucher:React.FC=()=>{
 
         setErrorDiscountValue("")
         setErrorExpiredDate("");
+        setErrorMinimumSingleValue("")
 
         const discountValueValid = !handleDiscountPercent();
         const expiredDateValid = !handleExpiredDate();
+        const minimumSingleValueValid = !handleChangeMinimumSingleValue();
 
-        if(discountValueValid && expiredDateValid){
+        if(discountValueValid && expiredDateValid && minimumSingleValueValid){
             console.log(voucher)
             try{
                 setHasCalled(true);
@@ -117,7 +123,7 @@ const EditVoucher:React.FC=()=>{
                     setNotice(data.content)
                 }else{
                     setIsError(true);
-                    setNotice("Lỗi không thể chỉnh sửa voucher!");
+                    setNotice(data.content);
                 }
             }catch(error){
                 console.log({error})
@@ -156,6 +162,16 @@ const EditVoucher:React.FC=()=>{
             setErrorExpiredDate("");
             return false;
     }
+
+    const handleChangeMinimumSingleValue=()=>{  // Xử lý giá trị đơn tối thiểu
+      if(voucher.minimumSingleValue<0){
+          setErrorMinimumSingleValue("Đơn tối thiểu 0đ!")
+          return true;
+      }else{
+        setErrorMinimumSingleValue("");
+          return false;
+      }
+  }
 
     const handleVoucherImage=async(e:ChangeEvent<HTMLInputElement>)=>{ // Xử lý ảnh voucher
         if(e.target.files){
@@ -220,6 +236,31 @@ const EditVoucher:React.FC=()=>{
                 helperText={errorDiscountValue}
               />
             </Grid>
+            <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      id="maximumOrderDiscount"
+                      label="Giảm tối đa (Để là 0 nếu muốn giảm theo % giảm giá"
+                      type="number"
+                      value={voucher.maximumOrderDiscount}
+                      onChange={(e) => setVoucher({...voucher, maximumOrderDiscount: parseFloat(e.target.value)})}
+                    />
+                 </Grid>
+            <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      id="discountValue"
+                      label="Đơn tối thiểu"
+                      type="number"
+                      value={voucher.minimumSingleValue}
+                      onChange={(e) => setVoucher({...voucher, minimumSingleValue: parseFloat(e.target.value)})}
+                      onBlur={handleChangeMinimumSingleValue}
+                      error={!!errorMinimumSingleValue}
+                      helperText={errorMinimumSingleValue}
+                    />
+                 </Grid>
             <Grid item xs={12}>
               <TextField
                 required

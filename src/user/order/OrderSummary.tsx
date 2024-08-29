@@ -1,249 +1,281 @@
-import CartItemModel from "../../models/CartItemModel";
-import BookModel from "../../models/BookModel";
-import {  ChangeEvent, useEffect, useState } from "react";
-import {  getBookByBookId, getBookByCartItem } from "../../api/BookAPI";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import NumberFormat from "../../layouts/utils/NumberFormat";
-import UserModel from "../../models/UserModel";
-import {getUsernameByToken } from "../../layouts/utils/JwtService";
-import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faGift } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "../../context/AuthContext";
-import VoucherModel from "../../models/VoucherModel";
-import SelectVoucherToPay from "./SelectVoucherToAddOrder";
-import { getCartItemById } from "../../api/CartItemAPI";
-import { format } from "date-fns";
-import { handleBankPayment } from "../payment/handleBankPayment";
-import { getUserByCondition } from "../../api/UserAPI";
-import { handleCreateOrder } from "./OrderActions";
+import moment from "moment";
 import { confirm } from "material-ui-confirm";
-import generateOrderCode from "../../layouts/utils/GenerateOrderCode";
 import { toast } from "react-toastify";
 
-const OrderSummary:React.FC =()=>{
+import CartItemModel from "../../models/CartItemModel";
+import BookModel from "../../models/BookModel";
+import UserModel from "../../models/UserModel";
+import VoucherModel from "../../models/VoucherModel";
+
+import { getBookByBookId, getBookByCartItem } from "../../api/BookAPI";
+import { getUserByCondition } from "../../api/UserAPI";
+import { getCartItemById } from "../../api/CartItemAPI";
+
+import { getUsernameByToken } from "../../layouts/utils/JwtService";
+import NumberFormat from "../../layouts/utils/NumberFormat";
+import generateOrderCode from "../../layouts/utils/GenerateOrderCode";
+
+import { useAuth } from "../../context/AuthContext";
+import { handleBankPayment } from "../payment/handleBankPayment";
+import { handleCreateOrder } from "./OrderActions";
+import SelectVoucherToAddCreate from "./SelectVoucherToAddOrder";
+
+
+const OrderSummary: React.FC = () => {
     const location = useLocation();
-    const { selectedItems, total,bookVoucher,shipVoucher,totalProduct,isBuyNow} = location.state as { 
+    const navigate = useNavigate();
+    const { isLoggedIn } = useAuth();
+
+    const { selectedItems, total, bookVoucher, shipVoucher, totalProduct, isBuyNow } = location.state as { 
         selectedItems: number[], 
-        total:number,
-        bookVoucher:VoucherModel|null,
-        shipVoucher:VoucherModel|null,
-        totalProduct:number,
-        isBuyNow:boolean
-    } || { selectedItems: [],total:0 , bookVoucher:null,shipVoucher:null,totalProduct:0,isBuyNow:false};
+        total: number,
+        bookVoucher: VoucherModel | null,
+        shipVoucher: VoucherModel | null,
+        totalProduct: number,
+        isBuyNow: boolean,
+    } || { selectedItems: [], total: 0, bookVoucher: null, shipVoucher: null, totalProduct: 0, isBuyNow: false };
 
     const [bookIsChoose, setBookIsChoose] = useState<BookModel[]>([]);
-    const [user,setUser] = useState<UserModel|null>(null);
-    const navigate = useNavigate();
-    const {isLoggedIn} = useAuth();
-    const deliveryDate = moment().add(7,'day').format("Do MMMM,YYYY");
-    const dateNow = moment().format("Do MMMM,YYYY");
-    const [showAllBooks,setShowAllBooks] = useState(false);
-    const [formOfDelivery,setFormOfDelivery] = useState("Nhanh")
-    const [priceShip,setPriceShip] = useState(0)
-    const [showModal,setShowModal] = useState(false);
+    const [user, setUser] = useState<UserModel | null>(null);
+    const deliveryDate = moment().add(7, 'day').format("Do MMMM, YYYY");
+    const dateNow = moment().format("Do MMMM, YYYY");
+    const [showAllBooks, setShowAllBooks] = useState(false);
+    const [formOfDelivery, setFormOfDelivery] = useState("Nhanh");
+    const [priceShip, setPriceShip] = useState(0);
+    const [showModal, setShowModal] = useState(false);
     const [appliedBookVoucher, setAppliedBookVoucher] = useState<VoucherModel | null>(bookVoucher);
     const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(shipVoucher);
-    const [cart,setCart] = useState<CartItemModel[]>([])
-    const [noteUser,setNoteUser] = useState('')
-    const [selectMethodPayment,setSelectMethodPayment] = useState("Thanh toán khi nhận hàng")
-    const [voucherIds,setVoucherIds] = useState<number[]>([])
+    const [cart, setCart] = useState<CartItemModel[]>([]);
+    const [noteUser, setNoteUser] = useState('');
+    const [selectMethodPayment, setSelectMethodPayment] = useState("Thanh toán khi nhận hàng");
+    const [voucherIds, setVoucherIds] = useState<number[]>([]);
 
-    const renderDetail = ()=>{ // Xử lý chọn phương thức giao hàng
-        switch (formOfDelivery){
+    const renderDetail = () => {
+        switch (formOfDelivery) {
             case "Nhanh":
-                return(
+                return (
                     <div className="mb-3">
                         <div className="d-flex justify-content-between">
-                        <p><strong>Nhanh</strong></p>
-                        <p>{NumberFormat(30000)} đ</p>
+                            <p><strong>Nhanh</strong></p>
+                            <p>{NumberFormat(30000)} đ</p>
                         </div>
                         <p style={{color:"green"}}><i className="fa-solid fa-truck-fast me-2"></i>Đảm bảo nhận hàng trong vòng từ hôm nay đến {deliveryDate}</p>
                         <p className="text-muted">Nhận voucher trị giá ({NumberFormat(15000)} đ) nếu đơn hàng được giao đến bạn sau ngày {deliveryDate}</p>
                         <p className="text-muted">Được đồng kiểm</p>
-                 </div>
-                )
-            
+                    </div>
+                );
             case "Hỏa tốc":
-                return(
+                return (
                     <div className="mb-3">
                         <div className="d-flex justify-content-between">
-                        <p><strong>Hỏa tốc</strong></p>
-                        <p>{NumberFormat(50000)} đ</p>
+                            <p><strong>Hỏa tốc</strong></p>
+                            <p>{NumberFormat(50000)} đ</p>
                         </div>
                         <p style={{color:"green"}}><i className="fa-solid fa-truck-fast me-2"></i>Đảm bảo nhận hàng trong {dateNow}</p>
                         <p className="text-muted">Nhận voucher trị giá ({NumberFormat(30000)} đ) nếu đơn hàng được giao đến bạn sau ngày {dateNow}</p>
                         <p className="text-muted">Được đồng kiểm</p>
-               </div>
-                )
+                    </div>
+                );
         }
-    }
+    };
 
-    useEffect(()=>{
-        if(!isLoggedIn){
-            navigate("/login",{replace:true})
-            return ;
+    useEffect(() => {
+        if (!isLoggedIn) {
+            navigate("/login", { replace: true });
+            return;
         }
-        const handlePurchase = async()=>{ // xử lý chuyển từ id cartItem thành sách
-            if(isBuyNow){
+
+        const handlePurchase = async () => {  // Xử lý mua hàng
+            if (isBuyNow) {
                 const book = await getBookByBookId(selectedItems[0]);
-                if(book){
-                    const books:BookModel[] = [book];
+                if (book) {
+                    const books: BookModel[] = [book];
                     setBookIsChoose(books);
                 }
-               
-            }else{
-                    const handleBook = selectedItems.map(async(item:number)=>{
-                        const book = await getBookByCartItem(item);
-                        if(book){ 
-                            return book;
-                        }
-                    })
-                        const bookList = await Promise.all(handleBook);
-                        const bookValid = bookList.filter(book=>book!==null) as BookModel[];
-                        setBookIsChoose(bookValid);
+            } else {
+                const handleBook = selectedItems.map(async (item: number) => {
+                    const book = await getBookByCartItem(item);
+                    if (book) { 
+                        return book;
+                    }
+                });
+                const bookList = await Promise.all(handleBook);
+                const bookValid = bookList.filter(book => book !== null) as BookModel[];
+                setBookIsChoose(bookValid);
 
-                        const handleCart = selectedItems.map(async(item:number)=>{ // Chuyển từ cartItemId thành cartItem đẻ lấy quantity
-                            const cartItem = await getCartItemById(item);
-                            if(cartItem){
-                                return cartItem;
-                            }
-                        })
+                const handleCart = selectedItems.map(async (item: number) => {
+                    const cartItem = await getCartItemById(item);
+                    if (cartItem) {
+                        return cartItem;
+                    }
+                });
 
-                        const careItemList = await Promise.all(handleCart);
-                        const careItemListValid = careItemList.filter(cartItem=>cartItem!==null) as CartItemModel[];
-                        setCart(careItemListValid);
-                }
+                const cartItemList = await Promise.all(handleCart);
+                const cartItemListValid = cartItemList.filter(cartItem => cartItem !== null) as CartItemModel[];
+                setCart(cartItemListValid);
             }
+        };
 
-        const handleUser = async()=>{ // Lấy user => Hiển thị thông tin thanh toán
+        const handleUser = async () => {   // Load thông tin user
             const username = getUsernameByToken();
-            if(username){
-                try{
+            if (username) {
+                try {
                     const getUser = await getUserByCondition(username);
-                    if(getUser===null){
-                        navigate("/error-404",{replace:true});
+                    if (getUser === null) {
+                        navigate("/error-404", { replace: true });
                     }
                     setUser(getUser);
-                }catch(error){
-                    console.log({error});
+                } catch (error) {
+                    console.log({ error });
                 }
-              
             }
-        }
-        const handleSelectDelivery=()=>{ //Xử lý họn phương thức giao hàng
-            if(formOfDelivery==="Nhanh"){
+        };
+
+        const handleSelectDelivery = () => {
+            if (formOfDelivery === "Nhanh") {
                 setPriceShip(30000);
-            }else{
+            } else {
                 setPriceShip(50000);
             }
-        }
+        };
+
         handleSelectDelivery();
         handlePurchase();
         handleUser();
-    },[formOfDelivery, isBuyNow, isLoggedIn, navigate, selectedItems])
+    }, [formOfDelivery, isBuyNow, isLoggedIn, navigate, selectedItems]);
 
-    const [priceByVoucher,setPriceByVoucher] = useState(total);
-    
-    useEffect(()=>{         // Cập nhật giá tiền
-        let totalPrice = total+priceShip;
-        if(appliedBookVoucher){
-            totalPrice-= totalPrice*(appliedBookVoucher.discountValue/100);
+    const [priceByVoucher, setPriceByVoucher] = useState(total);
+
+    const discountPriceByBookVoucher = useMemo(() => {  // Tính giảm giá tiền sách
+        if (selectedItems && appliedBookVoucher) {
+            let discount = total * (appliedBookVoucher.discountValue / 100);
+            if (discount > appliedBookVoucher.maximumOrderDiscount && appliedBookVoucher.maximumOrderDiscount > 0) {
+                discount = appliedBookVoucher.maximumOrderDiscount;
+            }
+            return Math.floor(discount);
+        } else {
+            return 0;
         }
-         if(appliedShipVoucher){
-            totalPrice-= priceShip*(appliedShipVoucher.discountValue/100);
+    }, [appliedBookVoucher, selectedItems, total]);
+
+    const discountPriceByShipVoucher = useMemo(() => {  // Tính giảm giá tiền ship
+        if (selectedItems && appliedShipVoucher) {
+            let discount = priceShip * (appliedShipVoucher.discountValue / 100);
+            if (discount > appliedShipVoucher.maximumOrderDiscount && appliedShipVoucher.maximumOrderDiscount > 0) {
+                discount = appliedShipVoucher.maximumOrderDiscount;
+            }
+            return Math.floor(discount);
+        } else {
+            return 0;
+        }
+    }, [appliedShipVoucher, selectedItems, priceShip]);
+
+    useEffect(() => {  // Tính tổng tiền
+        let totalPrice = total + priceShip;
+        if (appliedBookVoucher) {
+            totalPrice -= discountPriceByBookVoucher;
+        }
+        if (appliedShipVoucher) {
+            totalPrice -= discountPriceByShipVoucher;
         }
 
-        setPriceByVoucher(totalPrice);
-    },[appliedBookVoucher, appliedShipVoucher, priceShip, total])
+        setPriceByVoucher(Math.floor(totalPrice));
+    }, [appliedBookVoucher, appliedShipVoucher, discountPriceByBookVoucher, discountPriceByShipVoucher, priceShip, total]);
 
-
-    const handleSelectVoucher=()=>{ // Đóng modal chọn voucher
-        setShowModal(!showModal)
-    }
-
-    const handleClose=()=>{ // đóng modal showVoucher
-        setShowModal(false);
-    }
-    const handleApplyVoucher=(voucherBook:VoucherModel|null,voucherShip:VoucherModel|null)=>{ // Xử lý khi chọn voucher 
-            setAppliedBookVoucher(voucherBook);
-            setAppliedShipVoucher(voucherShip);
-    }
-
-    const handleSelectMethodPayment=(e:ChangeEvent<HTMLSelectElement>)=>{  // Xử lý chọn phương thức thanh toán
-        setSelectMethodPayment(e.target.value);
-    }
-    
-    const handleClickBuy = () => {
-      confirm({
-        title: 'Đơn hàng',
-        description: `Bạn có chắc muốn mua đơn hàng này không (${selectMethodPayment})?`,
-        confirmationText: 'Đồng ý',
-        cancellationText: 'Hủy',
-      })
-        .then(() => {
-          // Người dùng đã xác nhận
-          if (user) {
-            let updatedVoucherIds = [...voucherIds];
-            if (appliedBookVoucher) {
-              updatedVoucherIds.push(appliedBookVoucher.voucherId);
-            }
-            if (appliedShipVoucher) {
-              updatedVoucherIds.push(appliedShipVoucher.voucherId);
-            }
-            setVoucherIds(updatedVoucherIds);
-    
-            const order = {
-              orderId: 0,
-              date: format(new Date(), 'yyyy/MM/dd HH:mm:ss'),
-              orderCode: generateOrderCode(),
-              deliveryAddress: user.deliveryAddress,
-              deliveryStatus: "Chưa giao",
-              orderStatus: 'Đang xử lý',
-              paymentCost: priceByVoucher,
-              purchaseAddress: "BookStore Hà Nội",
-              shippingFee: priceShip,
-              shippingFeeVoucher: appliedShipVoucher ? priceShip - priceShip * (appliedShipVoucher.discountValue / 100) : priceShip,
-              totalPrice: total,
-              totalProduct: totalProduct,
-              noteFromUser: noteUser,
-              userId: user.userId,
-              cartItems: selectedItems,
-              paymentMethod: selectMethodPayment,
-              deliveryMethod: formOfDelivery,
-              voucherIds: updatedVoucherIds,
-            };
-    
-            if (selectMethodPayment === "Thanh toán khi nhận hàng") {
-              navigate("/order/createOrder", { state: { order, isBuyNow }, replace: true });
-            } else {
-              handleBankPayment(order)
-                .then(paymentUrl => {
-                  if (paymentUrl) {
-                    order.orderStatus = 'Chờ thanh toán';  // Cập nhật trạng thái đơn hàng thành chờ thanh toán
-                    return handleCreateOrder(order, false)  // isBuyNow là false
-                      .then(() => {
-                        window.location.replace(paymentUrl);
-                      });
-                  } else {
-                    throw new Error("Không tạo được URL thanh toán");
-                  }
-                })
-                .catch(error => {
-                  console.error("Lỗi khi xử lý thanh toán:", error);
-                  toast.error("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
-                });
-            }
-          }
-        })
-        .catch(() => {
-          // Người dùng đã hủy hoặc có lỗi xảy ra
-          console.log("Người dùng đã hủy hoặc có lỗi xảy ra");
-        });
+    const handleSelectVoucher = () => {
+        setShowModal(!showModal);
     };
 
-   
+    const handleClose = () => {
+        setShowModal(false);
+    };
 
+    const handleApplyVoucher = (voucherBook: VoucherModel | null, voucherShip: VoucherModel | null) => {
+        setAppliedBookVoucher(voucherBook);
+        setAppliedShipVoucher(voucherShip);
+    };
+
+    const handleSelectMethodPayment = (e: ChangeEvent<HTMLSelectElement>) => {
+        setSelectMethodPayment(e.target.value);
+    };
+
+    const handleClickBuy = () => {
+        confirm({
+            title: 'Đơn hàng',
+            description: `Bạn có chắc muốn mua đơn hàng này không (${selectMethodPayment})?`,
+            confirmationText: 'Đồng ý',
+            cancellationText: 'Hủy',
+        })
+            .then(() => {
+                if (user) {
+                    let updatedVoucherIds = [...voucherIds];
+                    if (appliedBookVoucher) {
+                        updatedVoucherIds.push(appliedBookVoucher.voucherId);
+                    }
+                    if (appliedShipVoucher) {
+                        updatedVoucherIds.push(appliedShipVoucher.voucherId);
+                    }
+                    setVoucherIds(updatedVoucherIds);
+
+                    const order = {
+                        orderId: 0,
+                        date: moment().format('YYYY/MM/DD HH:mm:ss'),
+                        orderCode: generateOrderCode(),
+                        deliveryAddress: user.deliveryAddress,
+                        deliveryStatus: "Chưa giao",
+                        orderStatus: 'Đang xử lý',
+                        paymentCost: priceByVoucher,
+                        purchaseAddress: "BookStore Hà Nội",
+                        shippingFee: priceShip,
+                        shippingFeeVoucher: appliedShipVoucher ? priceShip - priceShip * (appliedShipVoucher.discountValue / 100) : priceShip,
+                        totalPrice: total,
+                        totalProduct: totalProduct,
+                        noteFromUser: noteUser,
+                        userId: user.userId,
+                        cartItems: selectedItems,
+                        paymentMethod: selectMethodPayment,
+                        deliveryMethod: formOfDelivery,
+                        voucherIds: updatedVoucherIds,
+                    };
+
+                    if (order.deliveryAddress === null || order.deliveryAddress === "") {
+                        toast.error("Địa chỉ giao hàng không được bỏ trống!");
+                        return;
+                    }
+
+                    if (selectMethodPayment === "Thanh toán khi nhận hàng") {
+                        navigate("/order/createOrder", { state: { order, isBuyNow }, replace: true });
+                    } else {
+                        handleBankPayment(order)
+                            .then(paymentUrl => {
+                                if (paymentUrl) {
+                                    order.orderStatus = 'Chờ thanh toán';
+                                    return handleCreateOrder(order, false)
+                                        .then(() => {
+                                            window.location.replace(paymentUrl);
+                                        });
+                                } else {
+                                    throw new Error("Không tạo được URL thanh toán");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Lỗi khi xử lý thanh toán:", error);
+                                toast.error("Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.");
+                            });
+                    }
+                }
+            })
+            .catch(() => {
+                console.log("Người dùng đã hủy hoặc có lỗi xảy ra");
+            });
+    };
+
+
+   
     return(
         <div className="container mb-5">
         <h1 className="text-center mt-3">Thanh toán</h1>
@@ -283,13 +315,13 @@ const OrderSummary:React.FC =()=>{
                 >
                     {showAllBooks ?
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-chevron-double-up" viewBox="0 0 16 16" style={{width:"100px"}}>
-                            <path fill-rule="evenodd" d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708z"/>
-                            <path fill-rule="evenodd" d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
+                            <path  d="M7.646 2.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 3.707 2.354 9.354a.5.5 0 1 1-.708-.708z"/>
+                            <path  d="M7.646 6.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 7.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
                         </svg>
                     :
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-chevron-double-down" viewBox="0 0 16 16" style={{width:"100px"}}>
-                        <path fill-rule="evenodd" d="M1.646 6.646a.5.5 0 0 1 .708 0L8 12.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
-                        <path fill-rule="evenodd" d="M1.646 2.646a.5.5 0 0 1 .708 0L8 8.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+                        <path d="M1.646 6.646a.5.5 0 0 1 .708 0L8 12.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+                        <path d="M1.646 2.646a.5.5 0 0 1 .708 0L8 8.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
                     </svg>
                     }
                 </button>)
@@ -356,8 +388,14 @@ const OrderSummary:React.FC =()=>{
                                      </button>
 
                         {
-                             <SelectVoucherToPay handleClose={handleClose} showModal={showModal} onApplyVoucher={handleApplyVoucher} selectedBookVoucher={bookVoucher} selectedShipVoucher={shipVoucher}/>
-                        }
+                            <SelectVoucherToAddCreate
+                                showModal={showModal}
+                                handleClose={handleClose}
+                                onApplyVoucher={handleApplyVoucher}
+                                selectedBookVoucher={appliedBookVoucher}
+                                selectedShipVoucher={appliedShipVoucher}
+                                totalPrice={total + priceShip}
+                            />                        }
                         </div>
                     </div>
                     <hr />
@@ -394,14 +432,14 @@ const OrderSummary:React.FC =()=>{
                                     appliedBookVoucher &&
                                     <div className="d-flex justify-content-between mb-2">
                                     <span>Voucher giảm giá</span>
-                                    <span><b>- {NumberFormat((total)*(appliedBookVoucher.discountValue/100))} đ</b></span>
+                                    <span><b>- {NumberFormat(discountPriceByBookVoucher)} đ</b></span>
                                 </div>
                                 }
                                 {
                                     appliedShipVoucher && 
                                     <div className="d-flex justify-content-between mb-2">
                                     <span>Giảm giá phí vận chuyển</span>
-                                    <span><b>- {NumberFormat(priceShip*(appliedShipVoucher.discountValue/100))} đ</b></span>
+                                    <span><b>- {NumberFormat(discountPriceByShipVoucher)} đ</b></span>
                                 </div>
                                 }
                                   <div className="d-flex justify-content-between mb-2">

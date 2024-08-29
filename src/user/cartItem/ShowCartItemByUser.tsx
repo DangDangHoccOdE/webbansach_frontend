@@ -14,7 +14,6 @@ import SelectVoucherToAddCreate from "../order/SelectVoucherToAddOrder";
 import { CartContext } from "../../context/CartContext";
 import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { deleteAllCartItemsIsChoose, deleteCartItem, updateQuantityOfCarts } from "./cartItemActions";
-import { CircularProgress } from "@mui/material";
 
 const ShowCart=()=>{
     const location = useLocation();
@@ -35,8 +34,6 @@ const ShowCart=()=>{
     const {updateCartItemCount} = useContext(CartContext);
     const [cartUpdated, setCartUpdated] = useState(false);
     const userId = getUserIdByToken();
-    const [isLoading,setIsLoading] = useState(false);
-
     useEffect(()=>{
         if(!isLoggedIn || !userId){
             navigate("/login",{replace:true})
@@ -47,7 +44,6 @@ const ShowCart=()=>{
             setSelectedItems(cartItemIds);
         }
         const showCartByUser = async()=>{
-            setIsLoading(true);
             try{
                 const cartItemData = await getAllCartItemByUser(userId);
                 if(cartItemData===null){
@@ -61,8 +57,6 @@ const ShowCart=()=>{
             }catch(error){
                 console.log("Không tải được dữ liệu giỏ hàng!");
                 navigate("/error-404",{replace:true});                
-            }finally{
-                setIsLoading(false);
             }
         }
         showCartByUser()
@@ -71,7 +65,6 @@ const ShowCart=()=>{
 
     useEffect(()=>{
         const getBookOfCart = async()=>{
-            setIsLoading(true)
             try{
                 if(cartItem){
                   const cart = cartItem.map(async(item:CartItemModel)=>{
@@ -85,29 +78,39 @@ const ShowCart=()=>{
                 }
             }catch(error){
                 navigate("/error-404",{replace:true}); 
-            }finally{
-                setIsLoading(false);
             }
         }
         getBookOfCart()
 
     },[cartItem,navigate])
 
-    useEffect(() => {
+    useEffect(() => { // Tính tiền nếu áp dụng voucher
         const updateTotal = async () => {
           const totalValue = await calculateTotal();
           setTotal(totalValue);
           if(appliedBookVoucher===null){
-            setTotalByVoucher(totalValue);
+            setTotalByVoucher(Math.floor(totalValue));
           }else{
-            const priceUpdateVoucher = totalValue - totalValue*(appliedBookVoucher.discountValue/100);
-            setTotalByVoucher(priceUpdateVoucher);
+            let discount = totalValue*(appliedBookVoucher.discountValue/100); // Kiểm tra xem số tiền sau khi giảm có vượt giảm tối đa k
+
+            if(discount > appliedBookVoucher.maximumOrderDiscount && appliedBookVoucher.maximumOrderDiscount>0){
+                discount =   appliedBookVoucher.maximumOrderDiscount;
+            }
+            const priceUpdateVoucher = totalValue - discount;
+            setTotalByVoucher(Math.floor(priceUpdateVoucher));
           }
         };
     
         updateTotal();
       // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [selectedItems,appliedBookVoucher,cartItem]);
+
+      const totalProduct = useMemo(()=>{  // Tính tổng sản phẩm
+        return selectedItems.reduce((total,cartItemId)=>{
+            const item = cartItem.find(item=>item.cartItemId === cartItemId);
+            return total + (item ? item.quantity : 0);
+        },0);
+      },[selectedItems,cartItem])
 
       const calculateTotal = async()=>{ // Tính tổng tiến
         let total = 0;
@@ -124,13 +127,6 @@ const ShowCart=()=>{
         total = totalPrice.reduce((sum,price)=>sum+price,0); // sum là giá trị tích lũy sau mỗi lần , price là giá hiện tại
         return total;
       }
-
-      const totalProduct = useMemo(()=>{  // Tính tổng sản phẩm
-        return selectedItems.reduce((total,cartItemId)=>{
-            const item = cartItem.find(item=>item.cartItemId === cartItemId);
-            return total + (item ? item.quantity : 0);
-        },0);
-      },[selectedItems,cartItem])
       
     const handleDelete=async(cartItemId:number)=>{ // Xóa sách trong giỏ hàng
         const result = await deleteCartItem(cartItemId);
@@ -228,7 +224,8 @@ const ShowCart=()=>{
                                             bookVoucher:appliedBookVoucher, 
                                             shipVoucher:appliedShipVoucher,
                                             totalProduct:totalProduct,
-                                            isBuyNow:false }});
+                                            isBuyNow:false,
+                                             }});
         }else{
             toast.warning("Vui lòng chọn ít nhất một sản phẩm để mua hàng.");
         }
@@ -255,6 +252,19 @@ const ShowCart=()=>{
         setAppliedBookVoucher(voucherBook);
         setAppliedShipVoucher(voucherShip);
     }
+
+    const discountPriceByBookVoucher=useMemo(()=>{  // Tính tiền bỏ qua số thập phân
+        if(selectedItems && appliedBookVoucher){
+            let discount = total*(appliedBookVoucher.discountValue/100); // Kiểm tra xem số tiền sau khi giảm có vượt giảm tối đa k
+
+            if(discount > appliedBookVoucher.maximumOrderDiscount && appliedBookVoucher.maximumOrderDiscount>0){
+                discount =   appliedBookVoucher.maximumOrderDiscount;
+            }
+            return Math.floor(discount)
+        }else{
+            return 0;
+        }
+    },[appliedBookVoucher, selectedItems, total])
 
     if(!isLoggedIn){
         return null;
@@ -286,11 +296,7 @@ const ShowCart=()=>{
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {isLoading ? (
-                                                <div className="text-center mt-3">
-                                                    <CircularProgress />
-                                                </div>
-                                                ) : 
+                                        {
                                         bookListOfCart?.map((book, index) => (
                                             cartItem[index] && (
         
@@ -352,7 +358,7 @@ const ShowCart=()=>{
                                     appliedBookVoucher &&
                                     <div className="d-flex justify-content-between mb-2">
                                     <span>Voucher giảm giá</span>
-                                    <span>- {NumberFormat(total*(appliedBookVoucher.discountValue/100))} đ</span>
+                                    <span>- {NumberFormat(discountPriceByBookVoucher)} đ</span>
                                 </div>
                                 }
                                 {
@@ -372,7 +378,7 @@ const ShowCart=()=>{
                                      </button>
 
                                      {
-                                        <SelectVoucherToAddCreate handleClose={handleClose} showModal={showModal} onApplyVoucher={handleApplyVoucher} selectedBookVoucher={null} selectedShipVoucher={null}/>
+                                        <SelectVoucherToAddCreate totalPrice={totalByVoucher} handleClose={handleClose} showModal={showModal} onApplyVoucher={handleApplyVoucher} selectedBookVoucher={null} selectedShipVoucher={null}/>
                                      }
                                 </div>
                             </div>

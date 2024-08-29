@@ -38,7 +38,7 @@ import { HideNavbarEnpoint } from "../utils/HideNavbar";
  const location = useLocation();
 
  const pathHideNavbar = HideNavbarEnpoint;
- if(pathHideNavbar.includes(location.pathname) || location.pathname.startsWith("/user/confirmForgotPassword")) {
+ if(pathHideNavbar.includes(location.pathname) || location.pathname.startsWith("/user/confirmForgotPassword") || location.pathname.startsWith("/activatedAccount")) {
    return null;
  }
 

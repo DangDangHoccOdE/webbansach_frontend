@@ -34,14 +34,7 @@ const VouchersProps:React.FC<VoucherProps>=(props)=>{
                                </div>
                                <div className="col-6">
                                  <h5 className="card-title text-primary mb-2">Giảm {voucher.discountValue}%</h5>
-                                 <p className="card-text mb-1">
-                                   <small>Giảm tối đa </small>
-                                   <span className="fw-bold">150.000đ</span>
-                                 </p>
-                                 <p className="card-text mb-1">
-                                   <small>Đơn tối thiểu </small>
-                                   <span className="fw-bold">1.000.000đ</span>
-                                 </p>
+                                 <div dangerouslySetInnerHTML={{ __html: voucher.describe }} />
                                  <p className="card-text text-muted">
                                    <small>
                                      <FontAwesomeIcon icon={faClock} className="me-1" />

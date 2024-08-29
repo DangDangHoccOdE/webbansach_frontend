@@ -16,6 +16,7 @@ import { confirmReceivedOrder, handleCreateOrder, repurchase } from "./OrderActi
 import { handleBankPayment } from "../payment/handleBankPayment";
 import { toast } from "react-toastify";
 import ModalCancelOrder from "./ModalCancelOrder";
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 
 interface OrderProps {
   orderId: number;
@@ -33,6 +34,8 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
   const [showModal, setShowModal] = useState(false);  // form review
   const {updateCartItemCount} = useContext(CartContext);
   const [showModalCancelOrder, setShowModalCancelOrder] = useState(false);
+  const [currentPage,setCurrentPage] = useState(0);
+  const [hasMore,setHasMore] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,25 +47,26 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
         // Lấy thông tin đơn hàng, order details, books, và images cùng lúc
         const [fetchOrder, fetchOrderDetails, fetchBooks] = await Promise.all([
           getOrderByOrderId(orderId),
-          getOrderDetailsFromOrder(orderId),
+          getOrderDetailsFromOrder(orderId,currentPage),
           getBooksOfOrders(orderId),
         ]);
     
-        if (!fetchOrder) {
+        if (!fetchOrder || !fetchOrderDetails) {
           navigate("/error-404", { replace: true });
           return;
         }
     
         setOrder(fetchOrder);
-        setOrderDetails(fetchOrderDetails);
+        setOrderDetails(prev=>[...prev, ...fetchOrderDetails.orderDetails]);
         setBooks(fetchBooks);
+        setHasMore(fetchOrderDetails.hasMore)
       } catch (error) {
         console.error({ error });
         navigate("/error-404", { replace: true });
       } 
     };
     fetchData()    
-  }, [isLoggedIn, navigate, orderId]);
+  }, [currentPage, isLoggedIn, navigate, orderId]);
 
   const handleRepurchase=async()=>{ // Xử lý mua lại hàng
       if(order && userId){
@@ -149,6 +153,10 @@ const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu tr�
     }
   };
 
+  const handleShowMore = ()=>{
+    setCurrentPage(prevPage=>prevPage+1);
+  }
+
   return (
     <>
         <ModalCancelOrder onClose={handleCloseModalCancelOrder}
@@ -205,6 +213,13 @@ const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu tr�
             </Box>
               ))}
         </Link>
+        {
+        hasMore && (
+          <div className="text-center mt-3 mb-3">
+              <button className="btn btn-secondary" onClick={handleShowMore}><KeyboardDoubleArrowDownIcon/></button>
+          </div>
+        )
+      }
 
       {
         showFunctionRelateOrder && 
@@ -260,6 +275,8 @@ const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu tr�
             </Typography>
          </Box>
       }
+
+      
       
       </CardContent>
     </Card> 

@@ -9,6 +9,8 @@ class VoucherModel{
   describe:string;
   isAvailable:boolean;
   typeVoucher:string;
+  minimumSingleValue:number;
+  maximumOrderDiscount:number
 
   constructor(  voucherId:number,
     code:string,
@@ -18,7 +20,10 @@ class VoucherModel{
     voucherImage:string,
     quantity:number,
   describe:string,  isAvailable:boolean,
-  typeVoucher:string){
+  typeVoucher:string,
+  minimumSingleValue:number,
+  maximumOrderDiscount:number
+){
         this.voucherId = voucherId;
         this.code= code;
         this.isActive=isActive;
@@ -29,6 +34,8 @@ class VoucherModel{
         this.describe =describe;
         this.isAvailable = isAvailable;
         this.typeVoucher = typeVoucher;
+        this.minimumSingleValue = minimumSingleValue;
+        this.maximumOrderDiscount = maximumOrderDiscount
     }
 
 }

@@ -113,6 +113,7 @@ const BookForm: React.FC = (props) => {
                 setNotice("Vui lòng chọn tối đa 5 ảnh")
                 return;
             }
+            setNotice("")
             const files = Array.from(e.target.files);
             const base64Images = await Promise.all(
                 files.map(async (file)=>{

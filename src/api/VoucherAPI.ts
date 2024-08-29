@@ -22,7 +22,9 @@ export async function showAllVouchers(url:string) :Promise<VoucherModel[]>{
                 voucherImage:responseData[key].voucherImage,
                 describe:responseData[key].describe,
                 isAvailable:responseData[key].isAvailable,
-                typeVoucher:responseData[key].typeVoucher
+                typeVoucher:responseData[key].typeVoucher,
+                minimumSingleValue:responseData[key].minimumSingleValue,
+                maximumOrderDiscount:responseData[key].maximumOrderDiscount
             })
         }
         return voucher;
@@ -77,7 +79,9 @@ export async function showVouchersAvailable() :Promise<VoucherModel[]>{
                 voucherImage:responseData[key].voucherImage,
                 describe:responseData[key].describe,
                 isAvailable:responseData[key].isAvailable,
-                typeVoucher:responseData[key].typeVoucher
+                typeVoucher:responseData[key].typeVoucher,
+                minimumSingleValue:responseData[key].minimumSingleValue,
+                maximumOrderDiscount:responseData[key].maximumOrderDiscount,
             })
         }
         return voucher;
@@ -114,7 +118,9 @@ export async function showAllVouchers_User(code:string,userId:number) :Promise<V
                     voucherImage:data[key].voucherImage,
                     describe:data[key].describe,
                     isAvailable:data[key].isAvailable,
-                    typeVoucher:data[key].typeVoucher
+                    typeVoucher:data[key].typeVoucher,
+                    minimumSingleValue:data[key].minimumSingleValue,
+                    maximumOrderDiscount:data[key].maximumOrderDiscount,
                 })
             }
         }
@@ -181,8 +187,9 @@ export async function getVoucher(url:string):Promise<VoucherModel|null>{
             voucherImage:data.voucherImage,
             describe:data.describe,
             isAvailable:data.isAvailable,
-            typeVoucher:data.typeVoucher
-
+            typeVoucher:data.typeVoucher,
+            minimumSingleValue:data.minimumSingleValue,
+            maximumOrderDiscount:data.maximumOrderDiscount,
         })
     }catch(error){
         console.log({error})

@@ -256,6 +256,10 @@ const ProductDetail: React.FC = () => {
                   <TableCell>Tình trạng kho:</TableCell>
                   <TableCell>{book.quantity - book.soldQuantity}</TableCell>
                 </TableRow>
+                <TableRow>
+                  <TableCell>Nhà xuất bản:</TableCell>
+                  <TableCell>{book.author}</TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </Paper>

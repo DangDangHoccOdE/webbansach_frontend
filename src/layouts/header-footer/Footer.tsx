@@ -6,7 +6,7 @@ function Footer() {
   const location = useLocation();
   const pathHideNavbar = HideNavbarEnpoint;
   
-  if (pathHideNavbar.includes(location.pathname) || location.pathname.startsWith("/user/confirmForgotPassword")) {
+  if (pathHideNavbar.includes(location.pathname) || location.pathname.startsWith("/user/confirmForgotPassword") || location.pathname.startsWith("/activatedAccount")) {
     return null;
   }
 

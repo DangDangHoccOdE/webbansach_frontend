@@ -21,6 +21,7 @@ import {
 const AddVoucher :React.FC=()=>{
     const [errorDiscountValue,setErrorDiscountValue] = useState("")
     const [errorExpiredDate,setErrorExpiredDate] = useState("")
+    const [errorMinimumSingleValue,setErrorMinimumSingleValue] = useState("")
     const [notice,setNotice] = useState("")
     const [image,setImage] = useState<string|null>(null)
     const [hasCalled,setHasCalled] = useState(false);
@@ -36,7 +37,9 @@ const AddVoucher :React.FC=()=>{
         voucherImage:image,
         isActive:true,
         isAvailable:false,
-        typeVoucher:""
+        typeVoucher:"",
+        minimumSingleValue:0,
+        maximumOrderDiscount:0
     })
 
     useEffect(()=>{
@@ -56,11 +59,13 @@ const AddVoucher :React.FC=()=>{
 
         setErrorDiscountValue("")
         setErrorExpiredDate("");
+        setErrorMinimumSingleValue("")
 
         const discountValueValid = !handleDiscountPercent();
         const expiredDateValid = !handleExpiredDate();
+        const minimumSingleValueValid = !handleChangeMinimumSingleValue();
 
-        if(discountValueValid && expiredDateValid){
+        if(discountValueValid && expiredDateValid && minimumSingleValueValid){
             try{
                 setHasCalled(true);
                 setNotice("Đang xử lý...")
@@ -84,10 +89,10 @@ const AddVoucher :React.FC=()=>{
                     setNotice(data.content)
                 }else{
                     setIsError(true);
-                    setNotice("Lỗi không thể tạo voucher!");
+                    setNotice(data.content);
                 }
             }catch(error){
-                setNotice("Đã xảy ra lỗi trong quá trình đăng ký tài khoản!")
+                setNotice("Đã xảy ra lỗi trong quá trình thêm voucher!")
                 console.log({error})
                 setIsError(true);
             }finally{
@@ -104,7 +109,18 @@ const AddVoucher :React.FC=()=>{
             setErrorDiscountValue("");
             return false;
         }
-    }
+    }  
+    
+    const handleChangeMinimumSingleValue=()=>{  // Xử lý giá trị đơn tối thiểu
+        if(voucher.minimumSingleValue<0){
+            setErrorMinimumSingleValue("Đơn tối thiểu 0đ!")
+            return true;
+        }else{
+          setErrorMinimumSingleValue("");
+            return false;
+        }
+    }  
+    
 
     const handleExpiredDate=()=>{  // Xử lý ngày hết hạn voucher
         const regex =  /\d{4}-\d{2}-\d{2}/;
@@ -153,6 +169,63 @@ const AddVoucher :React.FC=()=>{
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel id="typeVoucher-label">Loại voucher</InputLabel>
+                  <Select
+                    labelId="typeVoucher-label"
+                    id="typeVoucher"
+                    value={voucher.typeVoucher}
+                    label="Loại voucher"
+                    onChange={handleChangeTypeVoucher}
+                  >
+                    <MenuItem value="Voucher sách">Voucher sách</MenuItem>
+                    <MenuItem value="Voucher vận chuyển">Voucher vận chuyển</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+                <Grid item xs={12}>
+                      <TextField
+                        required
+                        fullWidth
+                        id="discountValue"
+                        label="Phần trăm giảm giá"
+                        type="number"
+                        value={voucher.discountValue}
+                        onChange={(e) => setVoucher({...voucher, discountValue: parseInt(e.target.value)})}
+                        onBlur={handleDiscountPercent}
+                        error={!!errorDiscountValue}
+                        helperText={errorDiscountValue}
+                      />
+                </Grid>   
+                                    
+                <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      id="minimumSingleValue"
+                      label="Đơn tối thiểu"
+                      type="number"
+                      value={voucher.minimumSingleValue}
+                      onChange={(e) => setVoucher({...voucher, minimumSingleValue: parseFloat(e.target.value)})}
+                      onBlur={handleChangeMinimumSingleValue}
+                      error={!!errorMinimumSingleValue}
+                      helperText={errorMinimumSingleValue}
+                    />
+                 </Grid>
+                 
+                 <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      id="maximumOrderDiscount"
+                      label="Giảm tối đa (Để là 0 nếu muốn giảm theo % giảm giá"
+                      type="number"
+                      value={voucher.maximumOrderDiscount}
+                      onChange={(e) => setVoucher({...voucher, maximumOrderDiscount: parseFloat(e.target.value)})}
+                    />
+                 </Grid>
+            <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
@@ -172,20 +245,7 @@ const AddVoucher :React.FC=()=>{
                 onChange={(e) => setVoucher({...voucher, describe: e.target.value})}
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="discountValue"
-                label="Phần trăm giảm giá"
-                type="number"
-                value={voucher.discountValue}
-                onChange={(e) => setVoucher({...voucher, discountValue: parseInt(e.target.value)})}
-                onBlur={handleDiscountPercent}
-                error={!!errorDiscountValue}
-                helperText={errorDiscountValue}
-              />
-            </Grid>
+          
             <Grid item xs={12}>
               <TextField
                 required
@@ -219,21 +279,7 @@ const AddVoucher :React.FC=()=>{
                 </Typography>
               )}
             </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id="typeVoucher-label">Loại voucher</InputLabel>
-                <Select
-                  labelId="typeVoucher-label"
-                  id="typeVoucher"
-                  value={voucher.typeVoucher}
-                  label="Loại voucher"
-                  onChange={handleChangeTypeVoucher}
-                >
-                  <MenuItem value="Voucher sách">Voucher sách</MenuItem>
-                  <MenuItem value="Voucher vận chuyển">Voucher vận chuyển</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
+     
             <Grid item xs={12}>
               <Button
                 variant="contained"
