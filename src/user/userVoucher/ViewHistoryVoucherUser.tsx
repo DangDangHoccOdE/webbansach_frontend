@@ -26,10 +26,8 @@ const ViewHistoryVoucherUser=()=>{
             .then(([responseVoucher,responseMapQuantity])=>{
                 // Lọc ra những voucher nào hết hạn hoặc đã sử dụng
                 const voucherFilter = responseVoucher.filter(v=>(responseMapQuantity?.get(v.voucherId)??0) <= 0 || !v.isActive)
-                if(voucherFilter.length===0){
-                    setNotice("Danh sách voucher trống!");
-                }
-                setNotice("")
+            
+                setNotice(voucherFilter.length===0?"Danh sách voucher trống!":"")
                 setVouchers(voucherFilter);
                 if(!responseMapQuantity){
                     navigate("/error-404",{replace:true});
