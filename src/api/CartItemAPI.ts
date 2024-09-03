@@ -2,7 +2,7 @@ import fetchWithAuth from "../layouts/utils/AuthService";
 import CartItemModel from "../models/CartItemModel";
 
 export async function getAllCartItemByUser(userId:number) :Promise<CartItemModel[]|null>{
-    const url:string = `http://localhost:8080/cart-items/search/findByUser_UserId?userId=${userId}&page=0&size=1000&sort=createdAt,desc`
+    const url:string = `http://localhost:8080/cart-items/findCartItemsByUserId/${userId}?page=0&size=10&sort=createdAt&direction=desc`
     const result:CartItemModel[] = []
     try{
         const response = await fetchWithAuth(url);
@@ -10,7 +10,7 @@ export async function getAllCartItemByUser(userId:number) :Promise<CartItemModel
             throw new Error("Không thể truy cập api giỏ hàng")
         }
         const data = await response.json();
-        const responseData = data._embedded.cartItems;
+        const responseData = data.content;
         if(data){
             for(const key in responseData){
                 result.push({
