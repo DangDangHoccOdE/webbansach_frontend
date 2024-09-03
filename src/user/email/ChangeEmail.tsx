@@ -1,8 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import UserModel from "../../models/UserModel";
-import { useNavigate } from "react-router-dom";
-import { getUsernameByToken } from "../../layouts/utils/JwtService";
-import { getUserByCondition } from "../../api/UserAPI";
+import { useNavigate, useParams } from "react-router-dom";
+import {  getUserByUserId } from "../../api/UserAPI";
 import { checkEmail } from "../../api/AccountAPI";
 import fetchWithAuth from "../../layouts/utils/AuthService";
 import useScrollToTop from "../../hooks/ScrollToTop";
@@ -20,20 +19,24 @@ const ChangeEmail: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false); // State để theo dõi trạng thái loading
     const navigate = useNavigate();
 
+    const {userId} = useParams();
+    const userIdNumber = parseInt(userId+"")
+
     useScrollToTop()
     useEffect(() => {
-        if (!isLoggedIn) {
+        if (!isLoggedIn || Number.isNaN(userIdNumber)) {
             navigate("/login");
             return;
         } else {
-            const usernameByToken = getUsernameByToken();
-            console.log(usernameByToken);
-            if (usernameByToken !== undefined) {
                 setIsLoading(true); // Bắt đầu hiển thị biểu tượng loading
-                getUserByCondition(usernameByToken)
+                getUserByUserId(userIdNumber)
                     .then((user) => {
                         setUser(user);
                         setEmailValue(user?.email || ""); // Cập nhật giá trị email từ user
+                        if(user == null){
+                            navigate("/error-404",{replace:true})
+                            return;
+                        }
                     })
                     .catch((error) => {
                         console.error("Lỗi load info user!", error);
@@ -43,12 +46,8 @@ const ChangeEmail: React.FC = () => {
                     .finally(() => {
                         setIsLoading(false); // Kết thúc hiển thị biểu tượng loading
                     });
-            } else {
-                toast.error("Không có thông tin user!");
-                navigate("/");
-            }
         }
-    }, [isLoggedIn, navigate]);
+    }, [isLoggedIn, navigate,userIdNumber]);
 
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setNewEmail(e.target.value);

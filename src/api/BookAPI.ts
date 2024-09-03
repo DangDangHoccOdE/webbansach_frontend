@@ -148,15 +148,50 @@ export async function getBookByBookId(bookId:number): Promise<BookModel | null> 
         console.log("Error: ",error);
         return null;
     }
-
-
-    
 }
 
 export async function getBookListByWishList(wishListId:number,currentPage:number):Promise<ResultInterface> {
-    const link:string=`http://localhost:8080/books/search/findByWishLists_WishListId?wishListId=${wishListId}&page=${currentPage}&size=8`;
+    const link:string=`http://localhost:8080/books/getBookFromWishList/${wishListId}?page=${currentPage}&size=8`;
 
-    return getBook(link);
+    const result:BookModel[] = [];
+
+    const response = await fetchWithAuth(link);
+
+    if(!response.ok){
+        throw new Error(`Không thể truy cập ${link}!`);
+    }
+
+         const data =await response.json();
+
+        // get json book
+        const responseData = data.content;
+
+        // total pages
+        const totalPages:number = data.totalPages;
+        const totalBooks:number = data.totalElements;
+
+        for(const key in responseData){
+                result.push({
+                bookId: responseData[key].bookId,
+                bookName: responseData[key].bookName,
+                price:responseData[key].price,
+                isbn:responseData[key].isbn,
+                listedPrice:responseData[key].listedPrice,
+                description:responseData[key].description,
+                author:responseData[key].author,
+                quantity:responseData[key].quantity,
+                averageRate:responseData[key].averageRate,
+                soldQuantity:responseData[key].soldQuantity,
+                discountPercent:responseData[key].discountPercent,
+                pageNumber:responseData[key].pageNumber,
+                language:responseData[key].language,
+                publishingYear:responseData[key].publishingYear
+                });
+    }
+
+    let newBookList = await fetchImageOfBooks(result);
+
+    return {resultBooks:newBookList, totalPages: totalPages , totalBooks: totalBooks};
 }
 
 export async function getBookListByCategory(categoryId:number,currentPage:number):Promise<ResultInterface> {

@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import getBase64 from "../layouts/utils/GetBase64";
-import { getUserByCondition } from "../api/UserAPI";
+import { getUserByUserId } from "../api/UserAPI";
 import UserModel from "../models/UserModel";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import fetchWithAuth from "../layouts/utils/AuthService";
@@ -28,19 +28,21 @@ const UserInformation: React.FC = () => {
     const [errorPhoneNumber, setErrorPhoneNumber] = useState("");
     const [notice, setNotice] = useState("");
     const [hasFull, setHasFull] = useState(true);
-    const {username} = useParams();
+    const {userId} = useParams();
+    const userIdNumber = parseInt(userId+"");
+
 
     useScrollToTop();
     
     useEffect(() => {
-        if (!isLoggedIn) {
+        if (!isLoggedIn || Number.isNaN(userIdNumber)) {
             navigate("/login")
             return;
         }
     
-        if (username !== undefined) {
+        if (userIdNumber !== undefined) {
             setIsLoading(true);
-            getUserByCondition(username)
+            getUserByUserId(userIdNumber)
                 .then(data => {
                     if(data === null){
                         navigate("/error-404");
@@ -57,7 +59,7 @@ const UserInformation: React.FC = () => {
         } else {
             navigate("/error-404");
         }
-    }, [isLoggedIn, navigate, username]);
+    }, [isLoggedIn, navigate, userIdNumber]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -246,7 +248,7 @@ const UserInformation: React.FC = () => {
                                                 value={email}
                                                 readOnly
                                             />
-                                            <Link to="/user/changeEmail" className="btn btn-outline-secondary">
+                                            <Link to={`/user/changeEmail/${userId}`} className="btn btn-outline-secondary">
                                                 <i className="fas fa-edit"></i> Thay đổi
                                             </Link>
                                         </div>

@@ -45,6 +45,11 @@ export async function getUserByReviewId(reviewId: number): Promise<UserModel | n
     return getUser(url);
 }
 
+export async function getUserByUserId(userId: number): Promise<UserModel | null> {
+  const url: string = `http://localhost:8080/user/${userId}`;
+    return getUser(url);
+}
+
 export async function getUserByOrderId(orderId: number): Promise<UserModel | null> {
   const url: string = `http://localhost:8080/orders/${orderId}/user`;
     return getUser(url);

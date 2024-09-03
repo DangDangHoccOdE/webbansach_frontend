@@ -81,8 +81,8 @@ const MyRoutes = () =>{
                     <Route path="/about" element={<About />} />
 
                     <Route element={<ProtectedRoute><Outlet/></ProtectedRoute>}>  {/* Các endpoint yêu cầu xác thực , ProtectedRoute có chức năng lưu đường dẫn trước đó vào local Storage*/}
-                          <Route path="/user/info/:username" element={<UserInformation />}/>
-                          <Route path="/user/changeEmail" element={<ChangeEmail />}/>  
+                          <Route path="/user/info/:userId" element={<UserInformation />}/>
+                          <Route path="/user/changeEmail/:userId" element={<ChangeEmail />}/>  
                           <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail />}/>  
                           <Route path="/user/showWishList/:userId" element={ <ShowWishListByUser />}/>  
                           <Route path="/wishList/editWishList/:wishListId" element={<EditWishList />}/>  

@@ -118,7 +118,7 @@ import { HideNavbarEnpoint } from "../utils/HideNavbar";
                     <div className="dropdown-header">
                       <p className="mb-0">Chào, {user?.firstName}</p>
                     </div>
-                    <Link className="dropdown-item" to={`/user/info/${user?.userName}`}>
+                    <Link className="dropdown-item" to={`/user/info/${user?.userId}`}>
                       <i className="fas fa-user-circle me-2"></i>
                       Xem thông tin
                     </Link>
