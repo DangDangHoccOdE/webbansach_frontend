@@ -1,8 +1,7 @@
 import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from "react";
 import VoucherModel from "../../models/VoucherModel";
 import { getVoucherQuantityFromVoucherUser, showAllVouchers_User } from "../../api/VoucherAPI";
-import { getUserIdByToken } from "../../layouts/utils/JwtService";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import VouchersProps from "../../layouts/voucher/VouchersProps";
 import { updateVoucher } from "../../layouts/voucher/UpdateIsActiveFromVoucher";
 import { useAuth } from "../../context/AuthContext";
@@ -11,7 +10,8 @@ const ShowVoucherUser =()=>{
     const [isLoading,setIsLoading] = useState(false);
     const [allVouchers,setAllVouchers] = useState<VoucherModel[]>([])
     const [notice,setNotice] = useState("");
-    const userId = getUserIdByToken();
+    const {userId} = useParams();
+    const userIdNumber = parseInt(userId+"")
     const {isLoggedIn} = useAuth();
     const navigate = useNavigate();
     const [findVoucherName,setFindVoucherName] = useState("")
@@ -19,14 +19,14 @@ const ShowVoucherUser =()=>{
     const [voucherQuantityFromUserVoucher,setVoucherQuantityFromUserVoucher] = useState<Map<number,number>>(new Map())
     
     useEffect(() => {
-        if (!isLoggedIn || userId === undefined) {
+        if (!isLoggedIn || Number.isNaN(userIdNumber)) {
             navigate("/login", { replace: true });
             return;
         }
 
         const fetchVoucherQuantities = async () => {
             try {
-                const data = await getVoucherQuantityFromVoucherUser(userId);
+                const data = await getVoucherQuantityFromVoucherUser(userIdNumber);
                 if (!data) {
                     navigate("/error-404", { replace: true });
                 } else {
@@ -39,14 +39,14 @@ const ShowVoucherUser =()=>{
         };
 
         fetchVoucherQuantities();
-    }, [userId, isLoggedIn, navigate]);
+    }, [isLoggedIn, navigate,userIdNumber]);
 
     useEffect(() => {
         if (userId) {
             const getVouchers = async () => {
                 setIsLoading(true);
                 try {
-                    const fetchVouchers = await showAllVouchers_User(findVoucherName, userId);
+                    const fetchVouchers = await showAllVouchers_User(findVoucherName, userIdNumber);
                
                     const update = await updateVoucher(fetchVouchers);
                     const filterVoucher = update.filter(voucher =>
@@ -72,7 +72,7 @@ const ShowVoucherUser =()=>{
             getVouchers();
         }
         
-    }, [findVoucherName, userId, voucherQuantityFromUserVoucher, navigate]);
+    }, [findVoucherName, userIdNumber, voucherQuantityFromUserVoucher, navigate, userId]);
 
     const handleFindVoucher = (e: ChangeEvent<HTMLInputElement>) => {
         setTemporaryVoucherName(e.target.value);
@@ -94,7 +94,7 @@ const ShowVoucherUser =()=>{
             <div className="d-flex justify-content-end">
                 <Link to={`/vouchers`} style={{textDecoration:"none",color:"orange"}}>Tìm thêm voucher</Link>
                 <span style={{margin: "0 10px"}}> | </span>
-                <Link to={`/user/vouchers/historyVouchers`} style={{textDecoration:"none",color:"orange"}}> Xem lịch sử voucher</Link>
+                <Link to={`/user/vouchers/historyVouchers/${userIdNumber}`} style={{textDecoration:"none",color:"orange"}}> Xem lịch sử voucher</Link>
             </div>
             <div className="d-flex justify-content-center mb-2">
                 <label htmlFor="findVoucher"className="form-label me-2">Mã Voucher</label>

@@ -42,6 +42,7 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
         books.forEach(book=>initialMap.set(book.bookId,5));
         return initialMap;
     })
+    const [isSending,setIsSending] = useState(false)
 
     // Kiểm tra xem có dữ liệu reviews từ trang khác gửi về k => Phần sửa đánh giá
     useEffect(() => {
@@ -129,6 +130,7 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
         if(reviews && orderReview){
             url=`http://localhost:8080/review/editReviewOrder/${orderId}`
         }
+        setIsSending(true);
             try{
                 const response = await fetchWithAuth(url,{
                     method:reviews && orderReview ? "PUT":"POST",
@@ -160,6 +162,8 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
             }catch(error){
                 console.error({error})
                 toast.error("Lỗi, không thể tải bình luận")
+            }finally{
+                setIsSending(false)
             }
         
        handleClose();
@@ -398,8 +402,10 @@ const OrderReview:React.FC<ReviewOrderProps>=({handleClose,reviews,showModal,boo
             <Button variant="secondary" onClick={handleClose}>
             Trở lại
         </Button>
-        <Button variant="primary" onClick={handleSubmit}>
-            Gửi đánh giá
+        <Button variant="primary" onClick={handleSubmit} disabled={isSending}>
+           {
+            isSending ? "Đang tải đánh giá": "Gửi đánh giá"
+           }
         </Button>
         </Modal.Footer>
         </Modal>

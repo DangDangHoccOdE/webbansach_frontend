@@ -94,7 +94,7 @@ const OrderDetail: React.FC<OrderProps> = ({ orderId ,onOrderUpdate,showFunction
       toast.warn("Tính năng đang cập nhật!")
 }  
 
-const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào yêu cầu trả hàng/ hoàn tiền
+const handleShowDetailCancelOrder=()=>{ // Xử lý khi ấn vào xem chi tiết hủy đơn
       if(order){
           navigate(`/user/purchase/cancellation/${orderId}`);
       }

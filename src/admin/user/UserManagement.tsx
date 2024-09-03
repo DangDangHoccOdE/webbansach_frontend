@@ -178,9 +178,24 @@ const UserManagement:React.FC=()=>{
                         </td>
                         <td>
                         <div className="btn-group" role="group">
-                            <Link to={`/user/info/${user.userName}`} className="btn btn-sm btn-outline-primary">
-                            <i className="fa fa-edit me-1"></i>Sửa
-                            </Link>
+                            {
+                                user.active &&
+                                <>
+                                <Link to={`/user/info/${user.userName}`} className="btn btn-sm btn-outline-primary">
+                                <i className="fa fa-edit me-1"></i>Sửa
+                                </Link>
+                                <Link to={`/user/showWishList/${user.userId}`} className="btn btn-sm btn-outline-secondary">
+                                <i className="fa-regular fa-heart me-1"></i>Xem danh sách yêu thích
+                                </Link>
+                                <Link to={`/user/showVoucherUser/${user.userId}`} className="btn btn-sm btn-outline-success">
+                                <i className="fa-solid fa-ticket me-1"></i>Xem voucher
+                                </Link> 
+                                <Link to={`/user/showCart/${user.userId}`} className="btn btn-sm btn-outline-dark">
+                                <i className="fa-solid fa-cart-shopping me-1"></i>Xem giỏ hàng
+                                </Link>
+                                </>
+                            }
+                           
                             {
                                 !roles[user.userId]?.includes("ROLE_ADMIN") && (
                                     <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(user.userName)}>

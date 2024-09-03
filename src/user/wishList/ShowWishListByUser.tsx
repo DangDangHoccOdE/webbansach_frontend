@@ -34,9 +34,8 @@ const ShowWishListByUser=()=>{
                 if (data === null) {
                     navigate("/error-404");
                 }
-                if (data?.length === 0) {
-                    setNotice("Danh sách yêu thích hiện đang trống!");
-                }
+                    setNotice(data?.length === 0?"Danh sách yêu thích hiện đang trống!":"");
+                
                 setWishList(data);
             }catch(error){
                 console.log("Không thể tải được danh sách yêu thích!");

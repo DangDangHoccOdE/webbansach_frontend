@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import VoucherModel from "../../models/VoucherModel";
-import { useNavigate } from "react-router-dom";
-import { getUserIdByToken } from "../../layouts/utils/JwtService";
+import { useNavigate, useParams } from "react-router-dom";
 import { getVoucherQuantityFromVoucherUser, showAllVouchers_User } from "../../api/VoucherAPI";
 import VouchersProps from "../../layouts/voucher/VouchersProps";
 
@@ -10,19 +9,20 @@ const ViewHistoryVoucherUser=()=>{
     const {isLoggedIn} = useAuth();
     const [vouchers,setVouchers] = useState<VoucherModel[]>([]);
     const navigate = useNavigate();
-    const userId = getUserIdByToken();
+    const {userId} = useParams();
+    const userIdNumber = parseInt(userId+"")
     const [isLoading,setIsLoading] = useState(false)
     const [voucherQuantity,setVoucherQuantity] = useState<Map<number,number>>(new Map());
     const [notice,setNotice] = useState("");
 
     useEffect(()=>{
-        if(!isLoggedIn || !userId){
+        if(!isLoggedIn || Number.isNaN(userIdNumber)){
             navigate("/login",{replace:true});
             return
         }
 
         setIsLoading(true)
-        Promise.all([showAllVouchers_User("",userId),getVoucherQuantityFromVoucherUser(userId)])
+        Promise.all([showAllVouchers_User("",userIdNumber),getVoucherQuantityFromVoucherUser(userIdNumber)])
             .then(([responseVoucher,responseMapQuantity])=>{
                 // Lọc ra những voucher nào hết hạn hoặc đã sử dụng
                 const voucherFilter = responseVoucher.filter(v=>(responseMapQuantity?.get(v.voucherId)??0) <= 0 || !v.isActive)
@@ -42,7 +42,7 @@ const ViewHistoryVoucherUser=()=>{
             .finally(
                 ()=>setIsLoading(false)
             )
-    },[isLoggedIn, navigate, userId])
+    },[isLoggedIn, navigate, userIdNumber])
 
     if(!isLoggedIn){
         return null;

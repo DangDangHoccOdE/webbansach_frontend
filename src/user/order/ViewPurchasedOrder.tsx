@@ -10,7 +10,7 @@ import { getVoucherFromOrder } from "../../api/VoucherAPI";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import { getPaymentByOrderId } from "../../api/PaymentAPI";
 import PaymentModel from "../../models/PaymentModel";
-import { RateReview } from "@mui/icons-material";
+import {  HighlightOffOutlined, RateReview } from "@mui/icons-material";
 import ShowOrderReviewByUser from "../review/ShowOrderReviewByUser";
 import DeliveryModel from "../../models/DeliveryModel";
 import { getDeliveryByOrder } from "../../api/DeliveryAPI";
@@ -134,8 +134,14 @@ const ViewPurchasedOrder = () =>{
             navigate("/login", { replace: true });
           }else{
             setShowModal(true);
-          }    }
+          } 
+   }
 
+    const handleShowDetailCancelOrder=()=>{ //Xử lý khi ấn vào xem chi tiết hủy đơn
+        if(order){
+             navigate(`/user/purchase/cancellation/${orderId}`);
+        }
+      }
     if(isLoading){
         return(
             <Box sx={{ textAlign: "center", mt: 5 }}>
@@ -242,6 +248,24 @@ const ViewPurchasedOrder = () =>{
                             showModal={showModal} 
                             orderId={orderIdNumber} 
                             />
+                            </Box>
+                        </Grid>
+                }
+
+                {
+                    order.orderStatus==="Đã hủy" &&
+                            <Grid item xs={12}>
+                            <Box display="flex" justifyContent="center" mt={2} >
+                                <Button 
+                                    variant="contained" 
+                                    color="primary" 
+                                    startIcon={<HighlightOffOutlined  />}
+                                    onClick={
+                                        handleShowDetailCancelOrder
+                                    }
+                                >
+                                    Xem lý do hủy đơn
+                                </Button>
                             </Box>
                         </Grid>
                 }

@@ -61,7 +61,14 @@ import { HideNavbarEnpoint } from "../utils/HideNavbar";
     return(
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">Bookstore</a>
+        <Link to='/'>						
+							<img
+								src={"./../../../logo.jpg"}
+								width='100'
+								alt='MDB Logo'
+								loading='lazy'
+							/>
+            </Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -71,22 +78,15 @@ import { HideNavbarEnpoint } from "../utils/HideNavbar";
               <li className="nav-item">
                 <NavLink className="nav-link active" aria-current="page" to="/">Trang chủ</NavLink>
               </li>
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Quy định bán hàng
-                </a>
-                <ul className="dropdown-menu" aria-labelledby="navbarDropdown2">
-                  <li><a className="dropdown-item" href="#">Quy định 1</a></li>
-                  <li><a className="dropdown-item" href="#">Quy định 2</a></li>
-                  <li><a className="dropdown-item" href="#">Quy định 3</a></li>
-                </ul>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">Liên hệ</a>
-              </li>
+             
               <li className='nav-item'>
 							<Link className='nav-link' to={"/policy"}>
 								Chính sách
+							</Link>
+						</li>
+            <li>
+            <Link className='nav-link' to={"/about"}>
+								Giới thiệu
 							</Link>
 						</li>
             </ul>
@@ -95,7 +95,7 @@ import { HideNavbarEnpoint } from "../utils/HideNavbar";
           {/* Biểu tượng giỏ hàng */}
           <ul className="navbar-nav me-1">
             <li className="nav-item">
-                <Link to={`/user/showCart`} style={{textDecoration:"none",color:"green",  marginLeft:"4px"}}>
+                <Link to={`/user/showCart/${user?.userId}`} style={{textDecoration:"none",color:"green",  marginLeft:"4px"}}>
                     <i className="fas fa-shopping-cart"></i> 
                     <span className="badge bg-danger rounded-pill">{itemCounter}</span>
                 </Link>
@@ -126,7 +126,7 @@ import { HideNavbarEnpoint } from "../utils/HideNavbar";
                       <i className="fas fa-heart me-2"></i>
                       Danh sách yêu thích
                     </Link>
-                    <Link className="dropdown-item" to={`/user/showVoucherUser`}>
+                    <Link className="dropdown-item" to={`/user/showVoucherUser/${user?.userId}`}>
                       <i className="fas fa-ticket-alt me-2"></i>
                       Voucher của tôi
                     </Link>

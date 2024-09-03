@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ChangeEvent, useContext, useEffect, useMemo, useState } from "react";
 import BookModel from "../../models/BookModel";
 import { getAllCartItemByUser } from "../../api/CartItemAPI";
@@ -12,7 +12,6 @@ import { faCartShopping, faGift } from "@fortawesome/free-solid-svg-icons";
 import VoucherModel from "../../models/VoucherModel";
 import SelectVoucherToAddCreate from "../order/SelectVoucherToAddOrder";
 import { CartContext } from "../../context/CartContext";
-import { getUserIdByToken } from "../../layouts/utils/JwtService";
 import { deleteAllCartItemsIsChoose, deleteCartItem, updateQuantityOfCarts } from "./cartItemActions";
 
 const ShowCart=()=>{
@@ -33,9 +32,11 @@ const ShowCart=()=>{
     const [appliedShipVoucher, setAppliedShipVoucher] = useState<VoucherModel | null>(null);
     const {updateCartItemCount} = useContext(CartContext);
     const [cartUpdated, setCartUpdated] = useState(false);
-    const userId = getUserIdByToken();
+    const {userId} = useParams();
+    const userIdNumber = parseInt(userId+"")
+    
     useEffect(()=>{
-        if(!isLoggedIn || !userId){
+        if(!isLoggedIn || Number.isNaN(userIdNumber)){
             navigate("/login",{replace:true})
             return;
         }
@@ -45,7 +46,7 @@ const ShowCart=()=>{
         }
         const showCartByUser = async()=>{
             try{
-                const cartItemData = await getAllCartItemByUser(userId);
+                const cartItemData = await getAllCartItemByUser(userIdNumber);
                 if(cartItemData===null){
                     navigate("/error-404",{replace:true});
                     return;
@@ -61,7 +62,7 @@ const ShowCart=()=>{
         }
         showCartByUser()
 
-    },[cartItemIds, isLoggedIn, navigate, cartUpdated, userId])
+    },[cartItemIds, isLoggedIn, navigate, cartUpdated, userIdNumber])
 
     useEffect(()=>{
         const getBookOfCart = async()=>{

@@ -78,6 +78,7 @@ const MyRoutes = () =>{
                     <Route path="/user/forgotPassword" element={<ForgotPassword />} />
                     <Route path="/vouchers" element={<ListVoucherToday />} />
                     <Route path="/policy" element={<PolicyPage />} />
+                    <Route path="/about" element={<About />} />
 
                     <Route element={<ProtectedRoute><Outlet/></ProtectedRoute>}>  {/* Các endpoint yêu cầu xác thực , ProtectedRoute có chức năng lưu đường dẫn trước đó vào local Storage*/}
                           <Route path="/user/info/:username" element={<UserInformation />}/>
@@ -85,15 +86,15 @@ const MyRoutes = () =>{
                           <Route path="/user/confirmChangeEmail/:email/:emailCode/:newEmail" element={<ConfirmChangeEmail />}/>  
                           <Route path="/user/showWishList/:userId" element={ <ShowWishListByUser />}/>  
                           <Route path="/wishList/editWishList/:wishListId" element={<EditWishList />}/>  
-                          <Route path="/user/showCart" element= {<ShowCart />}/>  
+                          <Route path="/user/showCart/:userId" element= {<ShowCart />}/>  
                           <Route path="/order/orderSummary" element={ <OrderSummary />}/>  
                           <Route path="/order/createOrder" element={ <CreateOrder />}/>  
-                          <Route path="/user/showVoucherUser" element={ <ShowVoucherUser /> }/>  
+                          <Route path="/user/showVoucherUser/:userId" element={ <ShowVoucherUser /> }/>  
                           <Route path="/order/purchase/:orderId" element={ <ViewPurchasedOrder />}/>  
                           <Route path="/check-out/status" element={ <CheckoutStatus />}/>  
                           <Route path="/user/showOrder" element={<ShowOrder />} />
                           <Route path="/user/purchase/cancellation/:orderId" element={<ShowCancellationDetails />} />
-                          <Route path="/user/vouchers/historyVouchers" element={<ViewHistoryVoucherUser />} />
+                          <Route path="/user/vouchers/historyVouchers/:userId" element={<ViewHistoryVoucherUser />} />
                     </Route>
                     {/* Các route khác */}
                   </Routes>
