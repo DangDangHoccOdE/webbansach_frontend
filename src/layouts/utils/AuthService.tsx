@@ -1,3 +1,6 @@
+import { toast } from "react-toastify";
+import { logout } from "./JwtService";
+
 interface RequestInitWithRetry extends RequestInit{
     _retry?:boolean;
 }
@@ -30,8 +33,8 @@ const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise
 }
 
  const refreshToken = async ():Promise<string|null> => {
-    const refreshToken = localStorage.getItem("refreshToken");
 
+    const refreshToken = localStorage.getItem("refreshToken");
     try {
         const url = "http://localhost:8080/user/refreshToken";
         const response = await fetch(url, {
@@ -41,7 +44,6 @@ const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise
                 "X-Refresh-Token":`Refresh-Token ${refreshToken}`,
             },
         });
-        console.log("Authorization",`Bearer ${refreshToken}`)
         const text = await response.text();
 
         if (!response.ok) {
@@ -52,6 +54,9 @@ const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise
         return data;
     } catch (error) {
         console.log("Lỗi refreshToken:", error);
+        logout();
+        window.location.replace("/login")
+        toast.warning("Phiên làm việc đã hết, vui lòng đăng nhập lại!")
         throw error;
     }
 };
