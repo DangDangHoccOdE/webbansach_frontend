@@ -22,17 +22,18 @@ const ViewHistoryVoucherUser=()=>{
         }
 
         setIsLoading(true)
-        Promise.all([showAllVouchers_User("",userIdNumber),getVoucherQuantityFromVoucherUser(userIdNumber)])
+        Promise.all([showAllVouchers_User("",userIdNumber),getVoucherQuantityFromVoucherUser(userIdNumber)]) // "" không tìm kiếm theo mã voucher
             .then(([responseVoucher,responseMapQuantity])=>{
+                if(!responseVoucher || !responseMapQuantity){
+                    navigate("/error-404", { replace: true });
+                    return;
+                }
                 // Lọc ra những voucher nào hết hạn hoặc đã sử dụng
                 const voucherFilter = responseVoucher.filter(v=>(responseMapQuantity?.get(v.voucherId)??0) <= 0 || !v.isActive)
             
                 setNotice(voucherFilter.length===0?"Danh sách voucher trống!":"")
                 setVouchers(voucherFilter);
-                if(!responseMapQuantity){
-                    navigate("/error-404",{replace:true});
-                    return;
-                }
+               
                 setVoucherQuantity(responseMapQuantity);
             })
             .catch(error=>{

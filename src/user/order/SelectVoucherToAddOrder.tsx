@@ -64,6 +64,10 @@ const SelectVoucherToAddCreate: React.FC<SelectVoucherProps> = (props) => {
       try {
         if (userId) {
           const fetchData = await showAllVouchers_User(findVoucherName, userId);
+          if(!fetchData){
+            navigate("/error-404", { replace: true });
+            return;
+        }
           const updateData = await updateVoucher(fetchData);
 
           const filterVoucherBook = updateData.filter(

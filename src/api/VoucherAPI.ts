@@ -90,7 +90,7 @@ export async function showVouchersAvailable() :Promise<VoucherModel[]>{
     }
 }
 
-export async function showAllVouchers_User(code:string,userId:number) :Promise<VoucherModel[]>{
+export async function showAllVouchers_User(code:string,userId:number) :Promise<VoucherModel[]|null>{
     let url:string;
     if(code===''){
         url=`http://localhost:8080/vouchers/showVoucherByUserId/${userId}`;
@@ -123,10 +123,12 @@ export async function showAllVouchers_User(code:string,userId:number) :Promise<V
                     maximumOrderDiscount:data[key].maximumOrderDiscount,
                 })
             }
+            return voucher;
+        }else{
+            throw new Error(`Lỗi HTTP: ${response.status}`);
         }
-        return voucher;
     }catch(error){
-        return [];
+        return null;
     }
 }
 

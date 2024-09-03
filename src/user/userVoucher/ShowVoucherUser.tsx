@@ -47,6 +47,10 @@ const ShowVoucherUser =()=>{
                 setIsLoading(true);
                 try {
                     const fetchVouchers = await showAllVouchers_User(findVoucherName, userIdNumber);
+                    if(fetchVouchers === null){
+                        navigate("/error-404", { replace: true });
+                        return;
+                    }
                
                     const update = await updateVoucher(fetchVouchers);
                     const filterVoucher = update.filter(voucher =>
