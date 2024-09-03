@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faGift } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
@@ -23,12 +23,12 @@ import { useAuth } from "../../context/AuthContext";
 import { handleBankPayment } from "../payment/handleBankPayment";
 import { handleCreateOrder } from "./OrderActions";
 import SelectVoucherToAddCreate from "./SelectVoucherToAddOrder";
-
-
+import EditIcon from '@mui/icons-material/Edit';
 const OrderSummary: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
+    const username = getUsernameByToken();
 
     const { selectedItems, total, bookVoucher, shipVoucher, totalProduct, isBuyNow } = location.state as { 
         selectedItems: number[], 
@@ -84,7 +84,7 @@ const OrderSummary: React.FC = () => {
     };
 
     useEffect(() => {
-        if (!isLoggedIn) {
+        if (!isLoggedIn || !username) {
             navigate("/login", { replace: true });
             return;
         }
@@ -146,7 +146,7 @@ const OrderSummary: React.FC = () => {
         handleSelectDelivery();
         handlePurchase();
         handleUser();
-    }, [formOfDelivery, isBuyNow, isLoggedIn, navigate, selectedItems]);
+    }, [formOfDelivery, isBuyNow, isLoggedIn, navigate, selectedItems, username]);
 
     const [priceByVoucher, setPriceByVoucher] = useState(total);
 
@@ -242,7 +242,7 @@ const OrderSummary: React.FC = () => {
                         voucherIds: updatedVoucherIds,
                     };
 
-                    if (order.deliveryAddress === null || order.deliveryAddress === "") {
+                    if (order.deliveryAddress === null || order.deliveryAddress.trim() === "") {
                         toast.error("Địa chỉ giao hàng không được bỏ trống!");
                         return;
                     }
@@ -343,7 +343,18 @@ const OrderSummary: React.FC = () => {
                         Địa chỉ nhận hàng
                         </h5>
                         <p className="mb-0">{user?.lastName} {user?.firstName} ({user?.phoneNumber})</p>
-                        <p>{user?.deliveryAddress}</p>
+                        <div className="row">
+                            <div className="col-6">
+                              <span style={{color:user?.deliveryAddress===null || user?.deliveryAddress.trim()==="" ?"red":undefined}}>
+                                     {user?.deliveryAddress===null || user?.deliveryAddress.trim()==="" ? "Chưa có địa chỉ giao hàng" : user?.deliveryAddress}
+                                </span>
+                            </div>
+                            <div className="col-6 ">
+                                <Link to={`/user/info/${username}`}>
+                                    <EditIcon/>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                     <hr />
 

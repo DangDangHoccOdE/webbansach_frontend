@@ -12,6 +12,8 @@ import { getPaymentByOrderId } from "../../api/PaymentAPI";
 import PaymentModel from "../../models/PaymentModel";
 import { RateReview } from "@mui/icons-material";
 import ShowOrderReviewByUser from "../review/ShowOrderReviewByUser";
+import DeliveryModel from "../../models/DeliveryModel";
+import { getDeliveryByOrder } from "../../api/DeliveryAPI";
 
 const ViewPurchasedOrder = () =>{
     const {isLoggedIn} = useAuth();
@@ -23,6 +25,7 @@ const ViewPurchasedOrder = () =>{
     const [voucherBook,setVoucherBook] = useState<VoucherModel|null>(null)
     const [voucherShip,setVoucherShip] = useState<VoucherModel|null>(null)
     const [payment,setPayment] = useState<PaymentModel|null>(null)
+    const [delivery,setDelivery] = useState<DeliveryModel|null>(null)
     const [showModal, setShowModal] = useState(false);
 
     const orderIdNumber = parseInt(orderId+'');
@@ -72,6 +75,18 @@ const ViewPurchasedOrder = () =>{
                     .then(data=>{
                         if(data){
                             setPayment(data);
+                        }else{
+                            navigate("/error-404",{replace:true})
+                        }
+                    }).catch(error=>{
+                        console.error(error);
+                        navigate("/error-404",{replace:true})
+                    })
+
+                    getDeliveryByOrder(order.orderId)
+                    .then(data=>{
+                        if(data){
+                            setDelivery(data);
                         }else{
                             navigate("/error-404",{replace:true})
                         }
@@ -140,7 +155,7 @@ const ViewPurchasedOrder = () =>{
                     <Grid container>
                         <Grid item xs={8}>
                             <Typography variant="subtitle1">Mã đơn hàng: {order.orderCode}</Typography>
-                            <Typography variant="body1">Địa chỉ nhận hàng: {order.deliveryAddress}</Typography>
+                            <Typography variant="body1">Địa chỉ giao hàng: {order.deliveryAddress}</Typography>
                         </Grid>
                         
                         <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
@@ -199,6 +214,12 @@ const ViewPurchasedOrder = () =>{
                     <Paper elevation={3} sx={{ p: 2 }}>
                         <Typography variant="h5" gutterBottom>Phương thức thanh toán</Typography>
                         <Typography variant="body1">{payment?.paymentName}</Typography>
+                        <Divider sx={{my:2}}/>
+                        <Typography variant="h5" gutterBottom>Phương thức vận chuyển</Typography>
+                        <Typography variant="body1">{delivery?.deliveryName}</Typography>
+                        <Divider sx={{my:2}}/>
+                        <Typography variant="h5" gutterBottom>Chú ý từ người đặt hàng</Typography>
+                        <Typography variant="body1">{order.noteFromUser}</Typography>
                     </Paper>
                 </Grid>
 
