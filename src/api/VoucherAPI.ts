@@ -2,7 +2,6 @@ import fetchWithAuth from "../layouts/utils/AuthService"
 import VoucherModel from "../models/VoucherModel";
 
 export async function showAllVouchers(url:string) :Promise<VoucherModel[]>{
-    const voucher:VoucherModel[] = [];
 
     try{
         const response = await fetchWithAuth(url)
@@ -11,27 +10,35 @@ export async function showAllVouchers(url:string) :Promise<VoucherModel[]>{
         }
         const data = await response.json();
         const responseData = data._embedded.vouchers;
-        for(const key in responseData){
-            voucher.push({
-                voucherId:responseData[key].voucherId,
-                code:responseData[key].code,
-                discountValue:responseData[key].discountValue,
-                expiredDate:responseData[key].expiredDate,
-                isActive:responseData[key].isActive,
-                quantity:responseData[key].quantity,
-                voucherImage:responseData[key].voucherImage,
-                describe:responseData[key].describe,
-                isAvailable:responseData[key].isAvailable,
-                typeVoucher:responseData[key].typeVoucher,
-                minimumSingleValue:responseData[key].minimumSingleValue,
-                maximumOrderDiscount:responseData[key].maximumOrderDiscount
-            })
-        }
+        const voucher:VoucherModel[] = filerLoop(responseData);
+
         return voucher;
     }catch(error){
         return [];
     }
-    
+}
+
+const filerLoop=(responseData:any)=>{ // Tạo function cho đỡ bị lặp code
+    const filer:VoucherModel[] = [];
+
+    for(const key in responseData){
+        filer.push({
+            voucherId:responseData[key].voucherId,
+            code:responseData[key].code,
+            discountValue:responseData[key].discountValue,
+            expiredDate:responseData[key].expiredDate,
+            isActive:responseData[key].isActive,
+            quantity:responseData[key].quantity,
+            voucherImage:responseData[key].voucherImage,
+            describe:responseData[key].describe,
+            isAvailable:responseData[key].isAvailable,
+            typeVoucher:responseData[key].typeVoucher,
+            minimumSingleValue:responseData[key].minimumSingleValue,
+            maximumOrderDiscount:responseData[key].maximumOrderDiscount
+        })
+    }
+
+        return filer;
 }
 
 export async function showAllVouchers_Admin(voucherName:string,condition:string) :Promise<VoucherModel[]>{
@@ -59,7 +66,6 @@ export async function showAllVouchers_Admin(voucherName:string,condition:string)
 
 export async function showVouchersAvailable() :Promise<VoucherModel[]>{
     const url:string = `http://localhost:8080/vouchers/search/findByIsAvailableAndIsActive?isAvailable=true&isActive=true`;
-    const voucher:VoucherModel[] = [];
 
     try{
         const response = await fetch(url)
@@ -68,22 +74,8 @@ export async function showVouchersAvailable() :Promise<VoucherModel[]>{
         }
         const data = await response.json();
         const responseData = data._embedded.vouchers;
-        for(const key in responseData){
-            voucher.push({
-                voucherId:responseData[key].voucherId,
-                code:responseData[key].code,
-                discountValue:responseData[key].discountValue,
-                expiredDate:responseData[key].expiredDate,
-                isActive:responseData[key].isActive,
-                quantity:responseData[key].quantity,
-                voucherImage:responseData[key].voucherImage,
-                describe:responseData[key].describe,
-                isAvailable:responseData[key].isAvailable,
-                typeVoucher:responseData[key].typeVoucher,
-                minimumSingleValue:responseData[key].minimumSingleValue,
-                maximumOrderDiscount:responseData[key].maximumOrderDiscount,
-            })
-        }
+        const voucher:VoucherModel[] = filerLoop(responseData);
+
         return voucher;
     }catch(error){
         return [];
@@ -98,8 +90,6 @@ export async function showAllVouchers_User(code:string,userId:number) :Promise<V
         url=`http://localhost:8080/vouchers/findVoucherByVoucherCodeAndUserId/${code}/${userId}`;
     }
 
-    const voucher:VoucherModel[] = [];
-
     try{
         const response = await fetchWithAuth(url)
         if(!response){
@@ -107,22 +97,8 @@ export async function showAllVouchers_User(code:string,userId:number) :Promise<V
         }
         const data = await response.json();
         if(response.ok){
-            for(const key in data){
-                voucher.push({
-                    voucherId:data[key].voucherId,
-                    code:data[key].code,
-                    discountValue:data[key].discountValue,
-                    expiredDate:data[key].expiredDate,
-                    isActive:data[key].isActive,
-                    quantity:data[key].quantity,
-                    voucherImage:data[key].voucherImage,
-                    describe:data[key].describe,
-                    isAvailable:data[key].isAvailable,
-                    typeVoucher:data[key].typeVoucher,
-                    minimumSingleValue:data[key].minimumSingleValue,
-                    maximumOrderDiscount:data[key].maximumOrderDiscount,
-                })
-            }
+            const voucher:VoucherModel[] = filerLoop(data);
+
             return voucher;
         }else{
             throw new Error(`Lỗi HTTP: ${response.status}`);

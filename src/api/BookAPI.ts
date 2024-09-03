@@ -9,8 +9,6 @@ interface ResultInterface{
 }
 
 export async function getBook(link:string):Promise<ResultInterface> {
-    const result:BookModel[] = [];
-
     const response = await fetch(link);
 
     if(!response.ok){
@@ -26,30 +24,37 @@ export async function getBook(link:string):Promise<ResultInterface> {
         const totalPages:number = data.page.totalPages;
         const totalBooks:number = data.page.totalElements;
 
-        for(const key in responseData){
-                result.push({
-                bookId: responseData[key].bookId,
-                bookName: responseData[key].bookName,
-                price:responseData[key].price,
-                isbn:responseData[key].isbn,
-                listedPrice:responseData[key].listedPrice,
-                description:responseData[key].description,
-                author:responseData[key].author,
-                quantity:responseData[key].quantity,
-                averageRate:responseData[key].averageRate,
-                soldQuantity:responseData[key].soldQuantity,
-                discountPercent:responseData[key].discountPercent,
-                pageNumber:responseData[key].pageNumber,
-                language:responseData[key].language,
-                publishingYear:responseData[key].publishingYear
-                });
-    }
+    const result:BookModel[] = filerLoop(responseData);
 
     let newBookList = await fetchImageOfBooks(result);
 
     return {resultBooks:newBookList, totalPages: totalPages , totalBooks: totalBooks};
 }
 
+const filerLoop=(loop:any)=>{ // Tạo function cho đỡ bị lặp code
+    const filer:BookModel[] = [];
+
+    for(const key in loop){
+        filer.push({
+        bookId: loop[key].bookId,
+        bookName: loop[key].bookName,
+        price:loop[key].price,
+        isbn:loop[key].isbn,
+        listedPrice:loop[key].listedPrice,
+        description:loop[key].description,
+        author:loop[key].author,
+        quantity:loop[key].quantity,
+        averageRate:loop[key].averageRate,
+        soldQuantity:loop[key].soldQuantity,
+        discountPercent:loop[key].discountPercent,
+        pageNumber:loop[key].pageNumber,
+        language:loop[key].language,
+        publishingYear:loop[key].publishingYear
+        });
+    }
+
+        return filer;
+}
 export async function getAllBook(currentPage:number):Promise<ResultInterface> {
     const size:number = 8; // Giả sử số sách môi trang là 8
     const url:string=`http://localhost:8080/books?sort=bookId,desc&size=${size}&page=${currentPage}`;
@@ -153,8 +158,6 @@ export async function getBookByBookId(bookId:number): Promise<BookModel | null> 
 export async function getBookListByWishList(wishListId:number,currentPage:number):Promise<ResultInterface> {
     const link:string=`http://localhost:8080/books/getBookFromWishList/${wishListId}?page=${currentPage}&size=8`;
 
-    const result:BookModel[] = [];
-
     const response = await fetchWithAuth(link);
 
     if(!response.ok){
@@ -170,24 +173,7 @@ export async function getBookListByWishList(wishListId:number,currentPage:number
         const totalPages:number = data.totalPages;
         const totalBooks:number = data.totalElements;
 
-        for(const key in responseData){
-                result.push({
-                bookId: responseData[key].bookId,
-                bookName: responseData[key].bookName,
-                price:responseData[key].price,
-                isbn:responseData[key].isbn,
-                listedPrice:responseData[key].listedPrice,
-                description:responseData[key].description,
-                author:responseData[key].author,
-                quantity:responseData[key].quantity,
-                averageRate:responseData[key].averageRate,
-                soldQuantity:responseData[key].soldQuantity,
-                discountPercent:responseData[key].discountPercent,
-                pageNumber:responseData[key].pageNumber,
-                language:responseData[key].language,
-                publishingYear:responseData[key].publishingYear
-                });
-    }
+        const result:BookModel[] = filerLoop(responseData);
 
     let newBookList = await fetchImageOfBooks(result);
 
@@ -248,7 +234,6 @@ export async function getBookByCartItem(cartItemId:number):Promise<BookModel|nul
 
 
 export async function getBooksOfOrders(orderId:number):Promise<BookModel[]> {
-    const result:BookModel[] = [];
     const url:string=`http://localhost:8080/order/getBooksOfOrder/${orderId}`
     const response = await fetchWithAuth(url);
 
@@ -258,25 +243,7 @@ export async function getBooksOfOrders(orderId:number):Promise<BookModel[]> {
 
          const data =await response.json();
 
-        for(const key in data){
-                result.push({
-                bookId: data[key].bookId,
-                bookName: data[key].bookName,
-                price:data[key].price,
-                isbn:data[key].isbn,
-                listedPrice:data[key].listedPrice,
-                description:data[key].description,
-                author:data[key].author,
-                quantity:data[key].quantity,
-                averageRate:data[key].averageRate,
-                soldQuantity:data[key].soldQuantity,
-                discountPercent:data[key].discountPercent,
-                pageNumber:data[key].pageNumber,
-                language:data[key].language,
-                publishingYear:data[key].publishingYear
-                });
-    }
-
+         const result:BookModel[] = filerLoop(data);
     let newBookList = await fetchImageOfBooks(result);
 
     return newBookList;

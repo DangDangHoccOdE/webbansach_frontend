@@ -20,8 +20,6 @@ export async function showOrders(userId:number,orderStatus:string,page:number=0)
         url=`http://localhost:8080/orders/search/findByUser_UserIdAndOrderStatusContaining?userId=${userId}&orderStatus=${orderStatus}&sort=date,desc&page=${page}&size=${size}`;
     }
 
-    const result:OrderModel[] = [];
-
     try{
         const response = await fetchWithAuth(url);
         if(!response){
@@ -30,29 +28,8 @@ export async function showOrders(userId:number,orderStatus:string,page:number=0)
 
         const data = await response.json();
         const responseData = data._embedded.orders;
-
-        for(const key in responseData){
-            result.push({
-                orderId:responseData[key].orderId,
-                orderCode:responseData[key].orderCode,
-                date:responseData[key].date,
-                deliveryAddress:responseData[key].deliveryAddress,
-                deliveryStatus:responseData[key].deliveryStatus,
-                orderStatus:responseData[key].orderStatus,
-                paymentCost:responseData[key].paymentCost,
-                purchaseAddress:responseData[key].purchaseAddress,
-                shippingFee:responseData[key].shippingFee,
-                shippingFeeVoucher:responseData[key].shippingFeeVoucher,
-                totalPrice:responseData[key].totalPrice,
-                totalProduct:responseData[key].totalProduct,
-                noteFromUser:responseData[key].noteFromUser,
-                userId:responseData[key].userId,
-                cartItems:responseData[key].cartItems,
-                paymentMethod:responseData[key].paymentMethod,
-                deliveryMethod:responseData[key].deliveryMethod,
-                voucherIds:responseData[key].voucherIds,
-            })
-        }
+        
+        const result:OrderModel[] = filerLoop(responseData);
 
         const hasMore = data.page.number < data.page.totalPages - 1;
 
@@ -148,7 +125,6 @@ export async function fetchAllOrders(currentPage:number):Promise<ResultInterface
     else{
         url='http://localhost:8080/orders?sort=date,desc&size=10000';
     }
-    const result:OrderModel[] = [];
 
     try{
         const response = await fetchWithAuth(url);
@@ -162,31 +138,40 @@ export async function fetchAllOrders(currentPage:number):Promise<ResultInterface
         const totalPages:number = data.page.totalPages;
         const totalOrders:number = data.page.totalElements;
 
-        for(const key in responseData){
-            result.push({
-                orderId:responseData[key].orderId,
-                orderCode:responseData[key].orderCode,
-                date:responseData[key].date,
-                deliveryAddress:responseData[key].deliveryAddress,
-                deliveryStatus:responseData[key].deliveryStatus,
-                orderStatus:responseData[key].orderStatus,
-                paymentCost:responseData[key].paymentCost,
-                purchaseAddress:responseData[key].purchaseAddress,
-                shippingFee:responseData[key].shippingFee,
-                shippingFeeVoucher:responseData[key].shippingFeeVoucher,
-                totalPrice:responseData[key].totalPrice,
-                totalProduct:responseData[key].totalProduct,
-                noteFromUser:responseData[key].noteFromUser,
-                userId:responseData[key].userId,
-                cartItems:responseData[key].cartItems,
-                paymentMethod:responseData[key].paymentMethod,
-                deliveryMethod:responseData[key].deliveryMethod,
-                voucherIds:responseData[key].voucherIds,
-            })
-        }
+        const result:OrderModel[] = filerLoop(responseData);
+
         return {resultOrders:result, totalOrders:totalOrders , totalPages:totalPages};
     }catch(error){
         console.error(error)
         return null;
     }
+}
+
+const filerLoop=(responseData:any)=>{ // Tạo function cho đỡ bị lặp code
+    const result:OrderModel[] = [];
+
+    for(const key in responseData){
+        result.push({
+            orderId:responseData[key].orderId,
+            orderCode:responseData[key].orderCode,
+            date:responseData[key].date,
+            deliveryAddress:responseData[key].deliveryAddress,
+            deliveryStatus:responseData[key].deliveryStatus,
+            orderStatus:responseData[key].orderStatus,
+            paymentCost:responseData[key].paymentCost,
+            purchaseAddress:responseData[key].purchaseAddress,
+            shippingFee:responseData[key].shippingFee,
+            shippingFeeVoucher:responseData[key].shippingFeeVoucher,
+            totalPrice:responseData[key].totalPrice,
+            totalProduct:responseData[key].totalProduct,
+            noteFromUser:responseData[key].noteFromUser,
+            userId:responseData[key].userId,
+            cartItems:responseData[key].cartItems,
+            paymentMethod:responseData[key].paymentMethod,
+            deliveryMethod:responseData[key].deliveryMethod,
+            voucherIds:responseData[key].voucherIds,
+        })
+    }
+
+        return result;
 }
