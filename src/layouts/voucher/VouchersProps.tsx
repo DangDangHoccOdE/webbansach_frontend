@@ -11,7 +11,6 @@ interface VoucherProps{
     showRelateHistoryVoucher:boolean
 }
 const VouchersProps:React.FC<VoucherProps>=(props)=>{
-  console.log(props.notice)
     return (
         <div className="container">
             <div>

@@ -48,6 +48,7 @@ import PolicyPage from "./layouts/page/PolicyPage";
 import ShowCancellationDetails from "./user/order/ShowCancellationDetails";
 import OrderReviewManagementPage from "./admin/orderReview/OrderReviewManagement";
 import ViewHistoryVoucherUser from "./user/userVoucher/ViewHistoryVoucherUser";
+import OAuth2RedirectHandler from "./user/oauth2/OAuth2RedirectHandler";
 
 const MyRoutes = () =>{
   // Xử lý ẩn hiện navbar và footer
@@ -78,7 +79,8 @@ const MyRoutes = () =>{
                     <Route path="/user/forgotPassword" element={<ForgotPassword />} />
                     <Route path="/vouchers" element={<ListVoucherToday />} />
                     <Route path="/policy" element={<PolicyPage />} />
-                    <Route path="/about" element={<About />} />
+                    <Route path="/about" element={<About />} />    
+                    <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler/>}></Route>  
 
                     <Route element={<ProtectedRoute><Outlet/></ProtectedRoute>}>  {/* Các endpoint yêu cầu xác thực , ProtectedRoute có chức năng lưu đường dẫn trước đó vào local Storage*/}
                           <Route path="/user/info/:userId" element={<UserInformation />}/>

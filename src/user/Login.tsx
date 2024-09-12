@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useScrollToTop from "../hooks/ScrollToTop";
 import { useAuth } from "../context/AuthContext";
+import { FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL } from "../constants/oauth2";
 
 const Login=()=>{
 const [username,setUsername] = useState("");
@@ -70,6 +71,16 @@ const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     }
   }
 
+  const handleLoginWithGoogle=async()=>{
+      // Make a request to the backend server to initiate the Google OAuth2 flow
+      window.location.href = GOOGLE_AUTH_URL;
+    } 
+    
+    const handleLoginFacebook=async()=>{
+      // Make a request to the backend server to initiate the Google OAuth2 flow
+      window.location.href = FACEBOOK_AUTH_URL;
+    }
+
   return (
     <div className="vh-100" style={{backgroundColor: "#F3E9DD"}}>
       <div className="container py-5 h-100">
@@ -109,23 +120,35 @@ const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
                         <label className="form-label" htmlFor="form2Example17">Tài khoản</label>
                       </div>
   
-                      <div className="form-outline mb-4">
+                      <div className="form-outline mb-2">
                         <input type="password" id="form2Example27" className="form-control form-control-lg" 
                           value={password} onChange={e => setPassword(e.target.value)} onKeyDown={handleEnter}/>
                         <label className="form-label" htmlFor="form2Example27">Mật khẩu</label>
                       </div>
-  
-                      <div className="pt-1 mb-4">
+
+                          <Link className="small text-muted" to="/user/forgotPassword">Quên mật khẩu?</Link>
+                     
+                      <div className="pt-1 mb-4 text-center">
                         <button className="btn btn-lg btn-block" type="submit" 
                           style={{backgroundColor: "#8E6F3E", color: "white"}}>Đăng nhập</button>
                       </div>
-  
                       {notice && <div style={{color: isError ? "red" : "green"}}>{notice}</div>}
-  
-                      <Link className="small text-muted" to="/user/forgotPassword">Quên mật khẩu?</Link>
-                      <p className="mb-5 pb-lg-2" style={{color: "#393f81"}}>
-                        Bạn chưa có tài khoản? <Link to="/register" style={{color: "#8E6F3E"}}>Đăng ký tại đây</Link>
-                      </p>
+
+                      <hr className="my-6"/>
+                      <div className="space-y-3">
+                        <button className="btn btn-primary" onClick={handleLoginFacebook} >
+                             <i className="fab fa-facebook-f me-2"></i>Đăng nhập với Facebook                          
+                        </button>
+                        <button className="btn btn-danger ms-5" onClick={handleLoginWithGoogle}>
+                          <i className="fab fa-google me-2"></i>Đăng nhập với Google
+                        </button>
+                      </div>
+
+                          <p className="mt-3 pb-lg-2" style={{color: "#393f81"}}>
+                            Bạn chưa có tài khoản? <Link to="/register" style={{color: "#8E6F3E"}}>Đăng ký tại đây</Link>
+                          </p>
+
+                          {/* <LoginComponent/> */}
                     </form>
                   </div>
                 </div>

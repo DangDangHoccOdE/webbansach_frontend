@@ -35,6 +35,7 @@ const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise
  const refreshToken = async ():Promise<string|null> => {
 
     const refreshToken = localStorage.getItem("refreshToken");
+    console.log("RefreshToken",refreshToken)
     try {
         const url = "http://localhost:8080/user/refreshToken";
         const response = await fetch(url, {
@@ -45,7 +46,7 @@ const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise
             },
         });
         const text = await response.text();
-
+        console.log(text)
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -53,7 +54,6 @@ const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise
         const data = JSON.parse(text);
         return data;
     } catch (error) {
-        console.log("Lỗi refreshToken:", error);
         logout();
         window.location.replace("/login")
         toast.warning("Phiên làm việc đã hết, vui lòng đăng nhập lại!")
