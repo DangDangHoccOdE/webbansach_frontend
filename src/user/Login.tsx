@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useScrollToTop from "../hooks/ScrollToTop";
 import { useAuth } from "../context/AuthContext";
-import { FACEBOOK_AUTH_URL, GOOGLE_AUTH_URL } from "../constants/oauth2";
+import { GOOGLE_AUTH_URL } from "../constants/oauth2";
 
 const Login=()=>{
 const [username,setUsername] = useState("");
@@ -55,7 +55,6 @@ const handleLogin=async (e:React.FormEvent) =>{
 
         }else{
             setNotice(data.content)
-            console.log(data.content)
             setIsError(true)
         }
   
@@ -72,14 +71,9 @@ const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
   }
 
   const handleLoginWithGoogle=async()=>{
-      // Make a request to the backend server to initiate the Google OAuth2 flow
+      // Chuyển đến link đăng nhập
       window.location.href = GOOGLE_AUTH_URL;
     } 
-    
-    const handleLoginFacebook=async()=>{
-      // Make a request to the backend server to initiate the Google OAuth2 flow
-      window.location.href = FACEBOOK_AUTH_URL;
-    }
 
   return (
     <div className="vh-100" style={{backgroundColor: "#F3E9DD"}}>
@@ -133,13 +127,11 @@ const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
                           style={{backgroundColor: "#8E6F3E", color: "white"}}>Đăng nhập</button>
                       </div>
                       {notice && <div style={{color: isError ? "red" : "green"}}>{notice}</div>}
-
-                      <hr className="my-6"/>
-                      <div className="space-y-3">
-                        <button className="btn btn-primary" onClick={handleLoginFacebook} >
-                             <i className="fab fa-facebook-f me-2"></i>Đăng nhập với Facebook                          
-                        </button>
-                        <button className="btn btn-danger ms-5" onClick={handleLoginWithGoogle}>
+                    </form>
+            
+                    <hr className="my-6"/>
+                      <div className="space">
+                        <button className="btn btn-danger" onClick={handleLoginWithGoogle}>
                           <i className="fab fa-google me-2"></i>Đăng nhập với Google
                         </button>
                       </div>
@@ -147,9 +139,6 @@ const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
                           <p className="mt-3 pb-lg-2" style={{color: "#393f81"}}>
                             Bạn chưa có tài khoản? <Link to="/register" style={{color: "#8E6F3E"}}>Đăng ký tại đây</Link>
                           </p>
-
-                          {/* <LoginComponent/> */}
-                    </form>
                   </div>
                 </div>
               </div>

@@ -27,6 +27,7 @@ export async function getUser(link: string): Promise<UserModel | null> {
           purchaseAddress: userData.purchaseAddress,
           avatar: userData.avatar,
           active: userData.active,
+          authProvider:userData.authProvider
         };
       } else {
         throw new Error("Người dùng không tồn tại!");
@@ -77,6 +78,7 @@ export async function getUserByCondition(condition: string): Promise<UserModel |
           purchaseAddress: userData.purchaseAddress,
           avatar: userData.avatar,
           active: userData.active,
+          authProvider:userData.authProvider
         };
       } else {
         throw new Error("Người dùng không tồn tại!");
@@ -127,7 +129,8 @@ export async function getAllUserByAdmin(currentPage:number): Promise<UserProps> 
       purchaseAddress:responseData[key].purchaseAddress,
       avatar:responseData[key].avatar,
       password:responseData[key].password,
-      active:responseData[key].active
+      active:responseData[key].active,
+      authProvider:responseData[key].authProvider
     });
   }
 

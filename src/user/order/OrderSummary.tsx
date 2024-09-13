@@ -12,10 +12,9 @@ import UserModel from "../../models/UserModel";
 import VoucherModel from "../../models/VoucherModel";
 
 import { getBookByBookId, getBookByCartItem } from "../../api/BookAPI";
-import { getUserByCondition } from "../../api/UserAPI";
+import {  getUserByUserId } from "../../api/UserAPI";
 import { getCartItemById } from "../../api/CartItemAPI";
 
-import { getUsernameByToken } from "../../layouts/utils/JwtService";
 import NumberFormat from "../../layouts/utils/NumberFormat";
 import generateOrderCode from "../../layouts/utils/GenerateOrderCode";
 
@@ -24,11 +23,12 @@ import { handleBankPayment } from "../payment/handleBankPayment";
 import { handleCreateOrder } from "./OrderActions";
 import SelectVoucherToAddCreate from "./SelectVoucherToAddOrder";
 import EditIcon from '@mui/icons-material/Edit';
+import { getUserIdByToken } from "../../layouts/utils/JwtService";
 const OrderSummary: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
-    const username = getUsernameByToken();
+    const userId = getUserIdByToken();
 
     const { selectedItems, total, bookVoucher, shipVoucher, totalProduct, isBuyNow } = location.state as { 
         selectedItems: number[], 
@@ -84,7 +84,7 @@ const OrderSummary: React.FC = () => {
     };
 
     useEffect(() => {
-        if (!isLoggedIn || !username) {
+        if (!isLoggedIn || !userId) {
             navigate("/login", { replace: true });
             return;
         }
@@ -121,10 +121,9 @@ const OrderSummary: React.FC = () => {
         };
 
         const handleUser = async () => {   // Load thông tin user
-            const username = getUsernameByToken();
-            if (username) {
+            if (userId) {
                 try {
-                    const getUser = await getUserByCondition(username);
+                    const getUser = await getUserByUserId(userId);
                     if (getUser === null) {
                         navigate("/error-404", { replace: true });
                     }
@@ -146,7 +145,7 @@ const OrderSummary: React.FC = () => {
         handleSelectDelivery();
         handlePurchase();
         handleUser();
-    }, [formOfDelivery, isBuyNow, isLoggedIn, navigate, selectedItems, username]);
+    }, [formOfDelivery, isBuyNow, isLoggedIn, navigate, selectedItems, userId]);
 
     const [priceByVoucher, setPriceByVoucher] = useState(total);
 
@@ -242,8 +241,8 @@ const OrderSummary: React.FC = () => {
                         voucherIds: updatedVoucherIds,
                     };
 
-                    if (order.deliveryAddress === null || order.deliveryAddress.trim() === "") {
-                        toast.error("Địa chỉ giao hàng không được bỏ trống!");
+                    if (order.deliveryAddress === null || order.deliveryAddress.trim() === "" || user.phoneNumber === null) {
+                        toast.warning("Địa chỉ giao hàng hoặc số điện thoại không được bỏ trống!");
                         return;
                     }
 
@@ -350,7 +349,7 @@ const OrderSummary: React.FC = () => {
                                 </span>
                             </div>
                             <div className="col-6 ">
-                                <Link to={`/user/info/${username}`}>
+                                <Link to={`/user/info/${userId}`}>
                                     <EditIcon/>
                                 </Link>
                             </div>

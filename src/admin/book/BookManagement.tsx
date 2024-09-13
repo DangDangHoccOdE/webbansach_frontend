@@ -40,12 +40,9 @@ const BookManagement:React.FC=()=>{
                     .finally(
                         ()=>setIsLoading(false)
                     )
-
-                    console.log("óadklas")
             }else{
               const size:number=8;
               // Khi có sử dụng bộ lọc
-              console.log("Filter:",filter)
               searchBook(temporaryWordFind,idCate,filter,size,currentPage-1)
                   .then((response)=>{
                     setBooks(response.resultBooks);
@@ -57,7 +54,7 @@ const BookManagement:React.FC=()=>{
                    .finally(
                     ()=>setIsLoading(false)
                 )
-            }    console.log("ok",temporaryWordFind)
+            }  
     },[currentPage, filter, idCate, temporaryWordFind,isUpdate])
 
     const pagination = (pageCurrent:number)=>{ // phân trang
@@ -65,7 +62,6 @@ const BookManagement:React.FC=()=>{
     }
 
     const handleChangeWordFind=(keySearch:string)=>{ // Theo dõi từng từ tìm kiếm
-        console.log("Value",keySearch)
         setTemporaryWordFind(keySearch);
     }
 

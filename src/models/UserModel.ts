@@ -11,7 +11,8 @@ class UserModel{
     deliveryAddress:string;
     purchaseAddress:string;
     avatar:string;
-    active:boolean
+    active:boolean;
+    authProvider:string;
 
     constructor(
         userId:number,
@@ -26,7 +27,8 @@ class UserModel{
         deliveryAddress:string,
         purchaseAddress:string,
         avatar:string,
-        active:boolean
+        active:boolean,
+        authProvider:string
     ){
         this.userId=userId;
         this.firstName=firstName;
@@ -41,6 +43,7 @@ class UserModel{
         this.purchaseAddress=purchaseAddress;
         this.avatar =avatar;
         this.active=active;
+        this.authProvider = authProvider
     }
 }
 

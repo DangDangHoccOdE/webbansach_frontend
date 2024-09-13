@@ -156,7 +156,7 @@ const OrderManagement:React.FC=()=>{
                           <TableRow key={order.orderId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                             <TableCell align="center">{(currentPage - 1) * 10 + index + 1}</TableCell>
                             <TableCell align="center">{order.orderCode}</TableCell>
-                            <TableCell align="center">{orderUsers[index].userName}</TableCell>
+                            <TableCell align="center">{orderUsers[index].email}</TableCell>
                             <TableCell align="center">{order.orderStatus}</TableCell>
                             <TableCell align="center">
                               <FormControl fullWidth size="small">

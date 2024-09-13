@@ -30,7 +30,7 @@ const UserInformation: React.FC = () => {
     const [hasFull, setHasFull] = useState(true);
     const {userId} = useParams();
     const userIdNumber = parseInt(userId+"");
-
+    const [authProvider,setAuthProvider] = useState("");
 
     useScrollToTop();
     
@@ -74,6 +74,7 @@ const UserInformation: React.FC = () => {
             setAvatar(user.avatar);
             setDeliveryAddress(user.deliveryAddress);
             setPurchaseAddress(user.purchaseAddress);
+            setAuthProvider(user.authProvider)
         }
         setIsLoading(false);
     }, [user]);
@@ -112,10 +113,14 @@ const UserInformation: React.FC = () => {
                     sex,
                     avatar: noAvatar ? null : avatar,
                     deliveryAddress,
-                    purchaseAddress
+                    purchaseAddress,
+                    authProvider:authProvider
                 };
 
-                const url = "http://localhost:8080/user/changeInfo";
+                let url = "http://localhost:8080/user/changeInfo";  // Nếu tài khoản local có username password
+                if(!user?.userName && !user?.password){
+                    url = "http://localhost:8080/user/changeInfoOauth2"; // Nếu tài khoản không có username password
+                }
                 const response = await fetchWithAuth(url, {
                     method: 'PUT',
                     headers: {

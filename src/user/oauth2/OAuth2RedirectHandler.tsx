@@ -16,14 +16,10 @@ const OAuth2RedirectHandler = () => {
     const refreshToken = getUrlParameter('refreshToken');
     const error = getUrlParameter('error');
 
-    console.log(accessToken);
-    console.log(refreshToken);
-
     if (accessToken) {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         setLoggedIn(true);
-        console.log("Thành công")
         return <Navigate to="/" />;
     } else {
         console.log("Lỗi",error)

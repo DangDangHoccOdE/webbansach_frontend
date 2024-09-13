@@ -35,6 +35,7 @@ function RegisterUser(){
     const [hasCalled,setHasCalled] = useState(false)
     const [avatarPreview,setAvatarPreview] = useState<string|null>(null)
 
+    const authProvider = "local"
     useScrollToTop();
     
     const handleSubmit = async(e:React.FormEvent) =>{
@@ -90,7 +91,8 @@ function RegisterUser(){
                         dateOfBirth:dateOfBirth,
                         phoneNumber: phoneNumber,
                         sex:sex,
-                        avatar:base64Avatar
+                        avatar:base64Avatar,
+                        authProvider:authProvider
                     })
                 });
                 const data = await response.json();
