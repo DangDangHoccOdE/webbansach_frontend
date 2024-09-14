@@ -7,7 +7,7 @@ import CategoryRoundedIcon from "@mui/icons-material/CategoryRounded";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import LocalMallRoundedIcon from "@mui/icons-material/LocalMallRounded";
 import FeedbackIcon from "@mui/icons-material/Feedback";
-import { getUsernameByToken, logout } from "../../layouts/utils/JwtService";
+import { getUserIdByToken, logout } from "../../layouts/utils/JwtService";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { LocalOffer } from "@mui/icons-material";
@@ -15,7 +15,7 @@ import { LocalOffer } from "@mui/icons-material";
 
 export const SlideBar: React.FC = () => {
 	const { setLoggedIn } = useAuth();
-	const username = getUsernameByToken();
+	const userId = getUserIdByToken();
 
 	return (
 		<div
@@ -131,7 +131,7 @@ export const SlideBar: React.FC = () => {
 					<Link
 						className='dropdown-item'
 						style={{ cursor: "pointer" }}
-						to={`/user/info/${username}`}
+						to={`/user/info/${userId}`}
 					>
 						Thông tin cá nhân
 					</Link>
