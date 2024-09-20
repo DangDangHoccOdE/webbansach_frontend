@@ -39,7 +39,7 @@ export const AuthProvider:React.FC<AuthContextProps>=(props)=>{
         const getUser = async()=>{
             const username = getUsernameByToken();
             if(username){
-                const getUser = await getUserByCondition(username);
+                const getUser = await getUserByCondition(username,true);  // True là tìm theo cả email
                 setUser(getUser);
             }        
         }

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
+import React, { useEffect } from "react";
 import PersonIcon from "@mui/icons-material/Person";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
@@ -8,14 +8,23 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import LocalMallRoundedIcon from "@mui/icons-material/LocalMallRounded";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import { getUserIdByToken, logout } from "../../layouts/utils/JwtService";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { LocalOffer } from "@mui/icons-material";
 
 
 export const SlideBar: React.FC = () => {
-	const { setLoggedIn } = useAuth();
+	const {isLoggedIn,setLoggedIn} = useAuth();
 	const userId = getUserIdByToken();
+	const navigate = useNavigate();
+
+	useEffect(()=>{
+		if(!isLoggedIn){
+			navigate("/login")
+			return;
+		}
+	},[isLoggedIn, navigate])
+
 
 	return (
 		<div

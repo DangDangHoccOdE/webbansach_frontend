@@ -56,8 +56,11 @@ export async function getUserByOrderId(orderId: number): Promise<UserModel | nul
     return getUser(url);
 }
 
-export async function getUserByCondition(condition: string): Promise<UserModel | null> {
-  const url: string = `http://localhost:8080/user/findUserByCondition?condition=${condition}`;
+export async function getUserByCondition(condition: string,isSearchEmail:boolean): Promise<UserModel | null> {
+  let url: string = `http://localhost:8080/user/findUserByCondition?condition=${condition}`;
+  if(!isSearchEmail){ 
+    url = `http://localhost:8080/user/findByUserName?username=${condition}`
+  }
   try {
     const response = await fetch(url);
 

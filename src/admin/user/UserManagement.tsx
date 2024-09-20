@@ -39,7 +39,7 @@ const UserManagement:React.FC=()=>{
                     }
 
             }else{
-                const result = await getUserByCondition(wordFind);
+                const result = await getUserByCondition(wordFind,true);  // True là tìm theo cả email
                 if(!result){
                     setNotice("Không tồn tại user cần tìm");
                     setAllUser([])

@@ -22,7 +22,7 @@ import { HideNavbarEnpoint } from "../utils/HideNavbar";
         const username = getUsernameByToken();
         if(username!==undefined){
           try{
-              const result = await getUserByCondition(username);
+              const result = await getUserByCondition(username,true);  // True là tìm theo cả email
               setUser(result);
           }catch(error){
             setError("Lỗi khi gọi api user!");

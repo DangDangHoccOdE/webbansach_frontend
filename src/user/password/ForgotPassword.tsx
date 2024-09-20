@@ -19,7 +19,7 @@ const ForgotPassword: React.FC = () => {
     setIsLoading(true);
   
     try {
-      const result = await getUserByCondition(username);
+      const result = await getUserByCondition(username,false); // false là không tìm theo email
       if (result !== null) {
         setNotice("Tài khoản hợp lệ!");
         setIsError(false);
