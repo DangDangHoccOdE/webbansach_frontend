@@ -102,36 +102,36 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
     setCurrentPage(pageCurrent);
   }
 
-  const deleteReview=async(reviewId:number)=>{
-    confirm({
-      title:'Ẩn đánh giá',
-      description:`Bạn có chắc muốn ẩn đánh giá này?`,
-      confirmationText:['Đồng ý'],
-      cancellationText:['Hủy'],
-  }).then(()=>{
-      toast.promise(
-          fetchWithAuth(`http://localhost:8080/review/hideReview/${reviewId}`,{
-            method:"PUT",
-                headers:{
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+  const hideReview=async(reviewId:number)=>{
+            confirm({
+              title:'Ẩn đánh giá',
+              description:`Bạn có chắc muốn ẩn đánh giá này?`,
+              confirmationText:['Đồng ý'],
+              cancellationText:['Hủy'],
+          }).then(()=>{
+              toast.promise(
+                  fetchWithAuth(`http://localhost:8080/review/hideReview/${reviewId}`,{
+                    method:"PUT",
+                        headers:{
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+                          }
+                    }
+              ).then((response)=>{
+                  if(response.ok){
+                      toast.success("Đã ẩn đánh giá thành công");
+                      setIsUpdate(prev=>!prev);
+                      props.setIsRefresh(prev=>!prev)
+                }else{
+                      toast.error("Lỗi khi ẩn đánh giá!");
                   }
-            }
-      ).then((response)=>{
-          if(response.ok){
-              toast.success("Đã ẩn đánh giá thành công");
-              setIsUpdate(prev=>!prev);
-              props.setIsRefresh(prev=>!prev)
-         }else{
-              toast.error("Lỗi khi ẩn đánh giá!");
-          }
-      }).catch(error=>{
-          toast.error("Lỗi khi ẩn đánh giá!");
-          console.error(error);
-      }),
-      {pending:"Đang trong quá trình xử lý..."}
-  )})
-  .catch(()=>{});
+              }).catch(error=>{
+                  toast.error("Lỗi khi ẩn đánh giá!");
+                  console.error(error);
+              }),
+              {pending:"Đang trong quá trình xử lý..."}
+          )})
+          .catch(()=>{});
   }
 
 
@@ -218,7 +218,7 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
                         </Box>
                         {isAdmin && (
                             <Button 
-                                onClick={() => deleteReview(review.reviewId)} 
+                                onClick={() => hideReview(review.reviewId)} 
                                 variant="outlined" 
                                 color="error" 
                                 endIcon={<HideSourceIcon />}
