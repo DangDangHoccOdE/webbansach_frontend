@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import { logout } from "./JwtService";
 
 interface RequestInitWithRetry extends RequestInit{
@@ -54,7 +53,6 @@ const fetchWithAuth = async (url:string,options:RequestInitWithRetry={}):Promise
     } catch (error) {
         logout();
         window.location.replace("/login")
-        toast.warning("Phiên làm việc đã hết, vui lòng đăng nhập lại!")
         throw error;
     }
 };

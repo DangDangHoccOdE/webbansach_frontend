@@ -150,13 +150,13 @@ const ProductDetail: React.FC = () => {
             {
               book.quantity === book.soldQuantity && 
               <Box sx={{ position: 'absolute', 
-                top: 8, 
+                top:6, 
                 right: 8, 
                 backgroundColor: 'red', 
                 color: 'white', 
-                padding: '4px 8px', 
+                padding: '1px 6px', 
                 borderRadius: '4px',
-                fontSize: '0.75rem'}}>
+                fontSize: '0.2rem'}}>
                 <Typography >
                     Hết hàng
                 </Typography>

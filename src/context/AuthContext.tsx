@@ -28,7 +28,7 @@ export const AuthProvider:React.FC<AuthContextProps>=(props)=>{
             const refreshToken = localStorage.getItem("refreshToken");
 
             if(refreshToken&&isTokenExpired(refreshToken)){
-                toast.error("Phiên làm việc đã hết, vui lòng đăng nhập lại!")
+                toast.warning("Phiên làm việc đã hết, vui lòng đăng nhập lại!")
                 logout();
                 setLoggedIn(false);
                 navigate("/login")

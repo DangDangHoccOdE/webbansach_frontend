@@ -15,7 +15,8 @@ import { checkRoleAdmin } from "../../utils/JwtService";
 import HideSourceIcon from '@mui/icons-material/HideSource';
 import { faFaceSmileBeam, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import handleHideReview from "../../../admin/review/handleHideReview";
+import { confirm } from "material-ui-confirm";
+import fetchWithAuth from "../../utils/AuthService";
 interface ReviewProductProps {
   bookId: number;
   setIsRefresh:Dispatch<SetStateAction<boolean>>
@@ -102,16 +103,35 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
   }
 
   const deleteReview=async(reviewId:number)=>{
-    const adminConfirm = window.confirm("Bạn có chắc muốn ẩn đánh giá này!")
-    if(!adminConfirm){
-      return
-    }else{
-      const isComplete = await handleHideReview(reviewId);
-      if(isComplete){
-          setIsUpdate(prev=>!prev);
-          props.setIsRefresh(prev=>!prev)
-      }
-    }
+    confirm({
+      title:'Ẩn đánh giá',
+      description:`Bạn có chắc muốn ẩn đánh giá này?`,
+      confirmationText:['Đồng ý'],
+      cancellationText:['Hủy'],
+  }).then(()=>{
+      toast.promise(
+          fetchWithAuth(`http://localhost:8080/review/hideReview/${reviewId}`,{
+            method:"PUT",
+                headers:{
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("accessToken")}`
+                  }
+            }
+      ).then((response)=>{
+          if(response.ok){
+              toast.success("Đã ẩn đánh giá thành công");
+              setIsUpdate(prev=>!prev);
+              props.setIsRefresh(prev=>!prev)
+         }else{
+              toast.error("Lỗi khi ẩn đánh giá!");
+          }
+      }).catch(error=>{
+          toast.error("Lỗi khi ẩn đánh giá!");
+          console.error(error);
+      }),
+      {pending:"Đang trong quá trình xử lý..."}
+  )})
+  .catch(()=>{});
   }
 
 
@@ -195,7 +215,6 @@ const ReviewProduct: React.FC<ReviewProductProps> = (props) => {
                     <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                         <Box display="flex" alignItems="center">
                             <FontAwesomeIcon icon={faThumbsUp} style={{ marginRight: '8px' }} />
-                            {/* Thêm các nội dung khác ở đây nếu có */}
                         </Box>
                         {isAdmin && (
                             <Button 
